@@ -42,7 +42,7 @@
                          node_labels = NULL, 
                          geometry = NULL, 
                          phylogeny = NULL,
-                         values = NULL,
+                         random_walk = NULL,
                          graph  = NULL,
                          dissimiliarities = NULL) {
   #could return:
@@ -54,7 +54,7 @@
        node_labels = node_labels, 
        geometry = geometry, 
        phylogeny = phylogeny,
-       values = values,
+       random_walk = random_walk,
        graph  = graph,
        dissimiliarities = dissimiliarities)
   class(config) <- "mrf_config" 

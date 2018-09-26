@@ -61,7 +61,9 @@
   type_labels <- c("first_order_random_walk","cyclic_first_order_random_walk")
   names(type_labels) <- types
   pen <- as_mrf_penalty(pen, config = mrf_config(type = type_labels[type], 
-                                                 node_labels = node_labels))
+                                                 node_labels = node_labels,
+                                                 random_walk = list(values = object, end_points =end_points,
+                                                                    delta = delta)))
   pen
 }
 
@@ -105,7 +107,8 @@
   pen <- -pen
   
   pen <- as_mrf_penalty(pen, config = mrf_config(type = "sf", 
-                                                 node_labels = node_labels))
+                                                 node_labels = node_labels,
+                                                 geometry = obj_geom))
   pen
 }
 

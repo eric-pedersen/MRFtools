@@ -30,7 +30,18 @@
 
 
 `mrf_config` <- function(...) {
+  #could return: 
+    #unique factor levels associated with the data 
+    #MRF type
+    #information for plotting (e.g. the graph, phylogeny, etc.)
+    #geographic information
   list()
+}
+
+##' @export
+`print.mrf_penalty` <- function(x, ...) {
+  #placeholder till we implement a print function
+  print.default(x, ...) 
 }
 
 `check_penalty` <- function(...) {

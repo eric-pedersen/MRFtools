@@ -22,14 +22,11 @@
 `get_mrf.gam` <- function(object, term, ...) {
   ids <- gratia:::which_smooth(object, term)
   smooths <- gratia:::get_smooths_by_id(ids,object)
-  mrfs <- vapply(smooths, FUN = is_mrf_smooth, FUN.VALUE = logical(1))
+  mrfs <- vapply(smooths, FUN = gratia:::is_mrf_smooth, FUN.VALUE = logical(1))
   smooths <- smooths[[mrfs]]
   smooths
 }
 
-`is_mrf_smooth` <- function(object) {
-  inherits(object, what= "mrf.smooth")
-}
 
 
 

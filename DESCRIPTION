@@ -1,0 +1,32 @@
+Package: MRFtools
+Version: 0.0-1
+Date: 2018-09-26
+Title: Tools for constructing and plotting Markov Random Fields in R for graphical data
+Authors@R: c(person(given = "Eric J.", family = "Pedersen",
+                    email = "eric.j.pedersen@gmail.com",
+                    role = c("aut","cre")),
+person(given = "Gavin L.", family = "Simpson",
+                    email = "ucfagls@gmail.com",
+                    role = c("aut")))
+Maintainer: Eric J. Pedersen <eric.j.pedersen@gmail.com>
+Imports:
+    mgcv,
+    ggplot2,
+    ggraph,
+    sp,
+    sf,
+    dplyr,
+    tidyr,
+    igraph,
+    ape
+Suggests:
+    testthat,
+    vdiffr
+Description: Ggplot-based graphics and utility functions for working with GAMs fitted using the mgcv package.
+License: GPL-3
+LazyData: true
+URL: https://github.com/eric-pedersen/MRFtools
+BugReports: https://github.com/eric-pedersen/MRFtools/issues
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.0
+Encoding: UTF-8

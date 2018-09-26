@@ -4,17 +4,19 @@
 
 `create_mrf_penalty.factor` <- function(object,type = c("full","individual"), delta = 0, ...) {
   type <- match.arg(type)
-  obj_levels <- levels(object)
-  n_levels <- length(obj_levels)
+  node_labels <- levels(object)
+  n_levels <- length(node_labels)
   if(type == "full"){
     pen <- matrix(-1, n_levels, n_levels)
     diag(pen) <- n_levels - 1 + delta
   } else if(type =="individual"){
     pen <- diag(1, n_levels)
   }
-  dimnames(pen) <- list(obj_levels,obj_levels)
-  class(pen) <- c("mrf_penalty", "matrix")
-  attr(pen,which = "mrf_config") <- mrf_config()
+  types <-  c("full","individual")
+  type_labels <- c("fully_connected_graph","random_intercept")
+  names(type_labels) <- types
+  pen <- as_mrf_penalty(pen, config = mrf_config(type = type_labels[type], 
+                                                 node_labels = node_labels))
   pen
 }
 
@@ -54,9 +56,12 @@
     pen[n,1] = pen[1,n] = -1/dist_to_end
   }
   pen = pen[indices,indices]
-  dimnames(pen) <- list(node_labels,node_labels)
-  class(pen) <- c("mrf_penalty", "matrix")
-  attr(pen,which = "mrf_config") <- mrf_config()
+  
+  types <-  c("linear","cyclic")
+  type_labels <- c("first_order_random_walk","cyclic_first_order_random_walk")
+  names(type_labels) <- types
+  pen <- as_mrf_penalty(pen, config = mrf_config(type = type_labels[type], 
+                                                 node_labels = node_labels))
   pen
 }
 
@@ -70,7 +75,7 @@
   n <- nrow(object)
   
   node_labels <- if(is.null(node_labels)){
-    as.character(seq_len(n))
+    seq_len(n)
   } else{
     if(is.character(node_labels) && length(node_labels)==1){
       if(!node_labels %in% names(object)) {
@@ -86,6 +91,7 @@
       stop("node_labels is not an atomic vector or the name of a vector in object") 
     }
   }
+  node_labels <- as.character(node_labels)
   
   obj_geom <- st_sf(node_labels = node_labels,geometry = st_geometry(object))
   obj_geom <- obj_geom[!duplicated(st_geometry(obj_geom)),]
@@ -98,8 +104,8 @@
   diag(pen) <- rowSums(pen) - diag(pen)
   pen <- -pen
   
-  dimnames(pen) <- list(node_labels,node_labels)
-  class(pen) <- c("mrf_penalty", "matrix")
-  attr(pen,which = "mrf_config") <- mrf_config()
+  pen <- as_mrf_penalty(pen, config = mrf_config(type = "sf", 
+                                                 node_labels = node_labels))
   pen
 }
+

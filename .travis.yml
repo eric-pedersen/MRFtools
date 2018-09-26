@@ -1,0 +1,41 @@
+language: r
+cache: packages
+
+r:
+  - release
+  - devel
+
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - qpdf
+
+r_packages:
+  - mgcv
+  - testthat
+  - ggplot2
+  - sp
+  - vdiffr
+  - sf
+  - dplyr
+  - tidyr
+  - igraph
+  - ggraph
+  - ape
+
+r_github_packages:
+  - r-lib/covr
+  - gavinsimpson/gratia
+
+after_success:
+  - Rscript -e 'covr::codecov()'
+
+r_build_args: " --compact-vignettes=gs+qpdf"
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
+

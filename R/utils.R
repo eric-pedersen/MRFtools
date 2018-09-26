@@ -29,5 +29,13 @@
 
 
 
+`mrf_config` <- function(...) {
+  list()
+}
+
+`check_penalty` <- function(...) {
+  list()
+}
+
 
 

@@ -20,8 +20,8 @@
 }
 
 `get_mrf.gam` <- function(object, term, ...) {
-  ids <- gratia:::which_smooth(object, term)
-  smooths <- gratia:::get_smooths_by_id(ids,object)
+  ids <- which_smooth(object, term)
+  smooths <- get_smooths_by_id(ids,object)
   mrfs <- vapply(smooths, FUN = gratia:::is_mrf_smooth, FUN.VALUE = logical(1))
   smooths <- smooths[[mrfs]]
   smooths
@@ -30,8 +30,8 @@
 
 
 `mrf_config` <- function(...) {
-  #could return: 
-    #unique factor levels associated with the data 
+  #could return:
+    #unique factor levels associated with the data
     #MRF type
     #information for plotting (e.g. the graph, phylogeny, etc.)
     #geographic information
@@ -41,7 +41,7 @@
 ##' @export
 `print.mrf_penalty` <- function(x, ...) {
   #placeholder till we implement a print function
-  print.default(x, ...) 
+  print.default(x, ...)
 }
 
 `check_penalty` <- function(...) {

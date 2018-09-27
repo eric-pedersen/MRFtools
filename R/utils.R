@@ -118,6 +118,6 @@
     if (is.numeric(add_delta) && add_delta < 0) {
         stop("'add_delta' has to be zero or a positive number")
         }
-    return()
+    as.numeric(add_delta)
 }
   

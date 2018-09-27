@@ -75,6 +75,17 @@
 ##'
 ##' @export
 `get_labels` <- function(penalty) {
-    config <- attr(penalty, which = "mrf_config")
+    config <- get_config(penalty)
     config[["node_labels"]]
+}
+
+##' @title Extract configuration details of an MRF penalty
+##'
+##' @param penalty an object of class `"mrf_penalty"`
+##'
+##' @return An object of class `"mrf_config"`, a list.
+##'
+##' @export
+`get_config` <- function(penalty) {
+    attr(penalty, which = "mrf_config")
 }

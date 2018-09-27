@@ -12,6 +12,7 @@ addons:
     packages:
       - qpdf
       - libudunits2-dev
+      - libgit2-dev
 
 r_packages:
   - mgcv

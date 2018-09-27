@@ -113,3 +113,26 @@
                                                  geometry = obj_geom))
   pen
 }
+
+
+##' @title MRF penalty from a dendrogram
+##'
+##' @importFrom stats cophenetic
+`mrf_penalty.dendrogram` <- function(object, node_labels = NULL, add_delta = FALSE, ...) {
+    add_delta <- check_delta(add_delta)
+    pen <- as.matrix(cophenetic(object))
+    
+    pen <- pen - max(pen)
+    diag(pen) <- -(rowSums(pen) - diag(pen)) + add_delta
+
+    if (!is.null(node_labels)) {
+        if (length(node_labels) != nrow(pen)) {
+            stop("'node_labels' is not the same length as the number of observations.")
+        }
+        dimnames(pen) <- list(node_labels, node_labels)
+    }
+    
+    pen <- as_mrf_penalty(pen, config = mrf_config(type = "dendrogram",
+                                                   node_labels = node_labels))
+    pen
+}

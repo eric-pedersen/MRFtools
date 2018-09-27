@@ -107,10 +107,16 @@
 }
 
 
-check_delta <- function(add_delta) {
-  if(length(add_delta)>1) stop("'add_delta' has to be a single value, either logical or numeric")
-  if(!(is.logical(add_delta)||is.numeric(add_delta))) stop("'add_delta' has to be either logical or numeric")
-  if(is.numeric(add_delta)&&add_delta<0) stop("'add_delta' has to be zero or a positive number")
-  return()
+`check_delta` <- function(add_delta) {
+    if (length(add_delta) > 1) {
+        stop("'add_delta' has to be a single value, either logical or numeric")
+    }
+    if (!(is.logical(add_delta) || is.numeric(add_delta))) {
+        stop("'add_delta' has to be either logical or numeric")
+    }
+    if (is.numeric(add_delta) && add_delta < 0) {
+        stop("'add_delta' has to be zero or a positive number")
+        }
+    return()
 }
   

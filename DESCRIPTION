@@ -5,7 +5,7 @@ Title: Tools for constructing and plotting Markov Random Fields in R for graphic
 Authors@R: c(person(given = "Eric J.", family = "Pedersen",
                     email = "eric.j.pedersen@gmail.com",
                     role = c("aut","cre")),
-person(given = "Gavin L.", family = "Simpson",
+             person(given = "Gavin L.", family = "Simpson",
                     email = "ucfagls@gmail.com",
                     role = c("aut")))
 Maintainer: Eric J. Pedersen <eric.j.pedersen@gmail.com>

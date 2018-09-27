@@ -120,4 +120,23 @@
         }
     as.numeric(add_delta)
 }
-  
+
+##' @title Extract a MRF penalty matrix
+##'
+##' @param penalty an R object from which to extract the MRF penalty matrix.
+##'
+##' @return A penalty matrix of class `"matrix"`.
+##' 
+##' @export
+`get_penalty` <- function(penalty, ...) {
+    UseMethod("get_penalty")
+}
+
+##' @rdname get_penalty
+##' 
+##' @export
+`get_penalty.mrf_penalty` <- function(penalty, ...) {
+    attr(penalty, "mrf_config") <- NULL
+    class(penalty) <- "matrix"
+    penalty
+}

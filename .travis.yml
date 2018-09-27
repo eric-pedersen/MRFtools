@@ -11,6 +11,7 @@ addons:
   apt:
     packages:
       - qpdf
+      - libudunits2-dev
 
 r_packages:
   - mgcv

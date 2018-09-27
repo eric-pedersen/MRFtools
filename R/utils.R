@@ -19,10 +19,11 @@
   get_mrf(object, ...)
 }
 
+##' @importFrom gratia which_smooth get_smooths_by_id is_mrf_smooth
 `get_mrf.gam` <- function(object, term, ...) {
   ids <- which_smooth(object, term)
   smooths <- get_smooths_by_id(ids,object)
-  mrfs <- vapply(smooths, FUN = gratia:::is_mrf_smooth, FUN.VALUE = logical(1))
+  mrfs <- vapply(smooths, FUN = is_mrf_smooth, FUN.VALUE = logical(1))
   smooths <- smooths[[mrfs]]
   smooths
 }

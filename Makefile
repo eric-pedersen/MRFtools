@@ -4,11 +4,11 @@ PKGVERS := $(shell sed -n "s/Version: *\([^ ]*\)/\1/p" DESCRIPTION)
 all: docs check clean
 
 docs:
-	Rscript -e 'library("roxygen2"); roxygenise(".")'
+	R -q -e 'library("roxygen2"); roxygenise(".")'
 
 build: docs
 	cd ..;\
-	R CMD build gratia
+	R CMD build MRFtools
 
 check: build
 	cd ..;\

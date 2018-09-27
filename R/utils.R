@@ -75,7 +75,7 @@
 ##'
 ##' @export
 `get_labels` <- function(penalty) {
-    config <- attr(penalty, which = "mrf_config")
+    config <- get_config(penalty)
     config[["node_labels"]]
 }
 

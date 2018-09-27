@@ -25,6 +25,13 @@ r_packages:
   - ggraph
   - ape
   - ggforce
+  - units
+  - Rcpp
+  - MASS
+  - scales
+  - tweenr
+  - gtable
+  - lazyeval
 
 r_github_packages:
   - r-lib/covr

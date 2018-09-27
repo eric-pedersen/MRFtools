@@ -37,6 +37,7 @@
     ## print out info on MRF
     writeLines("Markov Random Field penalty")
     writeLines(paste0("MRF type: ", get_type(conf)))
+    writeLines(paste0("N:        ", nrow(x)))
 }
 
 `check_penalty` <- function(...) {

@@ -1,8 +1,9 @@
-`create_mrf_penalty` <- function(data, ...) {
-  UseMethod("create_mrf_penalty")
+`mrf_penalty` <- function(data, ...) {
+  UseMethod("mrf_penalty")
 }
 
-`create_mrf_penalty.factor` <- function(object,type = c("full","individual"), delta = 0, ...) {
+`mrf_penalty.factor` <- function(object,type = c("full","individual"), add_delta = FALSE, ...) {
+  check_delta(add_delta)
   type <- match.arg(type)
   node_labels <- levels(object)
   n_levels <- length(node_labels)
@@ -20,8 +21,9 @@
   pen
 }
 
-`create_mrf_penalty.numeric` <- function(object,type = c("linear","cyclic"), node_labels = NULL, delta = 0,
+`mrf_penalty.numeric` <- function(object,type = c("linear","cyclic"), node_labels = NULL, delta = 0,
                                         end_points = NULL, ...){
+  check_delta(add_delta)
   type <-  match.arg(type)
   object2 <- object
   object <- object[!duplicated(object)]
@@ -68,12 +70,12 @@
 }
 
 ##' @importFrom sf st_geometry_type st_geometry st_buffer st_sf st_intersects
-##' @importFrom dplyr bind_cols
-`create_mrf_penalty.sf` <- function(object, node_labels = NULL, buffer =NULL, ...){
+`mrf_penalty.sf` <- function(object, node_labels = NULL, buffer = NULL, ...){
   if(!all(st_geometry_type(object) %in% c("POLYGON", "MULTIPOLYGON"))){
-    stop("create_mrf_penalty.sf does not know how to handle geometry types besides 'POLYGON' and 'MULTIPOLYGON'")
+    stop("mrf_penalty.sf does not know how to handle geometry types besides 'POLYGON' and 'MULTIPOLYGON'")
   }
-
+  check_delta(add_delta)
+  
   n <- nrow(object)
 
   node_labels <- if(is.null(node_labels)){

@@ -3,6 +3,7 @@
 ##' @param object An object from which to extract the fitted MRF. Currently only
 ##'   for objects of classes `gam`, `bam`, and `gamm`, and GAMMs fitted by
 ##'   [gamm4::gamm4()].
+##' @param ... Arguments passed to other methods.
 ##'
 ##' @return A object representing the fitted MRF
 ##'
@@ -34,13 +35,16 @@
   get_mrf(object, ...)
 }
 
+##' @param term character; the MRF term to extract. Can be a partial match to a
+##'   term, which is matched against the smooth label.
+##'
 ##' @export
 ##' @rdname get_mrf
 ##'
 ##' @importFrom gratia which_smooth get_smooths_by_id is_mrf_smooth
 `get_mrf.gam` <- function(object, term, ...) {
   ids <- which_smooth(object, term)
-  smooths <- get_smooths_by_id(ids,object)
+  smooths <- get_smooths_by_id(ids, object)
   mrfs <- vapply(smooths, FUN = is_mrf_smooth, FUN.VALUE = logical(1))
   smooths <- smooths[[mrfs]]
   smooths

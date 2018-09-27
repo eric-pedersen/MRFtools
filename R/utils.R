@@ -69,3 +69,12 @@
   penalty
 }
 
+##' @title Extract MRF node labels from an MRF penalty
+##'
+##' @param penalty an object of class `"mrf_penalty"`
+##'
+##' @export
+`get_labels` <- function(penalty) {
+    config <- attr(penalty, which = "mrf_config")
+    config[["node_labels"]]
+}

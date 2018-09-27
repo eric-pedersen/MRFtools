@@ -3,7 +3,7 @@
 }
 
 `mrf_penalty.factor` <- function(object,type = c("full","individual"), add_delta = FALSE, ...) {
-  check_delta(add_delta)
+  add_delta <- check_delta(add_delta)
   type <- match.arg(type)
   node_labels <- levels(object)
   n_levels <- length(node_labels)
@@ -23,7 +23,7 @@
 
 `mrf_penalty.numeric` <- function(object,type = c("linear","cyclic"), node_labels = NULL, add_delta = FALSE,
                                         end_points = NULL, ...){
-  check_delta(add_delta)
+  add_delta <- check_delta(add_delta)
   type <- match.arg(type)
   object2 <- object
   object <- object[!duplicated(object)]
@@ -65,7 +65,7 @@
   pen <- as_mrf_penalty(pen, config = mrf_config(type = type_labels[type],
                                                  node_labels = node_labels,
                                                  random_walk = list(values = object, end_points =end_points,
-                                                                    delta = delta)))
+                                                                    delta = add_delta)))
   pen
 }
 
@@ -74,7 +74,7 @@
   if(!all(st_geometry_type(object) %in% c("POLYGON", "MULTIPOLYGON"))){
     stop("mrf_penalty.sf does not know how to handle geometry types besides 'POLYGON' and 'MULTIPOLYGON'")
   }
-  check_delta(add_delta)
+  add_delta <- check_delta(add_delta)
 
   n <- nrow(object)
 

@@ -136,6 +136,33 @@
     pen
 }
 
+##' @importFrom ape vcv
+`mrf_penalty.phylo` <- function(object, node_labels = NULL,  ...) {
+  
+  if (!is.null(node_labels)) {
+    if (length(node_labels) > length(object$tip.label)) {
+      stop("There are more 'node_labels' than tips in the phylogeny.")
+    }else if(length(node_labels)<length(object$tip.label)){
+      if(!all(node_labels %in% object$tip.label)){
+        stop("Not all node_labels are found in the phylogeny's tip labels.")
+      } else{
+        object <- drop.tip(object, object$tip.label[!object$tip.label%in%node_labels])
+      }
+    } else {
+      object$tip.labels <- node_labels
+    }
+  } else {
+    node_labels <- object$tip.labels
+  }
+  pen <- solve(vcv(object))
+  
+  pen <- as_mrf_penalty(pen, config = mrf_config(type = "phylo",
+                                                 node_labels = node_labels,
+                                                 phylogeny = object))
+  pen
+}
+
+
 ##' @importFrom sf st_as_sf st_geometry
 `mrf_penalty.SpatialPolygonsDataFrame` <- function(object, node_labels = NULL, buffer = NULL, add_delta = FALSE, ...){
   check_delta(add_delta)
@@ -164,7 +191,7 @@
   obj_geom <- st_as_sf(object)
   obj_geom$node_labels = node_labels
   obj_geom <- obj_geom[!duplicated(st_geometry(obj_geom)),]
-  mrf_penalty(obj_geom, node_labels = 'node_labels', buffer = buffer, delta = delta, ...)
+  mrf_penalty(obj_geom, node_labels = 'node_labels', buffer = buffer, delta = add_delta, ...)
 
 }
 

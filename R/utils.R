@@ -89,3 +89,14 @@
 `get_config` <- function(penalty) {
     attr(penalty, which = "mrf_config")
 }
+
+##' @title Extract the type of MRF from the penalty
+##'
+##' @param penalty an object of class `"mrf_penalty"`
+##'
+##' @return A length 1 character vector containing the type of MRF penalty.
+##'
+##' @export
+`get_type` <- function(penalty) {
+    get_config(penalty)[["type"]]
+}

@@ -31,8 +31,12 @@
 
 ##' @export
 `print.mrf_penalty` <- function(x, ...) {
-  #placeholder till we implement a print function
-  print.default(x, ...)
+    ## grab the configuration of the MRF
+    conf <- get_config(x)
+
+    ## print out info on MRF
+    writeLines("Markov Random Field penalty")
+    writeLines(paste0("MRF type: ", get_type(conf)))
 }
 
 `check_penalty` <- function(...) {

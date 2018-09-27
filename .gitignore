@@ -38,3 +38,6 @@ rsconnect/
 
 # Local Rproject files
 *.Rproj
+
+# Emacs backup files
+*~

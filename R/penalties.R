@@ -99,7 +99,7 @@
   obj_geom <- obj_geom[!duplicated(st_geometry(obj_geom)),]
   
   if(!is.null(buffer)){
-    obj_geom <- st_buffer(obj_geom,buffer= buffer)
+    obj_geom <- st_buffer(obj_geom, dist = buffer)
   }
   
   pen <- st_intersects(obj_geom,sparse = FALSE)

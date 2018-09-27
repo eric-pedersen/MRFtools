@@ -127,7 +127,8 @@
         if (length(node_labels) != nrow(pen)) {
             stop("'node_labels' is not the same length as the number of observations.")
         }
-        dimnames(pen) <- list(node_labels, node_labels)
+    } else {
+        node_labels <- rownames(pen)
     }
 
     pen <- as_mrf_penalty(pen, config = mrf_config(type = "dendrogram",

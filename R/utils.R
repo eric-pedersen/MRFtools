@@ -1,16 +1,32 @@
+##' @title Extract a fitted MRF
+##'
+##' @param object An object from which to extract the fitted MRF. Currently only
+##'   for objects of classes `gam`, `bam`, and `gamm`, and GAMMs fitted by
+##'   [gamm4::gamm4()].
+##' @param ... Arguments passed to other methods.
+##'
+##' @return A object representing the fitted MRF
+##'
+##' @export
 `get_mrf` <- function(object, ...) {
   UseMethod("get_mrf")
 }
 
+##' @export
+##' @rdname get_mrf
 `get_mrf.bam` <- function(object, ...) {
   NextMethod("get_mrf")
 }
 
+##' @export
+##' @rdname get_mrf
 `get_mrf.gamm` <- function(object, ...) {
   object <- object[["gam"]]
   get_mrf(object, ...)
 }
 
+##' @export
+##' @rdname get_mrf
 `get_mrf.list` <- function(object, ...) {
   if(!"gam" %in% names(object)){
     stop("Not a gamm or gamm4 object. No smooth object for get_mrf to use")
@@ -19,15 +35,20 @@
   get_mrf(object, ...)
 }
 
+##' @param term character; the MRF term to extract. Can be a partial match to a
+##'   term, which is matched against the smooth label.
+##'
+##' @export
+##' @rdname get_mrf
+##'
 ##' @importFrom gratia which_smooth get_smooths_by_id is_mrf_smooth
 `get_mrf.gam` <- function(object, term, ...) {
   ids <- which_smooth(object, term)
-  smooths <- get_smooths_by_id(ids,object)
+  smooths <- get_smooths_by_id(ids, object)
   mrfs <- vapply(smooths, FUN = is_mrf_smooth, FUN.VALUE = logical(1))
   smooths <- smooths[[mrfs]]
   smooths
 }
-
 
 ##' @export
 `print.mrf_penalty` <- function(x, ...) {
@@ -44,9 +65,9 @@
   list()
 }
 
-`mrf_config` <- function(type = NULL, 
-                         node_labels = NULL, 
-                         geometry = NULL, 
+`mrf_config` <- function(type = NULL,
+                         node_labels = NULL,
+                         geometry = NULL,
                          phylogeny = NULL,
                          random_walk = NULL,
                          graph  = NULL,
@@ -56,14 +77,14 @@
   #MRF type
   #information for plotting (e.g. the graph, phylogeny, etc.)
   #geographic information
-  config <- list(type = type, 
-       node_labels = node_labels, 
-       geometry = geometry, 
+  config <- list(type = type,
+       node_labels = node_labels,
+       geometry = geometry,
        phylogeny = phylogeny,
        random_walk = random_walk,
        graph  = graph,
        dissimiliarities = dissimiliarities)
-  class(config) <- "mrf_config" 
+  class(config) <- "mrf_config"
   config
 }
 
@@ -120,4 +141,23 @@
         }
     as.numeric(add_delta)
 }
-  
+
+##' @title Extract a MRF penalty matrix
+##'
+##' @param penalty an R object from which to extract the MRF penalty matrix.
+##'
+##' @return A penalty matrix of class `"matrix"`.
+##'
+##' @export
+`get_penalty` <- function(penalty, ...) {
+    UseMethod("get_penalty")
+}
+
+##' @rdname get_penalty
+##'
+##' @export
+`get_penalty.mrf_penalty` <- function(penalty, ...) {
+    attr(penalty, "mrf_config") <- NULL
+    class(penalty) <- "matrix"
+    penalty
+}

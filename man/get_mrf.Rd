@@ -22,6 +22,11 @@ get_mrf(object, ...)
 \item{object}{An object from which to extract the fitted MRF. Currently only
 for objects of classes \code{gam}, \code{bam}, and \code{gamm}, and GAMMs fitted by
 \code{\link[gamm4:gamm4]{gamm4::gamm4()}}.}
+
+\item{...}{Arguments passed to other methods.}
+
+\item{term}{character; the MRF term to extract. Can be a partial match to a
+term, which is matched against the smooth label.}
 }
 \value{
 A object representing the fitted MRF

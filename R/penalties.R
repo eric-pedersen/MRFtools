@@ -116,6 +116,7 @@
 ##' @title MRF penalty from a dendrogram
 ##'
 ##' @importFrom stats cophenetic
+##' @export
 `mrf_penalty.dendrogram` <- function(object, node_labels = NULL, add_delta = FALSE, ...) {
     add_delta <- check_delta(add_delta)
     pen <- as.matrix(cophenetic(object))
@@ -132,7 +133,9 @@
     }
 
     pen <- as_mrf_penalty(pen, config = mrf_config(type = "dendrogram",
-                                                   node_labels = node_labels))
+                                                   dendrogram = object
+                                                   node_labels = node_labels,
+                                                   delta = add_delta))
     pen
 }
 

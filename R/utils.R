@@ -70,6 +70,7 @@
                          geometry = NULL,
                          phylogeny = NULL,
                          random_walk = NULL,
+                         dendrogram = NULL,
                          graph  = NULL,
                          dissimiliarities = NULL) {
   #could return:
@@ -82,6 +83,7 @@
        geometry = geometry,
        phylogeny = phylogeny,
        random_walk = random_walk,
+       dendrogram = dendrogram,
        graph  = graph,
        dissimiliarities = dissimiliarities)
   class(config) <- "mrf_config"

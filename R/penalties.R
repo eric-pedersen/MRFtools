@@ -222,3 +222,9 @@
 
 }
 
+##' @importFrom stats as.dendrogram
+##'
+##' @export
+`mrf_penalty.hclust` <- function(object, ...) {
+    mrf_penalty(as.dendrogram(object), ...)
+}

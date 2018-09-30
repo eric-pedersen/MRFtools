@@ -137,29 +137,33 @@
 }
 
 ##' @importFrom ape vcv
+##'
+##' @export
 `mrf_penalty.phylo` <- function(object, node_labels = NULL,  ...) {
-  
-  if (!is.null(node_labels)) {
-    if (length(node_labels) > length(object$tip.label)) {
-      stop("There are more 'node_labels' than tips in the phylogeny.")
-    }else if(length(node_labels)<length(object$tip.label)){
-      if(!all(node_labels %in% object$tip.label)){
-        stop("Not all node_labels are found in the phylogeny's tip labels.")
-      } else{
-        object <- drop.tip(object, object$tip.label[!object$tip.label%in%node_labels])
-      }
+    tip_labs <- object[["tip.label"]]
+    if (!is.null(node_labels)) {
+        if (length(node_labels) > length(tip_labs)) {
+            stop("There are more 'node_labels' than tips in the phylogeny.")
+        } else if(length(node_labels) < length(tip_labs)){
+            if (!all(node_labels %in% tip_labs)){
+                stop("Not all node_labels are found in the phylogeny's tip labels.")
+            } else{
+                object <- drop.tip(object, tip_labs[!tip_labs %in% node_labels])
+            }
+        } else {
+            object[["tip.labels"]] <- node_labels
+        }
     } else {
-      object$tip.labels <- node_labels
+        node_labels <- tip_labs
     }
-  } else {
-    node_labels <- object$tip.labels
-  }
-  pen <- solve(vcv(object))
-  
-  pen <- as_mrf_penalty(pen, config = mrf_config(type = "phylo",
-                                                 node_labels = node_labels,
-                                                 phylogeny = object))
-  pen
+
+    ## create penalty matrix
+    pen <- solve(vcv(object))
+
+    pen <- as_mrf_penalty(pen, config = mrf_config(type = "phylo",
+                                                   node_labels = node_labels,
+                                                   phylogeny = object))
+    pen
 }
 
 

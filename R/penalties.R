@@ -1,8 +1,14 @@
-`mrf_penalty` <- function(data, ...) {
+##' @title Markov Random Field Penalty
+##'
+##' @param object an R object to create the MRF penalty from.
+##' @param ... arguments passed to other methods.
+`mrf_penalty` <- function(object, ...) {
   UseMethod("mrf_penalty")
 }
 
-`mrf_penalty.factor` <- function(object,type = c("full","individual"), add_delta = FALSE, ...) {
+##' @export
+`mrf_penalty.factor` <- function(object, type = c("full","individual"), node_labels = NULL,
+                                 add_delta = FALSE, ...) {
   add_delta <- check_delta(add_delta)
   type <- match.arg(type)
   node_labels <- levels(object)
@@ -22,8 +28,8 @@
 }
 
 ##' @export
-`mrf_penalty.numeric` <- function(object,type = c("linear","cyclic"), node_labels = NULL, add_delta = FALSE,
-                                        end_points = NULL, ...){
+`mrf_penalty.numeric` <- function(object, type = c("linear","cyclic"), node_labels = NULL,
+                                  add_delta = FALSE, end_points = NULL, ...){
   add_delta <- check_delta(add_delta)
   type <- match.arg(type)
   object2 <- object

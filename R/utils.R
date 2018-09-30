@@ -67,25 +67,29 @@
 
 `mrf_config` <- function(type = NULL,
                          node_labels = NULL,
+                         delta = NULL,
                          geometry = NULL,
                          phylogeny = NULL,
                          random_walk = NULL,
+                         dendrogram = NULL,
                          graph  = NULL,
                          dissimiliarities = NULL) {
-  #could return:
-  #unique factor levels associated with the data
-  #MRF type
-  #information for plotting (e.g. the graph, phylogeny, etc.)
-  #geographic information
-  config <- list(type = type,
-       node_labels = node_labels,
-       geometry = geometry,
-       phylogeny = phylogeny,
-       random_walk = random_walk,
-       graph  = graph,
-       dissimiliarities = dissimiliarities)
-  class(config) <- "mrf_config"
-  config
+    ## could return:
+    ## unique factor levels associated with the data
+    ## MRF type
+    ## information for plotting (e.g. the graph, phylogeny, etc.)
+    ## geographic information
+    config <- list(type = type,
+                   node_labels = node_labels,
+                   delta = delta,
+                   geometry = geometry,
+                   phylogeny = phylogeny,
+                   random_walk = random_walk,
+                   dendrogram = dendrogram,
+                   graph  = graph,
+                   dissimiliarities = dissimiliarities)
+    class(config) <- "mrf_config"
+    config
 }
 
 `as_mrf_penalty` <- function(penalty, config){
@@ -145,6 +149,7 @@
 ##' @title Extract a MRF penalty matrix
 ##'
 ##' @param penalty an R object from which to extract the MRF penalty matrix.
+##' @param ... arguments passed to other methods.
 ##'
 ##' @return A penalty matrix of class `"matrix"`.
 ##'

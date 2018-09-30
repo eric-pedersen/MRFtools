@@ -11,6 +11,8 @@ get_penalty(penalty, ...)
 }
 \arguments{
 \item{penalty}{an R object from which to extract the MRF penalty matrix.}
+
+\item{...}{arguments passed to other methods.}
 }
 \value{
 A penalty matrix of class \code{"matrix"}.

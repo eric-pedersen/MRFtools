@@ -149,6 +149,7 @@
 ##' @title Extract a MRF penalty matrix
 ##'
 ##' @param penalty an R object from which to extract the MRF penalty matrix.
+##' @param ... arguments passed to other methods.
 ##'
 ##' @return A penalty matrix of class `"matrix"`.
 ##'

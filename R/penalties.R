@@ -164,21 +164,24 @@
 
 
 ##' @importFrom sf st_as_sf st_geometry
-`mrf_penalty.SpatialPolygonsDataFrame` <- function(object, node_labels = NULL, buffer = NULL, add_delta = FALSE, ...){
-  check_delta(add_delta)
+##'
+##' @export
+`mrf_penalty.SpatialPolygonsDataFrame` <- function(object, node_labels = NULL, buffer = NULL,
+                                                   add_delta = FALSE, ...){
+  add_delta <- check_delta(add_delta)
 
   n <- nrow(object)
 
-  node_labels <- if(is.null(node_labels)){
+  node_labels <- if (is.null(node_labels)) {
     seq_len(n)
   } else{
-    if(is.character(node_labels) && length(node_labels) == 1){
-      if(!node_labels %in% names(object)) {
+    if (is.character(node_labels) && length(node_labels) == 1){
+      if (!node_labels %in% names(object)) {
         stop("node_labels is not a variable that occurs in object")
       }
       object[[node_labels]]
-    } else if(is.atomic(node_labels)){
-      if(length(node_labels)!=n){
+    } else if (is.atomic(node_labels)) {
+      if (length(node_labels) != n) {
         stop("node_labels either has to be length 1 or be the same length as the number of rows in object.")
       }
       node_labels
@@ -189,9 +192,9 @@
   node_labels <- as.character(node_labels)
 
   obj_geom <- st_as_sf(object)
-  obj_geom$node_labels = node_labels
+  obj_geom[["node_labels"]] <- node_labels
   obj_geom <- obj_geom[!duplicated(st_geometry(obj_geom)),]
-  mrf_penalty(obj_geom, node_labels = 'node_labels', buffer = buffer, delta = add_delta, ...)
+  mrf_penalty(obj_geom, node_labels = node_labels, buffer = buffer, delta = add_delta, ...)
 
 }
 

@@ -159,7 +159,7 @@
     }
 
     ## create penalty matrix
-    pen <- solve(vcv(object))
+    pen <- chol2inv(chol(vcv(object)))  # faster/more robust than solve(vcv(object)) ??
     diag(pen) <- diag(pen) + add_delta
 
     pen <- as_mrf_penalty(pen, config = mrf_config(type = "phylo",

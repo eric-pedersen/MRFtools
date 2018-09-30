@@ -198,7 +198,7 @@
   obj_geom <- st_as_sf(object)
   obj_geom[["node_labels"]] <- node_labels
   obj_geom <- obj_geom[!duplicated(st_geometry(obj_geom)),]
-  mrf_penalty(obj_geom, node_labels = node_labels, buffer = buffer, delta = add_delta, ...)
+  mrf_penalty(obj_geom, node_labels = node_labels, buffer = buffer, add_delta = add_delta, ...)
 
 }
 

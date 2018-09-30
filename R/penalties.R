@@ -145,7 +145,7 @@
     }
 
     pen <- as_mrf_penalty(pen, config = mrf_config(type = "dendrogram",
-                                                   dendrogram = object
+                                                   dendrogram = object,
                                                    node_labels = node_labels,
                                                    delta = add_delta))
     pen

@@ -120,7 +120,7 @@
 
   pen <- as_mrf_penalty(pen, config = mrf_config(type = "sf",
                                                  node_labels = node_labels,
-                                                 geometry = obj_geom
+                                                 geometry = obj_geom,
                                                  delta = add_delta))
   pen
 }

@@ -21,6 +21,7 @@
   pen
 }
 
+##' @export
 `mrf_penalty.numeric` <- function(object,type = c("linear","cyclic"), node_labels = NULL, add_delta = FALSE,
                                         end_points = NULL, ...){
   add_delta <- check_delta(add_delta)
@@ -30,7 +31,7 @@
   n <-  length(object)
 
   if (is.null(node_labels)) {
-    node_labels = as.character(object)
+    node_labels <- as.character(object)
   } else {
     if (n != length(node_labels)) {
       stop("object and lables need to be the same length")
@@ -48,11 +49,11 @@
   loc_diff_2 <- c(loc_diff, Inf)
   pen <- diag(1/loc_diff_1 + 1/loc_diff_2 + add_delta)
   diag(pen[-1, -n]) <- diag(pen[-n, -1]) <- -1 / loc_diff
-  if (type=="circular") {
+  if (type == "circular") {
     if (is.null(end_points)) {
-      end_points = c(min(object) - 1e-6, max(object) + 1e-6)
+      end_points <- c(min(object) - 1e-6, max(object) + 1e-6)
     }
-    dist_to_end = (object[1] - end_points[1]) + (end_points[2] - object[n])
+    dist_to_end <- (object[1] - end_points[1]) + (end_points[2] - object[n])
     pen[1, 1] <- pen[1, 1] + 1 / dist_to_end
     pen[n, n] <- pen[n, n] + 1 / dist_to_end
     pen[n, 1] <- pen[1, n] <- -1 / dist_to_end
@@ -62,10 +63,12 @@
   types <-  c("linear","cyclic")
   type_labels <- c("first_order_random_walk","cyclic_first_order_random_walk")
   names(type_labels) <- types
-  pen <- as_mrf_penalty(pen, config = mrf_config(type = type_labels[type],
-                                                 node_labels = node_labels,
-                                                 random_walk = list(values = object, end_points =end_points,
-                                                                    delta = add_delta)))
+  pen <- as_mrf_penalty(pen,
+                        config = mrf_config(type = type_labels[type],
+                                            node_labels = node_labels,
+                                            delta = add_delta,
+                                            random_walk = list(values = object,
+                                                               end_points = end_points)))
   pen
 }
 

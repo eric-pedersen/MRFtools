@@ -70,6 +70,8 @@
 }
 
 ##' @importFrom sf st_geometry_type st_geometry st_buffer st_sf st_intersects
+##'
+##' @export
 `mrf_penalty.sf` <- function(object, node_labels = NULL, buffer = NULL, add_delta = FALSE, ...){
   if(!all(st_geometry_type(object) %in% c("POLYGON", "MULTIPOLYGON"))){
     stop("mrf_penalty.sf does not know how to handle geometry types besides 'POLYGON' and 'MULTIPOLYGON'")
@@ -109,7 +111,8 @@
 
   pen <- as_mrf_penalty(pen, config = mrf_config(type = "sf",
                                                  node_labels = node_labels,
-                                                 geometry = obj_geom))
+                                                 geometry = obj_geom
+                                                 delta = add_delta))
   pen
 }
 

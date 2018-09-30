@@ -139,7 +139,8 @@
 ##' @importFrom ape vcv
 ##'
 ##' @export
-`mrf_penalty.phylo` <- function(object, node_labels = NULL,  ...) {
+`mrf_penalty.phylo` <- function(object, node_labels = NULL, add_delta = FALSE, ...) {
+    add_delta <- check_delta(add_delta)
     tip_labs <- object[["tip.label"]]
     if (!is.null(node_labels)) {
         if (length(node_labels) > length(tip_labs)) {
@@ -159,10 +160,12 @@
 
     ## create penalty matrix
     pen <- solve(vcv(object))
+    diag(pen) <- diag(pen) + add_delta
 
     pen <- as_mrf_penalty(pen, config = mrf_config(type = "phylo",
                                                    node_labels = node_labels,
-                                                   phylogeny = object))
+                                                   phylogeny = object,
+                                                   delta = add_delta))
     pen
 }
 

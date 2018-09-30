@@ -151,7 +151,7 @@
     pen
 }
 
-##' @importFrom ape vcv
+##' @importFrom ape vcv drop.tip
 ##'
 ##' @export
 `mrf_penalty.phylo` <- function(object, node_labels = NULL, add_delta = FALSE, ...) {

@@ -6,8 +6,10 @@
   UseMethod("mrf_penalty")
 }
 
+##' @title Fully connected graph and random effect MRF penalties from a factor
+##'
 ##' @export
-`mrf_penalty.factor` <- function(object, type = c("full","individual"), node_labels = NULL,
+`mrf_penalty.factor` <- function(object, type = c("full", "individual"), node_labels = NULL,
                                  add_delta = FALSE, ...) {
   add_delta <- check_delta(add_delta)
   type <- match.arg(type)
@@ -16,17 +18,20 @@
   if (type == "full") {
     pen <- matrix(-1, n_levels, n_levels)
     diag(pen) <- n_levels - 1 + add_delta
-  } else if (type =="individual") {
+  } else if (type == "individual") {
     pen <- diag(1, n_levels)
   }
-  types <-  c("full","individual")
-  type_labels <- c("fully_connected_graph","random_intercept")
+  types <-  c("full", "individual")
+  type_labels <- c("fully_connected_graph", "random_intercept")
   names(type_labels) <- types
   pen <- as_mrf_penalty(pen, config = mrf_config(type = type_labels[type],
-                                                 node_labels = node_labels))
+                                                 node_labels = node_labels,
+                                                 delta = add_delta))
   pen
 }
 
+##' @title First-order random walk MRF penalty from a numeric vector
+##'
 ##' @export
 `mrf_penalty.numeric` <- function(object, type = c("linear","cyclic"), node_labels = NULL,
                                   add_delta = FALSE, end_points = NULL, ...){
@@ -78,6 +83,8 @@
   pen
 }
 
+##' @title MRF penalty from polygon or multi-polygon simple features
+##'
 ##' @importFrom sf st_geometry_type st_geometry st_buffer st_sf st_intersects
 ##'
 ##' @export
@@ -151,6 +158,8 @@
     pen
 }
 
+##' @title MRF penalty from a phylogeny
+##'
 ##' @importFrom ape vcv drop.tip
 ##'
 ##' @export
@@ -184,7 +193,8 @@
     pen
 }
 
-
+##' @title MRF penalty from a SpatialPoylgonsDataFrame
+##'
 ##' @importFrom sf st_as_sf st_geometry
 ##'
 ##' @export
@@ -220,6 +230,8 @@
 
 }
 
+##' @title MRF penalty from a SpatialPolygons
+##'
 ##' @importFrom sf st_as_sf st_geometry
 ##'
 ##' @export
@@ -251,6 +263,8 @@
 
 }
 
+##' @title MRF penalty from a hclust object
+##'
 ##' @importFrom stats as.dendrogram
 ##'
 ##' @export

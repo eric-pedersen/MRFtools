@@ -2,12 +2,18 @@
 % Please edit documentation in R/utils.R
 \name{get_type}
 \alias{get_type}
+\alias{get_type.mrf_penalty}
+\alias{get_type.mrf_config}
 \title{Extract the type of MRF from the penalty}
 \usage{
-get_type(penalty)
+get_type(object)
+
+\method{get_type}{mrf_penalty}(object)
+
+\method{get_type}{mrf_config}(object)
 }
 \arguments{
-\item{penalty}{an object of class \code{"mrf_penalty"}}
+\item{object}{an object of class \code{"mrf_penalty"} or \code{"mrf_config"}.}
 }
 \value{
 A length 1 character vector containing the type of MRF penalty.

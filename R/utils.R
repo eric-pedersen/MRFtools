@@ -123,15 +123,26 @@
 
 ##' @title Extract the type of MRF from the penalty
 ##'
-##' @param penalty an object of class `"mrf_penalty"`
+##' @param object an object of class `"mrf_penalty"` or `"mrf_config"`.
 ##'
 ##' @return A length 1 character vector containing the type of MRF penalty.
 ##'
 ##' @export
-`get_type` <- function(penalty) {
-    get_config(penalty)[["type"]]
+`get_type` <- function(object) {
+    UseMethod("get_type")
 }
 
+##' @export
+##' @rdname get_type
+`get_type.mrf_penalty` <- function(object) {
+    get_type(get_config(object))
+}
+
+##' @export
+##' @rdname get_type
+`get_type.mrf_config` <- function(object) {
+    object[["type"]]
+}
 
 `check_delta` <- function(add_delta) {
     if (length(add_delta) > 1) {

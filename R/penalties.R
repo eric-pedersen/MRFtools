@@ -13,7 +13,7 @@
     ## see Jenny Bryan's Code Smells UseR 2018 talk: rstd.io/code-smells
     stop("Unable to create an MRF penalty from <",
          class(object)[[1L]], ">",
-         call. = FALSE)                 # don't show the call, simpler error
+         call. = FALSE)           # don't show the call, simpler error
 }
 
 ##' @title Fully connected graph and random effect MRF penalties from a factor

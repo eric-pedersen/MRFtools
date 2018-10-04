@@ -187,6 +187,15 @@
     UseMethod("get_penalty")
 }
 
+##' @export
+`get_penalty.default` <- function(penalty, ...) {
+    ## want to bail with a useful error;
+    ## see Jenny Bryan's Code Smells UseR 2018 talk: rstd.io/code-smells
+    stop("Don't know how to extract a penalty matrix from <",
+         class(penalty)[[1L]], ">",
+         call. = FALSE)           # don't show the call, simpler error
+}
+
 ##' @rdname get_penalty
 ##'
 ##' @export

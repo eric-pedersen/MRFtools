@@ -13,6 +13,15 @@
 }
 
 ##' @export
+`get_mrf.default` <- function(object, ...) {
+    ## want to bail with a useful error;
+    ## see Jenny Bryan's Code Smells UseR 2018 talk: rstd.io/code-smells
+    stop("Don't know how to extract an MRF penalty from <",
+         class(object)[[1L]], ">",
+         call. = FALSE)           # don't show the call, simpler error
+}
+
+##' @export
 ##' @rdname get_mrf
 `get_mrf.bam` <- function(object, ...) {
   NextMethod("get_mrf")
@@ -133,6 +142,15 @@
 }
 
 ##' @export
+`get_type.default` <- function(object, ...) {
+    ## want to bail with a useful error;
+    ## see Jenny Bryan's Code Smells UseR 2018 talk: rstd.io/code-smells
+    stop("Don't know how to identify the type MRF penalty from <",
+         class(object)[[1L]], ">",
+         call. = FALSE)           # don't show the call, simpler error
+}
+
+##' @export
 ##' @rdname get_type
 `get_type.mrf_penalty` <- function(object) {
     get_type(get_config(object))
@@ -167,6 +185,15 @@
 ##' @export
 `get_penalty` <- function(penalty, ...) {
     UseMethod("get_penalty")
+}
+
+##' @export
+`get_penalty.default` <- function(penalty, ...) {
+    ## want to bail with a useful error;
+    ## see Jenny Bryan's Code Smells UseR 2018 talk: rstd.io/code-smells
+    stop("Don't know how to extract a penalty matrix from <",
+         class(penalty)[[1L]], ">",
+         call. = FALSE)           # don't show the call, simpler error
 }
 
 ##' @rdname get_penalty

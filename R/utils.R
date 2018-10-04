@@ -13,6 +13,15 @@
 }
 
 ##' @export
+`get_mrf.default` <- function(object, ...) {
+    ## want to bail with a useful error;
+    ## see Jenny Bryan's Code Smells UseR 2018 talk: rstd.io/code-smells
+    stop("Don't know how to extract an MRF penalty from <",
+         class(object)[[1L]], ">",
+         call. = FALSE)           # don't show the call, simpler error
+}
+
+##' @export
 ##' @rdname get_mrf
 `get_mrf.bam` <- function(object, ...) {
   NextMethod("get_mrf")

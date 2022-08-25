@@ -4,8 +4,7 @@
 \alias{mrf_penalty.phylo}
 \title{MRF penalty from a phylogeny}
 \usage{
-\method{mrf_penalty}{phylo}(object, node_labels = NULL,
-  add_delta = FALSE, ...)
+\method{mrf_penalty}{phylo}(object, node_labels = NULL, add_delta = FALSE, ...)
 }
 \arguments{
 \item{object}{an R object to create the MRF penalty from.}

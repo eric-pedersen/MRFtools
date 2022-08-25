@@ -4,8 +4,14 @@
 \alias{mrf_penalty.numeric}
 \title{First-order random walk MRF penalty from a numeric vector}
 \usage{
-\method{mrf_penalty}{numeric}(object, type = c("linear", "cyclic"),
-  node_labels = NULL, add_delta = FALSE, end_points = NULL, ...)
+\method{mrf_penalty}{numeric}(
+  object,
+  type = c("linear", "cyclic"),
+  node_labels = NULL,
+  add_delta = FALSE,
+  end_points = NULL,
+  ...
+)
 }
 \arguments{
 \item{object}{an R object to create the MRF penalty from.}

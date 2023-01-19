@@ -4,8 +4,7 @@
 \alias{mrf_penalty.dendrogram}
 \title{MRF penalty from a dendrogram}
 \usage{
-\method{mrf_penalty}{dendrogram}(object, node_labels = NULL,
-  add_delta = FALSE, ...)
+\method{mrf_penalty}{dendrogram}(object, node_labels = NULL, add_delta = FALSE, ...)
 }
 \arguments{
 \item{object}{an R object to create the MRF penalty from.}

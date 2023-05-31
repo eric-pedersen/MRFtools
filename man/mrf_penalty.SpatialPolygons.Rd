@@ -4,8 +4,7 @@
 \alias{mrf_penalty.SpatialPolygons}
 \title{MRF penalty from a SpatialPolygons}
 \usage{
-\method{mrf_penalty}{SpatialPolygons}(object, node_labels = NULL,
-  buffer = NULL, add_delta = FALSE, ...)
+\method{mrf_penalty}{SpatialPolygons}(object, node_labels = NULL, buffer = NULL, add_delta = FALSE, ...)
 }
 \arguments{
 \item{object}{an R object to create the MRF penalty from.}
@@ -14,7 +13,7 @@
 of the factor.}
 
 \item{buffer}{numeric; buffer distance for all or for individual elements
-of the geometry. See argument \code{dist} in \link[sf:st_buffer]{sf::st_buffer} for details.}
+of the geometry. See argument \code{dist} in \link[sf:geos_unary]{sf::st_buffer} for details.}
 
 \item{add_delta}{numeric or logical; either the numeric value to add to the
 diagonal of the MRF penalty matrix, or a logical value indicating if such

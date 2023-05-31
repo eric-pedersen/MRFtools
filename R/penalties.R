@@ -197,9 +197,10 @@
 ##' @inheritParams mrf_penalty.factor
 ##'
 ##' @importFrom ape vcv drop.tip
-##'
+##' @param eps A value to add to the variance-covariance matrix diagonal to
+##' make it positive definite
 ##' @export
-`mrf_penalty.phylo` <- function(object, node_labels = NULL, add_delta = FALSE, ...) {
+`mrf_penalty.phylo` <- function(object, node_labels = NULL, add_delta = FALSE, eps = 0, ...) {
     add_delta <- check_delta(add_delta)
     tip_labs <- object[["tip.label"]]
     if (!is.null(node_labels)) {
@@ -219,7 +220,7 @@
     }
 
     ## create penalty matrix
-    pen <- chol2inv(chol(vcv(object)))  # faster/more robust than solve(vcv(object)) ??
+    pen <- chol2inv(chol(vcv(object) + eps*diag(length(object$tip.label))))  # faster/more robust than solve(vcv(object)) ??
     diag(pen) <- diag(pen) + add_delta
 
     pen <- as_mrf_penalty(pen, config = mrf_config(type = "phylo",

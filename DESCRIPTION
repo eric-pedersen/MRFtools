@@ -7,7 +7,10 @@ Authors@R: c(person(given = "Eric J.", family = "Pedersen",
                     role = c("aut","cre")),
              person(given = "Gavin L.", family = "Simpson",
                     email = "ucfagls@gmail.com",
-                    role = c("aut")))
+                    role = c("aut")),
+             person(given = "Valentin", family = "Lucet",
+                    email = "valentin.lucet@gmail.com",
+                    role = c("ctb")))
 Maintainer: Eric J. Pedersen <eric.j.pedersen@gmail.com>
 Imports:
     mgcv,

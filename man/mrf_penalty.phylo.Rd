@@ -4,7 +4,7 @@
 \alias{mrf_penalty.phylo}
 \title{MRF penalty from a phylogeny}
 \usage{
-\method{mrf_penalty}{phylo}(object, node_labels = NULL, add_delta = FALSE, ...)
+\method{mrf_penalty}{phylo}(object, node_labels = NULL, add_delta = FALSE, eps = 0, ...)
 }
 \arguments{
 \item{object}{an R object to create the MRF penalty from.}
@@ -16,6 +16,9 @@ of the factor.}
 diagonal of the MRF penalty matrix, or a logical value indicating if such
 an adjustment should be made. The default is to not alter the diagonal of
 the penalty matrix.}
+
+\item{eps}{A value to add to the variance-covariance matrix diagonal to
+make it positive definite}
 
 \item{...}{arguments passed to other methods.}
 }

@@ -61,6 +61,19 @@
 #' @inheritParams mrf_penalty.factor
 #'
 #' @export
+#'
+#' @examples
+#' # linear
+#' p <- mrf_penalty(1:10)
+#' as.matrix(p)
+#' 
+#' # cyclic
+#' p <- mrf_penalty(1:10, type = "cyclic")
+#' as.matrix(p)
+#'
+#' # cyclic with user end points
+#' p <- mrf_penalty(1:10, type = "cyclic", end_points = c(0,11))
+#' as.matrix(p)
 `mrf_penalty.numeric` <- function(object, type = c("linear", "cyclic"),
     node_labels = NULL, add_delta = FALSE, end_points = NULL, ...){
   add_delta <- check_delta(add_delta)
@@ -88,7 +101,7 @@
   loc_diff_2 <- c(loc_diff, Inf)
   pen <- diag(1/loc_diff_1 + 1/loc_diff_2 + add_delta)
   diag(pen[-1, -n]) <- diag(pen[-n, -1]) <- -1 / loc_diff
-  if (type == "circular") {
+  if (type == "cyclic") {
     if (is.null(end_points)) {
       end_points <- c(min(object) - 1e-6, max(object) + 1e-6)
     }

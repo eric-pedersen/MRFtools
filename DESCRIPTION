@@ -21,6 +21,7 @@ Suggests:
     testthat,
     vdiffr,
     mgcv,
+    gamm4,
     sp
 Description: Utility functions for  using Markov Random Field smooths in GAMs fitted with the 'mgcv' package.
 License: GPL-3

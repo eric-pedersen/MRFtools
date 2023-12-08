@@ -32,3 +32,17 @@ the penalty matrix.}
 \description{
 Fully connected graph and random effect MRF penalties from a factor
 }
+\examples{
+# a factor
+fv <- factor(letters[1:10])
+
+# create the MRF penalty for a fully connected graph
+p <- mrf_penalty(fv, type = "full")
+p
+as.matrix(p)
+
+# create the MRF penalty equivalent of random effects
+p <- mrf_penalty(fv, type = "individual")
+p
+as.matrix(p)
+}

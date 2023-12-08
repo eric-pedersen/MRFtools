@@ -1,7 +1,7 @@
 Package: MRFtools
 Version: 0.0-2
 Date: 2023-12-08
-Title: Tools for constructing and plotting Markov Random Fields in R for graphical data
+Title: Tools for Constructing and Plotting Markov Random Fields in R for Graphical Data
 Authors@R: c(person(given = "Eric J.", family = "Pedersen",
                     email = "eric.j.pedersen@gmail.com",
                     role = c("aut","cre")),
@@ -23,7 +23,7 @@ Suggests:
     mgcv,
     gamm4,
     sp
-Description: Utility functions for  using Markov Random Field smooths in GAMs fitted with the 'mgcv' package.
+Description: Utility functions for using Markov Random Field smooths in GAMs fitted with the 'mgcv' package.
 License: GPL-3
 LazyData: true
 URL: https://github.com/eric-pedersen/MRFtools

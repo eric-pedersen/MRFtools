@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{as.matrix.mrf_penalty}
 \alias{as.matrix.mrf_penalty}
-\title{Convert a MRF penalty object into a matrix}
+\title{Convert a MRF penalty object to a matrix}
 \usage{
 \method{as.matrix}{mrf_penalty}(x, ...)
 }
@@ -12,7 +12,7 @@
 \item{...}{arguments passed to other methods}
 }
 \description{
-Convert a MRF penalty object into a matrix
+Convert a MRF penalty object to a matrix
 }
 \examples{
 p <- mrf_penalty(1:10)

@@ -35,3 +35,16 @@ end points of the period of cycle.}
 \description{
 First-order random walk MRF penalty from a numeric vector
 }
+\examples{
+# linear
+p <- mrf_penalty(1:10)
+as.matrix(p)
+
+# cyclic
+p <- mrf_penalty(1:10, type = "cyclic")
+as.matrix(p)
+
+# cyclic with user end points
+p <- mrf_penalty(1:10, type = "cyclic", end_points = c(0,11))
+as.matrix(p)
+}

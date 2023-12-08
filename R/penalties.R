@@ -9,11 +9,11 @@
 
 #' @export
 `mrf_penalty.default` <- function(object, ...) {
-    ## want to bail with a useful error;
-    ## see Jenny Bryan's Code Smells UseR 2018 talk: rstd.io/code-smells
-    stop("Unable to create an MRF penalty from <",
-         class(object)[[1L]], ">",
-         call. = FALSE)           # don't show the call, simpler error
+  ## want to bail with a useful error;
+  ## see Jenny Bryan's Code Smells UseR 2018 talk: rstd.io/code-smells
+  stop("Unable to create an MRF penalty from <",
+    class(object)[[1L]], ">",
+    call. = FALSE)           # don't show the call, simpler error
 }
 
 #' @title Fully connected graph and random effect MRF penalties from a factor
@@ -31,6 +31,20 @@
 #' @param ... arguments passed to other methods.
 #'
 #' @export
+#'
+#' @examples
+#' # a factor
+#' fv <- factor(letters[1:10])
+#'
+#' # create the MRF penalty for a fully connected graph
+#' p <- mrf_penalty(fv, type = "full")
+#' p
+#' as.matrix(p)
+#'
+#' # create the MRF penalty equivalent of random effects
+#' p <- mrf_penalty(fv, type = "individual")
+#' p
+#' as.matrix(p)
 `mrf_penalty.factor` <- function(object, type = c("full", "individual"),
     node_labels = NULL, add_delta = FALSE, ...) {
   add_delta <- check_delta(add_delta)

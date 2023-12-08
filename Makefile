@@ -23,7 +23,7 @@ install: build
 	R CMD INSTALL MRFtools_$(PKGVERS).tar.gz
 
 move: check
-	cp ../gratia.Rcheck/MRFtools-Ex.Rout ./tests/Examples/MRFtools-Ex.Rout.save
+	cp ../MRFtools.Rcheck/MRFtools-Ex.Rout ./tests/Examples/MRFtools-Ex.Rout.save
 
 clean:
 	cd ..;\

@@ -61,13 +61,14 @@
 
 #' @export
 `print.mrf_penalty` <- function(x, ...) {
-    ## grab the configuration of the MRF
-    conf <- get_config(x)
-
-    ## print out info on MRF
-    writeLines("Markov Random Field penalty")
-    writeLines(paste0("MRF type: ", get_type(conf)))
-    writeLines(paste0("N:        ", nrow(x)))
+  ## grab the configuration of the MRF
+  conf <- get_config(x)
+  # type of MRF
+  type <- get_type(conf)
+  ## print out info on MRF
+  writeLines("Markov Random Field penalty")
+  writeLines(paste0("Type: ", gsub("_", " ", type)))
+  writeLines(paste0("N   : ", nrow(x)))
 }
 
 `check_penalty` <- function(...) {
@@ -103,9 +104,10 @@
 
 `as_mrf_penalty` <- function(penalty, config){
   #need to check if penalty is a matrix
-  dimnames(penalty) <- list(config[["node_labels"]],config[["node_labels"]])
-  class(penalty) <-  c(paste0(config[["type"]],"_mrf_penalty"), "mrf_penalty","matrix")
-  attr(penalty, which="mrf_config") <- config
+  dimnames(penalty) <- list(config[["node_labels"]], config[["node_labels"]])
+  class(penalty) <-  c(paste0(config[["type"]], "_mrf_penalty"),
+    "mrf_penalty", "matrix")
+  attr(penalty, which = "mrf_config") <- config
   penalty
 }
 
@@ -203,4 +205,18 @@
     attr(penalty, "mrf_config") <- NULL
     class(penalty) <- "matrix"
     penalty
+}
+
+#' Convert a MRF penalty object to a matrix
+#'
+#' @param x an object inheriting from class `"mrf_penalty"`
+#' @param ... arguments passed to other methods
+#'
+#' @export
+#'
+#' @examples
+#' p <- mrf_penalty(1:10)
+#' as.matrix(p)
+`as.matrix.mrf_penalty` <- function(x, ...) {
+  get_penalty(x)
 }

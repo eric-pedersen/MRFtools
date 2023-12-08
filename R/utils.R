@@ -1,18 +1,18 @@
-##' @title Extract a fitted MRF
-##'
-##' @param object An object from which to extract the fitted MRF. Currently only
-##'   for objects of classes `gam`, `bam`, and `gamm`, and GAMMs fitted by
-##'   [gamm4::gamm4()].
-##' @param ... Arguments passed to other methods.
-##'
-##' @return A object representing the fitted MRF
-##'
-##' @export
+#' @title Extract a fitted MRF
+#'
+#' @param object An object from which to extract the fitted MRF. Currently only
+#'   for objects of classes `gam`, `bam`, and `gamm`, and GAMMs fitted by
+#'   [gamm4::gamm4()].
+#' @param ... Arguments passed to other methods.
+#'
+#' @return A object representing the fitted MRF
+#'
+#' @export
 `get_mrf` <- function(object, ...) {
   UseMethod("get_mrf")
 }
 
-##' @export
+#' @export
 `get_mrf.default` <- function(object, ...) {
     ## want to bail with a useful error;
     ## see Jenny Bryan's Code Smells UseR 2018 talk: rstd.io/code-smells
@@ -21,21 +21,21 @@
          call. = FALSE)           # don't show the call, simpler error
 }
 
-##' @export
-##' @rdname get_mrf
+#' @export
+#' @rdname get_mrf
 `get_mrf.bam` <- function(object, ...) {
   NextMethod("get_mrf")
 }
 
-##' @export
-##' @rdname get_mrf
+#' @export
+#' @rdname get_mrf
 `get_mrf.gamm` <- function(object, ...) {
   object <- object[["gam"]]
   get_mrf(object, ...)
 }
 
-##' @export
-##' @rdname get_mrf
+#' @export
+#' @rdname get_mrf
 `get_mrf.list` <- function(object, ...) {
   if(!"gam" %in% names(object)){
     stop("Not a gamm or gamm4 object. No smooth object for get_mrf to use")
@@ -44,13 +44,13 @@
   get_mrf(object, ...)
 }
 
-##' @param term character; the MRF term to extract. Can be a partial match to a
-##'   term, which is matched against the smooth label.
-##'
-##' @export
-##' @rdname get_mrf
-##'
-##' @importFrom gratia which_smooths get_smooths_by_id is_mrf_smooth
+#' @param term character; the MRF term to extract. Can be a partial match to a
+#'   term, which is matched against the smooth label.
+#'
+#' @export
+#' @rdname get_mrf
+#'
+#' @importFrom gratia which_smooths get_smooths_by_id is_mrf_smooth
 `get_mrf.gam` <- function(object, term, ...) {
   ids <- which_smooths(object, term)
   smooths <- get_smooths_by_id(object, ids)
@@ -59,7 +59,7 @@
   smooths
 }
 
-##' @export
+#' @export
 `print.mrf_penalty` <- function(x, ...) {
     ## grab the configuration of the MRF
     conf <- get_config(x)
@@ -109,39 +109,39 @@
   penalty
 }
 
-##' @title Extract MRF node labels from an MRF penalty
-##'
-##' @param penalty an object of class `"mrf_penalty"`
-##'
-##' @export
+#' @title Extract MRF node labels from an MRF penalty
+#'
+#' @param penalty an object of class `"mrf_penalty"`
+#'
+#' @export
 `get_labels` <- function(penalty) {
     config <- get_config(penalty)
     config[["node_labels"]]
 }
 
-##' @title Extract configuration details of an MRF penalty
-##'
-##' @param penalty an object of class `"mrf_penalty"`
-##'
-##' @return An object of class `"mrf_config"`, a list.
-##'
-##' @export
+#' @title Extract configuration details of an MRF penalty
+#'
+#' @param penalty an object of class `"mrf_penalty"`
+#'
+#' @return An object of class `"mrf_config"`, a list.
+#'
+#' @export
 `get_config` <- function(penalty) {
     attr(penalty, which = "mrf_config")
 }
 
-##' @title Extract the type of MRF from the penalty
-##'
-##' @param object an object of class `"mrf_penalty"` or `"mrf_config"`.
-##'
-##' @return A length 1 character vector containing the type of MRF penalty.
-##'
-##' @export
+#' @title Extract the type of MRF from the penalty
+#'
+#' @param object an object of class `"mrf_penalty"` or `"mrf_config"`.
+#'
+#' @return A length 1 character vector containing the type of MRF penalty.
+#'
+#' @export
 `get_type` <- function(object) {
     UseMethod("get_type")
 }
 
-##' @export
+#' @export
 `get_type.default` <- function(object, ...) {
     ## want to bail with a useful error;
     ## see Jenny Bryan's Code Smells UseR 2018 talk: rstd.io/code-smells
@@ -150,14 +150,14 @@
          call. = FALSE)           # don't show the call, simpler error
 }
 
-##' @export
-##' @rdname get_type
+#' @export
+#' @rdname get_type
 `get_type.mrf_penalty` <- function(object) {
     get_type(get_config(object))
 }
 
-##' @export
-##' @rdname get_type
+#' @export
+#' @rdname get_type
 `get_type.mrf_config` <- function(object) {
     object[["type"]]
 }
@@ -175,19 +175,19 @@
     as.numeric(add_delta)
 }
 
-##' @title Extract a MRF penalty matrix
-##'
-##' @param penalty an R object from which to extract the MRF penalty matrix.
-##' @param ... arguments passed to other methods.
-##'
-##' @return A penalty matrix of class `"matrix"`.
-##'
-##' @export
+#' @title Extract a MRF penalty matrix
+#'
+#' @param penalty an R object from which to extract the MRF penalty matrix.
+#' @param ... arguments passed to other methods.
+#'
+#' @return A penalty matrix of class `"matrix"`.
+#'
+#' @export
 `get_penalty` <- function(penalty, ...) {
     UseMethod("get_penalty")
 }
 
-##' @export
+#' @export
 `get_penalty.default` <- function(penalty, ...) {
     ## want to bail with a useful error;
     ## see Jenny Bryan's Code Smells UseR 2018 talk: rstd.io/code-smells
@@ -196,9 +196,9 @@
          call. = FALSE)           # don't show the call, simpler error
 }
 
-##' @rdname get_penalty
-##'
-##' @export
+#' @rdname get_penalty
+#'
+#' @export
 `get_penalty.mrf_penalty` <- function(penalty, ...) {
     attr(penalty, "mrf_config") <- NULL
     class(penalty) <- "matrix"

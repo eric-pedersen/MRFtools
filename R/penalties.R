@@ -49,7 +49,6 @@
   pen <- as_mrf_penalty(pen, config = mrf_config(type = type_labels[type],
     node_labels = node_labels,
     delta = add_delta))
-  class(pen) <- "mrf_penalty"
   pen
 }
 
@@ -108,7 +107,6 @@
       node_labels = node_labels,
       delta = add_delta,
       random_walk = list(values = object, end_points = end_points)))
-  class(pen) <- "mrf_penalty"
   pen
 }
 
@@ -163,8 +161,6 @@
     node_labels = node_labels,
     geometry = obj_geom,
     delta = add_delta))
-  
-  class(pen) <- "mrf_penalty"
   pen
 }
 
@@ -191,8 +187,6 @@
     dendrogram = object,
     node_labels = node_labels,
     delta = add_delta))
-  
-  class(pen) <- "mrf_penalty"
   pen
 }
 
@@ -230,8 +224,6 @@
     node_labels = node_labels,
     phylogeny = object,
     delta = add_delta))
-  
-  class(pen) <- "mrf_penalty"
   pen
 }
 

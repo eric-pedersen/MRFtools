@@ -217,16 +217,17 @@
   pen
 }
 
-##' @title MRF penalty from a phylogeny
-##'
-##' @inheritParams mrf_penalty.factor
-##'
-##' @importFrom ape vcv drop.tip
-##' @param model The phylogenetic model used to calculate the penalty (precision) mrmatrix. Currently only the Brownian motion model of evolution ("Brownian") is implemented.
-##' @param internal_nodes Should the function return the precision matrix including the tips of the tree (`internal_nodes = FALSE`) or for the selected tips and the internal nodes that indicate common ancestors of the tips? Currently, `internal_tips` is not implemented.   
-##' @param eps A value to add to the variance-covariance matrix diagonal to
-##' make it positive definite
-##' @export
+#' @title MRF penalty from a phylogeny
+#'
+#'
+#' @inheritParams mrf_penalty.factor
+#'
+#' @importFrom ape vcv drop.tip
+#' @param model The phylogenetic model used to calculate the penalty (precision) mrmatrix. Currently only the Brownian motion model of evolution ("Brownian") is implemented.
+#' @param internal_nodes Should the function return the precision matrix including the tips of the tree (`internal_nodes = FALSE`) or for the selected tips and the internal nodes that indicate common ancestors of the tips? Currently, `internal_tips` is not implemented.   
+#' @param eps A value to add to the variance-covariance matrix diagonal to
+#' make it positive definite
+#' @export
 `mrf_penalty.phylo` <- function(object, 
 								node_labels = NULL, 
 								model = "Brownian",
@@ -261,8 +262,10 @@
     }
     
     ## create penalty matrix
-    vcv <- vcv(object)
-    pen <- chol2inv(chol(vcv(object) + eps*diag(length(object$tip.label))))  # faster/more robust than solve(vcv(object)) ??
+    vcv <- vcv(object) + eps*diag(length(object$tip.label))
+    pen <- chol2inv(vcv)  # faster/more robust than solve(vcv(object)) ??
+    
+    # adds a small delta value to the diagonal if requested by user
     diag(pen) <- diag(pen) + add_delta
 
     pen <- as_mrf_penalty(pen, config = mrf_config(type = "phylo",

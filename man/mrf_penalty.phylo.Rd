@@ -4,13 +4,25 @@
 \alias{mrf_penalty.phylo}
 \title{MRF penalty from a phylogeny}
 \usage{
-\method{mrf_penalty}{phylo}(object, node_labels = NULL, add_delta = FALSE, eps = 0, ...)
+\method{mrf_penalty}{phylo}(
+  object,
+  node_labels = NULL,
+  model = "Brownian",
+  internal_nodes = FALSE,
+  add_delta = FALSE,
+  eps = .Machine$double.eps,
+  ...
+)
 }
 \arguments{
 \item{object}{an R object to create the MRF penalty from.}
 
 \item{node_labels}{character; a vector of alternative labels for the levels
 of the factor.}
+
+\item{model}{The phylogenetic model used to calculate the penalty (precision) mrmatrix. Currently only the Brownian motion model of evolution ("Brownian") is implemented.}
+
+\item{internal_nodes}{Should the function return the precision matrix including the tips of the tree (\code{internal_nodes = FALSE}) or for the selected tips and the internal nodes that indicate common ancestors of the tips? Currently, \code{internal_tips} is not implemented.}
 
 \item{add_delta}{numeric or logical; either the numeric value to add to the
 diagonal of the MRF penalty matrix, or a logical value indicating if such

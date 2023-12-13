@@ -197,10 +197,15 @@
 ##' @inheritParams mrf_penalty.factor
 ##'
 ##' @importFrom ape vcv drop.tip
+##' @param model The phylogenetic model used to calculate the penalty (precision) mrmatrix. Currently only the Brownian motion model of evolution ("Brownian") is implemented.
+##' @param internal_nodes Should the function return the precision matrix including the tips of the tree (`internal_nodes = FALSE`) or for the selected tips and the internal nodes that indicate common ancestors of the tips? Currently, `internal_tips` is not implemented.   
 ##' @param eps A value to add to the variance-covariance matrix diagonal to
 ##' make it positive definite
 ##' @export
-`mrf_penalty.phylo` <- function(object, node_labels = NULL, add_delta = FALSE, eps = 0, ...) {
+`mrf_penalty.phylo` <- function(object, node_labels = NULL, model = "Brownian",
+                                internal_nodes = FALSE,
+                                add_delta = FALSE, 
+                                eps = .Machine$double.eps, ...) {
     add_delta <- check_delta(add_delta)
     tip_labs <- object[["tip.label"]]
     if (!is.null(node_labels)) {
@@ -218,8 +223,17 @@
     } else {
         node_labels <- tip_labs
     }
-
+    
+    if(model != "Brownian"){
+      stop("Currently, only Brownian motion phylogenetic models are implemented for penalty_mrf.phylo")
+    }
+    
+    if(internal_nodes){
+      stop("Including internal tree nodes in penalty matrices is not yet supported for penalty_mrf.phylo")
+    }
+    
     ## create penalty matrix
+    vcv <- vcv(object)
     pen <- chol2inv(chol(vcv(object) + eps*diag(length(object$tip.label))))  # faster/more robust than solve(vcv(object)) ??
     diag(pen) <- diag(pen) + add_delta
 

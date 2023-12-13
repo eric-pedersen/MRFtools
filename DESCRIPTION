@@ -1,32 +1,29 @@
 Package: MRFtools
-Version: 0.0-1
-Date: 2018-09-26
-Title: Tools for constructing and plotting Markov Random Fields in R for graphical data
+Version: 0.0-2
+Date: 2023-12-08
+Title: Tools for Constructing and Plotting Markov Random Fields in R for Graphical Data
 Authors@R: c(person(given = "Eric J.", family = "Pedersen",
                     email = "eric.j.pedersen@gmail.com",
-                    role = c("aut","cre")),
+                    role = c("aut", "cre")),
              person(given = "Gavin L.", family = "Simpson",
                     email = "ucfagls@gmail.com",
                     role = c("aut")),
              person(given = "Valentin", family = "Lucet",
                     email = "valentin.lucet@gmail.com",
                     role = c("ctb")))
-Maintainer: Eric J. Pedersen <eric.j.pedersen@gmail.com>
+Maintainer: Eric J. Petersen <eric.j.pedersen@gmail.com>
 Imports:
-    mgcv,
-    ggplot2,
-    ggraph,
     gratia,
-    sp,
+    stats,
     sf,
-    dplyr,
-    tidyr,
-    igraph,
     ape
 Suggests:
     testthat,
-    vdiffr
-Description: Ggplot-based graphics and utility functions for working with GAMs fitted using the mgcv package.
+    vdiffr,
+    mgcv,
+    gamm4,
+    sp
+Description: Utility functions for using Markov Random Field smooths in Generalized Additive Models fitted with the 'mgcv' package.
 License: GPL-3
 LazyData: true
 URL: https://github.com/eric-pedersen/MRFtools
@@ -34,3 +31,4 @@ BugReports: https://github.com/eric-pedersen/MRFtools/issues
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Encoding: UTF-8
+Config/testthat/edition: 3

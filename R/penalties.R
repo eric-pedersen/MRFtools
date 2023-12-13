@@ -1,38 +1,52 @@
-##' @title Markov Random Field Penalty
-##'
-##' @inheritParams mrf_penalty.factor
-##'
-##' @export
+#' @title Markov Random Field Penalty
+#'
+#' @inheritParams mrf_penalty.factor
+#'
+#' @export
 `mrf_penalty` <- function(object, ...) {
   UseMethod("mrf_penalty")
 }
 
-##' @export
+#' @export
 `mrf_penalty.default` <- function(object, ...) {
-    ## want to bail with a useful error;
-    ## see Jenny Bryan's Code Smells UseR 2018 talk: rstd.io/code-smells
-    stop("Unable to create an MRF penalty from <",
-         class(object)[[1L]], ">",
-         call. = FALSE)           # don't show the call, simpler error
+  ## want to bail with a useful error;
+  ## see Jenny Bryan's Code Smells UseR 2018 talk: rstd.io/code-smells
+  stop("Unable to create an MRF penalty from <",
+    class(object)[[1L]], ">",
+    call. = FALSE)           # don't show the call, simpler error
 }
 
-##' @title Fully connected graph and random effect MRF penalties from a factor
-##'
-##' @param object an R object to create the MRF penalty from.
-##' @param type character; one of `"full"` or `"individual"` indicating if a
-##'   fully connected graph (`"full"`) or a random effect (random intercepts;
-##'   `"individual"`) penalty is created.
-##' @param node_labels character; a vector of alternative labels for the levels
-##'   of the factor.
-##' @param add_delta numeric or logical; either the numeric value to add to the
-##'   diagonal of the MRF penalty matrix, or a logical value indicating if such
-##'   an adjustment should be made. The default is to not alter the diagonal of
-##'   the penalty matrix.
-##' @param ... arguments passed to other methods.
-##'
-##' @export
-`mrf_penalty.factor` <- function(object, type = c("full", "individual"), node_labels = NULL,
-                                 add_delta = FALSE, ...) {
+#' @title Fully connected graph and random effect MRF penalties from a factor
+#'
+#' @param object an R object to create the MRF penalty from.
+#' @param type character; one of `"full"` or `"individual"` indicating if a
+#'   fully connected graph (`"full"`) or a random effect (random intercepts;
+#'   `"individual"`) penalty is created.
+#' @param node_labels character; a vector of alternative labels for the levels
+#'   of the factor.
+#' @param add_delta numeric or logical; either the numeric value to add to the
+#'   diagonal of the MRF penalty matrix, or a logical value indicating if such
+#'   an adjustment should be made. The default is to not alter the diagonal of
+#'   the penalty matrix.
+#' @param ... arguments passed to other methods.
+#'
+#' @export
+#'
+#' @examples
+#' # a factor
+#' fv <- factor(letters[1:10])
+#'
+#' # create the MRF penalty for a fully connected graph
+#' p <- mrf_penalty(fv, type = "full")
+#' p
+#' as.matrix(p)
+#'
+#' # create the MRF penalty equivalent of random effects
+#' p <- mrf_penalty(fv, type = "individual")
+#' p
+#' as.matrix(p)
+`mrf_penalty.factor` <- function(object, type = c("full", "individual"),
+    node_labels = NULL, add_delta = FALSE, ...) {
   add_delta <- check_delta(add_delta)
   type <- match.arg(type)
   node_labels <- levels(object)
@@ -47,22 +61,35 @@
   type_labels <- c("fully_connected_graph", "random_intercept")
   names(type_labels) <- types
   pen <- as_mrf_penalty(pen, config = mrf_config(type = type_labels[type],
-                                                 node_labels = node_labels,
-                                                 delta = add_delta))
+    node_labels = node_labels,
+    delta = add_delta))
   pen
 }
 
-##' @title First-order random walk MRF penalty from a numeric vector
-##'
-##' @param type character; one of `"linear"` or `"cyclic"` indicating if the
-##'   observations form a cyclic series or not.
-##' @param end_points numeric; an optional vector of length 2 providing the
-##'   end points of the period of cycle.
-##' @inheritParams mrf_penalty.factor
-##'
-##' @export
-`mrf_penalty.numeric` <- function(object, type = c("linear", "cyclic"), node_labels = NULL,
-                                  add_delta = FALSE, end_points = NULL, ...){
+#' @title First-order random walk MRF penalty from a numeric vector
+#'
+#' @param type character; one of `"linear"` or `"cyclic"` indicating if the
+#'   observations form a cyclic series or not.
+#' @param end_points numeric; an optional vector of length 2 providing the
+#'   end points of the period of cycle.
+#' @inheritParams mrf_penalty.factor
+#'
+#' @export
+#'
+#' @examples
+#' # linear
+#' p <- mrf_penalty(1:10)
+#' as.matrix(p)
+#' 
+#' # cyclic
+#' p <- mrf_penalty(1:10, type = "cyclic")
+#' as.matrix(p)
+#'
+#' # cyclic with user end points
+#' p <- mrf_penalty(1:10, type = "cyclic", end_points = c(0,11))
+#' as.matrix(p)
+`mrf_penalty.numeric` <- function(object, type = c("linear", "cyclic"),
+    node_labels = NULL, add_delta = FALSE, end_points = NULL, ...){
   add_delta <- check_delta(add_delta)
   type <- match.arg(type)
   object2 <- object
@@ -88,7 +115,7 @@
   loc_diff_2 <- c(loc_diff, Inf)
   pen <- diag(1/loc_diff_1 + 1/loc_diff_2 + add_delta)
   diag(pen[-1, -n]) <- diag(pen[-n, -1]) <- -1 / loc_diff
-  if (type == "circular") {
+  if (type == "cyclic") {
     if (is.null(end_points)) {
       end_points <- c(min(object) - 1e-6, max(object) + 1e-6)
     }
@@ -103,24 +130,24 @@
   type_labels <- c("first_order_random_walk","cyclic_first_order_random_walk")
   names(type_labels) <- types
   pen <- as_mrf_penalty(pen,
-                        config = mrf_config(type = type_labels[type],
-                                            node_labels = node_labels,
-                                            delta = add_delta,
-                                            random_walk = list(values = object,
-                                                               end_points = end_points)))
+    config = mrf_config(type = type_labels[type],
+      node_labels = node_labels,
+      delta = add_delta,
+      random_walk = list(values = object, end_points = end_points)))
   pen
 }
 
-##' @title MRF penalty from polygon or multi-polygon simple features
-##'
-##' @param buffer numeric; buffer distance for all or for individual elements
-##'   of the geometry. See argument `dist` in [sf::st_buffer] for details.
-##' @inheritParams mrf_penalty.factor
-##'
-##' @importFrom sf st_geometry_type st_geometry st_buffer st_sf st_intersects
-##'
-##' @export
-`mrf_penalty.sf` <- function(object, node_labels = NULL, buffer = NULL, add_delta = FALSE, ...){
+#' @title MRF penalty from polygon or multi-polygon simple features
+#'
+#' @param buffer numeric; buffer distance for all or for individual elements
+#'   of the geometry. See argument `dist` in [sf::st_buffer] for details.
+#' @inheritParams mrf_penalty.factor
+#'
+#' @importFrom sf st_geometry_type st_geometry st_buffer st_sf st_intersects
+#'
+#' @export
+`mrf_penalty.sf` <- function(object, node_labels = NULL, buffer = NULL,
+    add_delta = FALSE, ...){
   if(!all(st_geometry_type(object) %in% c("POLYGON", "MULTIPOLYGON"))){
     stop("mrf_penalty.sf does not know how to handle geometry types besides 'POLYGON' and 'MULTIPOLYGON'")
   }
@@ -158,38 +185,36 @@
   diag(pen) <- -(rowSums(pen) - diag(pen)) + add_delta
 
   pen <- as_mrf_penalty(pen, config = mrf_config(type = "sf",
-                                                 node_labels = node_labels,
-                                                 geometry = obj_geom,
-                                                 delta = add_delta))
+    node_labels = node_labels,
+    geometry = obj_geom,
+    delta = add_delta))
   pen
 }
 
-##' @title MRF penalty from a dendrogram
-##'
-##' @inheritParams mrf_penalty.factor
-##'
-##' @importFrom stats cophenetic
-##' @export
-`mrf_penalty.dendrogram` <- function(object, node_labels = NULL, add_delta = FALSE, ...) {
-    add_delta <- check_delta(add_delta)
-    pen <- as.matrix(cophenetic(object))
-
-    pen <- pen - max(pen)
-    diag(pen) <- -(rowSums(pen) - diag(pen)) + add_delta
-
-    if (!is.null(node_labels)) {
-        if (length(node_labels) != nrow(pen)) {
-            stop("'node_labels' is not the same length as the number of observations.")
-        }
-    } else {
-        node_labels <- rownames(pen)
-    }
-
-    pen <- as_mrf_penalty(pen, config = mrf_config(type = "dendrogram",
-                                                   dendrogram = object,
-                                                   node_labels = node_labels,
-                                                   delta = add_delta))
-    pen
+#' @title MRF penalty from a dendrogram
+#'
+#' @inheritParams mrf_penalty.factor
+#'
+#' @importFrom stats cophenetic
+#' @export
+`mrf_penalty.dendrogram` <- function(object, node_labels = NULL,
+    add_delta = FALSE, ...) {
+  add_delta <- check_delta(add_delta)
+  pen <- as.matrix(cophenetic(object))
+  pen <- pen - max(pen)
+  diag(pen) <- -(rowSums(pen) - diag(pen)) + add_delta
+  if (!is.null(node_labels)) {
+      if (length(node_labels) != nrow(pen)) {
+          stop("'node_labels' is not the same length as the number of observations.")
+      }
+  } else {
+      node_labels <- rownames(pen)
+  }
+  pen <- as_mrf_penalty(pen, config = mrf_config(type = "dendrogram",
+    dendrogram = object,
+    node_labels = node_labels,
+    delta = add_delta))
+  pen
 }
 
 ##' @title MRF penalty from a phylogeny
@@ -202,10 +227,13 @@
 ##' @param eps A value to add to the variance-covariance matrix diagonal to
 ##' make it positive definite
 ##' @export
-`mrf_penalty.phylo` <- function(object, node_labels = NULL, model = "Brownian",
+`mrf_penalty.phylo` <- function(object, 
+								node_labels = NULL, 
+								model = "Brownian",
                                 internal_nodes = FALSE,
                                 add_delta = FALSE, 
-                                eps = .Machine$double.eps, ...) {
+                                eps = .Machine$double.eps, 
+								...) {
     add_delta <- check_delta(add_delta)
     tip_labs <- object[["tip.label"]]
     if (!is.null(node_labels)) {
@@ -244,17 +272,17 @@
     pen
 }
 
-##' @title MRF penalty from a SpatialPoylgonsDataFrame
-##'
-##' @param buffer numeric; buffer distance for all or for individual elements
-##'   of the geometry. See argument `dist` in [sf::st_buffer] for details.
-##' @inheritParams mrf_penalty.factor
-##'
-##' @importFrom sf st_as_sf st_geometry
-##'
-##' @export
-`mrf_penalty.SpatialPolygonsDataFrame` <- function(object, node_labels = NULL, buffer = NULL,
-                                                   add_delta = FALSE, ...){
+#' @title MRF penalty from a SpatialPoylgonsDataFrame
+#'
+#' @param buffer numeric; buffer distance for all or for individual elements
+#'   of the geometry. See argument `dist` in [sf::st_buffer] for details.
+#' @inheritParams mrf_penalty.factor
+#'
+#' @importFrom sf st_as_sf st_geometry
+#'
+#' @export
+`mrf_penalty.SpatialPolygonsDataFrame` <- function(object, node_labels = NULL,
+    buffer = NULL, add_delta = FALSE, ...){
   add_delta <- check_delta(add_delta)
 
   n <- nrow(object)
@@ -281,21 +309,21 @@
   obj_geom <- st_as_sf(object)
   obj_geom[["node_labels"]] <- node_labels
   obj_geom <- obj_geom[!duplicated(st_geometry(obj_geom)),]
-  mrf_penalty(obj_geom, node_labels = node_labels, buffer = buffer, add_delta = add_delta, ...)
-
+  mrf_penalty(obj_geom, node_labels = node_labels, buffer = buffer,
+    add_delta = add_delta, ...)
 }
 
-##' @title MRF penalty from a SpatialPolygons
-##'
-##' @param buffer numeric; buffer distance for all or for individual elements
-##'   of the geometry. See argument `dist` in [sf::st_buffer] for details.
-##' @inheritParams mrf_penalty.factor
-##'
-##' @importFrom sf st_as_sf st_geometry
-##'
-##' @export
-`mrf_penalty.SpatialPolygons` <- function(object, node_labels = NULL, buffer = NULL,
-                                          add_delta = FALSE, ...) {
+#' @title MRF penalty from a SpatialPolygons
+#'
+#' @param buffer numeric; buffer distance for all or for individual elements
+#'   of the geometry. See argument `dist` in [sf::st_buffer] for details.
+#' @inheritParams mrf_penalty.factor
+#'
+#' @importFrom sf st_as_sf st_geometry
+#'
+#' @export
+`mrf_penalty.SpatialPolygons` <- function(object, node_labels = NULL,
+    buffer = NULL, add_delta = FALSE, ...) {
   add_delta <- check_delta(add_delta)
 
   n <- length(object)
@@ -322,13 +350,13 @@
 
 }
 
-##' @title MRF penalty from a hclust object
-##'
-##' @inheritParams mrf_penalty.factor
-##'
-##' @importFrom stats as.dendrogram
-##'
-##' @export
+#' @title MRF penalty from a hclust object
+#'
+#' @inheritParams mrf_penalty.factor
+#'
+#' @importFrom stats as.dendrogram
+#'
+#' @export
 `mrf_penalty.hclust` <- function(object, ...) {
     mrf_penalty(as.dendrogram(object), ...)
 }

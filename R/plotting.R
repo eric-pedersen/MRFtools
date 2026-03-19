@@ -4,6 +4,11 @@
 #' @param graph logical;
 #' @param layout character;
 #' @param circular logical;
+#' @param xlab,ylab,title,subtitle,caption character; labels for plots. If
+#'   `xlab` or `ylab` are not supplied, a suitable default is used.
+#' @param fill_scale a suitable fill scale to use if plotting the penalty
+#'   matrix
+#' @param ... arguments passed to other methods
 #'
 #' @export
 #'
@@ -21,7 +26,8 @@
   title = NULL,
   subtitle = NULL,
   caption = NULL,
-  fill_scale = NULL
+  fill_scale = NULL,
+  ...
 ) {
   # check arguments
   assertthat::assert_that(is.logical(graph))
@@ -56,9 +62,8 @@
 #' Plot a thing
 #'
 #' @param x an object of class `"fully_connected_graph_mrf_penalty"`
-#' @param graph logical;
-#' @param layout character;
-#' @param circular logical;
+#'
+#' @inheritParams visualize.first_order_random_walk_mrf_penalty
 #'
 #' @export
 #'
@@ -76,7 +81,8 @@
   title = NULL,
   subtitle = NULL,
   caption = NULL,
-  fill_scale = NULL
+  fill_scale = NULL,
+  ...
 ) {
   # check arguments
   assertthat::assert_that(is.logical(graph))
@@ -162,7 +168,7 @@
   # plot
   mtrx |>
     ggplot(
-      aes(x = .col, y = .row, fill = .penalty)
+      aes(x = .data$.col, y = .data$.row, fill = .data$.penalty)
     ) +
     geom_raster() +
     fill_scale +

@@ -53,6 +53,61 @@
   plt
 }
 
+#' Plot a thing
+#'
+#' @param x an object of class `"fully_connected_graph_mrf_penalty"`
+#' @param graph logical;
+#' @param layout character;
+#' @param circular logical;
+#'
+#' @export
+#'
+#' @examples
+#' # example code
+#' mrf_penalty(1:10, type = "linear") |>
+#'   visualize()
+`visualize.fully_connected_graph_mrf_penalty` <- function(
+  x,
+  graph = TRUE,
+  layout = "stress",
+  circular = FALSE,
+  xlab = NULL,
+  ylab = NULL,
+  title = NULL,
+  subtitle = NULL,
+  caption = NULL,
+  fill_scale = NULL
+) {
+  # check arguments
+  assertthat::assert_that(is.logical(graph))
+  assertthat::assert_that(is.logical(circular))
+  assertthat::assert_that(is.character(layout))
+
+  # what to plot
+  plt <- if (isTRUE(graph)) {
+    # penalty as a graph
+    plot_penalty_graph(
+      x,
+      layout = layout,
+      circular = circular
+    )
+  } else {
+    # penalty as a matrix
+    plot_penalty_matrix(
+      x,
+      xlab = xlab,
+      ylab = ylab,
+      title = title,
+      subtitle = subtitle,
+      caption = caption,
+      fill_scale = fill_scale
+    )
+  }
+
+  # return
+  plt
+}
+
 #' @importFrom tidyr pivot_longer
 #' @importFrom dplyr as_tibble mutate row_number
 #' @importFrom ggplot2 ggplot aes geom_raster labs

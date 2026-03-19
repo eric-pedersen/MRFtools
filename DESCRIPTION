@@ -15,20 +15,25 @@ Maintainer: Eric J. Petersen <eric.j.pedersen@gmail.com>
 Imports:
     gratia,
     stats,
+    generics,
+    assertthat,
     sf,
-    ape
+    ape,
+    colorspace
 Suggests:
     testthat,
     vdiffr,
     mgcv,
     gamm4,
-    sp
+    sp,
+    tidygraph,
+    ggraph
 Description: Utility functions for using Markov Random Field smooths in Generalized Additive Models fitted with the 'mgcv' package.
 License: GPL-3
 LazyData: true
 URL: https://github.com/eric-pedersen/MRFtools
 BugReports: https://github.com/eric-pedersen/MRFtools/issues
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.3
 Encoding: UTF-8
 Config/testthat/edition: 3

@@ -14,7 +14,8 @@
   title = NULL,
   subtitle = NULL,
   caption = NULL,
-  fill_scale = NULL
+  fill_scale = NULL,
+  ...
 )
 }
 \arguments{
@@ -25,6 +26,14 @@
 \item{layout}{character;}
 
 \item{circular}{logical;}
+
+\item{xlab, ylab, title, subtitle, caption}{character; labels for plots. If
+\code{xlab} or \code{ylab} are not supplied, a suitable default is used.}
+
+\item{fill_scale}{a suitable fill scale to use if plotting the penalty
+matrix}
+
+\item{...}{arguments passed to other methods}
 }
 \description{
 Plot a thing

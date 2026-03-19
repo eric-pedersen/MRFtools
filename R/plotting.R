@@ -29,13 +29,15 @@
   assertthat::assert_that(is.character(layout))
 
   # what to plot
-  plt <- if (isTRUE(graph)) { # penalty as a graph
+  plt <- if (isTRUE(graph)) {
+    # penalty as a graph
     plot_penalty_graph(
       x,
       layout = layout,
       circular = circular
     )
-  } else { # penalty as a matrix
+  } else {
+    # penalty as a matrix
     plot_penalty_matrix(
       x,
       xlab = xlab,
@@ -46,7 +48,7 @@
       fill_scale = fill_scale
     )
   }
-  
+
   # return
   plt
 }
@@ -70,7 +72,8 @@
   mtrx <- x |>
     as.data.frame() |>
     dplyr::as_tibble() |>
-    mutate( # want a row id for matrix
+    mutate(
+      # want a row id for matrix
       .row = row_number() |> as.character()
     ) |>
     pivot_longer(
@@ -78,14 +81,19 @@
       names_to = ".col", # pivoting produces a column id
       values_to = ".penalty"
     ) |>
-    mutate( # set levels to data order from penalty matrix
+    mutate(
+      # set levels to data order from penalty matrix
       .row = factor(.row, levels = r_levs),
       .col = factor(.col, levels = c_levs)
     )
-  
+
   # set up default labels if none supplied
-  if (is.null(xlab)) { xlab <- "col" }
-  if (is.null(ylab)) { ylab <- "row" }
+  if (is.null(xlab)) {
+    xlab <- "col"
+  }
+  if (is.null(ylab)) {
+    ylab <- "row"
+  }
 
   # set up the default fill scale if user didn't supply anything
   if (is.null(fill_scale)) {
@@ -116,12 +124,12 @@
 #' @importFrom tidygraph as_tbl_graph
 #' @importFrom ggraph ggraph create_layout geom_edge_link geom_node_label
 #' @importFrom ggplot2 .data aes
-#' 
+#'
 `plot_penalty_graph` <- function(
   x,
   layout,
   circular = FALSE
-){
+) {
   grph <- x |>
     abs() |>
     tidygraph::as_tbl_graph(directed = FALSE)

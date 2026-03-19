@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MRFtools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0-3</span>
       </span>
     </div>
 
@@ -54,14 +54,15 @@
 <span><span class="fu"><a href="https://generics.r-lib.org/reference/visualize.html" class="external-link">visualize</a></span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
 <span>  graph <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  layout <span class="op">=</span> <span class="st">"auto"</span>,</span>
+<span>  layout <span class="op">=</span> <span class="st">"stress"</span>,</span>
 <span>  circular <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  xlab <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ylab <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  subtitle <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  caption <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  fill_scale <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  fill_scale <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -83,6 +84,20 @@
 
 <dt id="arg-circular">circular<a class="anchor" aria-label="anchor" href="#arg-circular"></a></dt>
 <dd><p>logical;</p></dd>
+
+
+<dt id="arg-xlab-ylab-title-subtitle-caption">xlab, ylab, title, subtitle, caption<a class="anchor" aria-label="anchor" href="#arg-xlab-ylab-title-subtitle-caption"></a></dt>
+<dd><p>character; labels for plots. If
+<code>xlab</code> or <code>ylab</code> are not supplied, a suitable default is used.</p></dd>
+
+
+<dt id="arg-fill-scale">fill_scale<a class="anchor" aria-label="anchor" href="#arg-fill-scale"></a></dt>
+<dd><p>a suitable fill scale to use if plotting the penalty
+matrix</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>arguments passed to other methods</p></dd>
 
 </dl></div>
 

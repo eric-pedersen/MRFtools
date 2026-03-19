@@ -1,16 +1,29 @@
 Package: MRFtools
-Version: 0.0-2
-Date: 2023-12-08
+Version: 0.0-3
 Title: Tools for Constructing and Plotting Markov Random Fields in R for Graphical Data
-Authors@R: c(person(given = "Eric J.", family = "Pedersen",
-                    email = "eric.j.pedersen@gmail.com",
-                    role = c("aut", "cre")),
-             person(given = "Gavin L.", family = "Simpson",
-                    email = "ucfagls@gmail.com",
-                    role = c("aut")),
-             person(given = "Valentin", family = "Lucet",
-                    email = "valentin.lucet@gmail.com",
-                    role = c("ctb")))
+Authors@R: c(
+    person(
+        given = "Eric J.",
+        family = "Pedersen",
+        email = "eric.j.pedersen@gmail.com",
+        role = c("aut", "cre"),
+        comment = c(ORCID = "0000-0003-1016-540X")
+    ),
+    person(
+        given = "Gavin L.",
+        family = "Simpson",
+        email = "ucfagls@gmail.com",
+        role = c("aut"),
+        comment = c(ORCID = "0000-0002-4842-3657")
+    ),
+    person(
+        given = "Valentin",
+        family = "Lucet",
+        email = "valentin.lucet@gmail.com",
+        role = c("ctb"),
+        comment = c(ORCID = "0000-0003-0268-818X")
+    )
+)
 Maintainer: Eric J. Petersen <eric.j.pedersen@gmail.com>
 Imports:
     gratia,
@@ -19,15 +32,18 @@ Imports:
     assertthat,
     sf,
     ape,
-    colorspace
+    colorspace,
+    tidygraph,
+    ggraph,
+    ggplot2,
+    tidyr,
+    dplyr
 Suggests:
     testthat,
     vdiffr,
     mgcv,
     gamm4,
-    sp,
-    tidygraph,
-    ggraph
+    sp
 Description: Utility functions for using Markov Random Field smooths in Generalized Additive Models fitted with the 'mgcv' package.
 License: GPL-3
 LazyData: true

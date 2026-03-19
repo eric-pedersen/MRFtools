@@ -4,7 +4,18 @@
 \alias{visualize.first_order_random_walk_mrf_penalty}
 \title{Plot a thing}
 \usage{
-\method{visualize}{first_order_random_walk_mrf_penalty}(x, graph = TRUE, layout = "linear", circular = FALSE)
+\method{visualize}{first_order_random_walk_mrf_penalty}(
+  x,
+  graph = TRUE,
+  layout = "linear",
+  circular = FALSE,
+  xlab = NULL,
+  ylab = NULL,
+  title = NULL,
+  subtitle = NULL,
+  caption = NULL,
+  fill_scale = NULL
+)
 }
 \arguments{
 \item{x}{an object of class \code{"first_order_random_walk_mrf_penalty"}}

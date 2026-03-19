@@ -7,7 +7,7 @@
 \method{visualize}{fully_connected_graph_mrf_penalty}(
   x,
   graph = TRUE,
-  layout = "auto",
+  layout = "stress",
   circular = FALSE,
   xlab = NULL,
   ylab = NULL,

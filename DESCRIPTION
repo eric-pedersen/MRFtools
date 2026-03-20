@@ -36,7 +36,9 @@ Imports:
     ggraph,
     ggplot2,
     tidyr,
-    dplyr
+    dplyr,
+    rlang,
+    glue
 Suggests:
     testthat,
     vdiffr,

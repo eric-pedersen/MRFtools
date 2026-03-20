@@ -8,7 +8,8 @@
 #'   `xlab` or `ylab` are not supplied, a suitable default is used.
 #' @param fill_scale a suitable fill scale to use if plotting the penalty
 #'   matrix
-#' @param ... arguments passed to other methods
+#' @param ... arguments passed to other methods and ultimately on to
+#'   [ggraph::create_layout()] if `graph = TRUE`.
 #'
 #' @export
 #'
@@ -40,7 +41,8 @@
     plot_penalty_graph(
       x,
       layout = layout,
-      circular = circular
+      circular = circular,
+      ...
     )
   } else {
     # penalty as a matrix
@@ -51,7 +53,8 @@
       title = title,
       subtitle = subtitle,
       caption = caption,
-      fill_scale = fill_scale
+      fill_scale = fill_scale,
+      ...
     )
   }
 
@@ -95,7 +98,8 @@
     plot_penalty_graph(
       x,
       layout = layout,
-      circular = circular
+      circular = circular,
+      ...
     )
   } else {
     # penalty as a matrix
@@ -106,7 +110,66 @@
       title = title,
       subtitle = subtitle,
       caption = caption,
-      fill_scale = fill_scale
+      fill_scale = fill_scale,
+      ...
+    )
+  }
+
+  # return
+  plt
+}
+
+#' Plot a thing
+#'
+#' @param x an object of class `"dendrogram_mrf_penalty"`
+#'
+#' @inheritParams visualize.first_order_random_walk_mrf_penalty
+#'
+#' @export
+#'
+#' @examples
+#' # example code
+#' hc <- hclust(dist(USArrests), "complete")
+#' mrf_penalty(hc) |>
+#'   visualize()
+`visualize.dendrogram_mrf_penalty` <- function(
+  x,
+  graph = TRUE,
+  layout = "stress",
+  circular = FALSE,
+  xlab = NULL,
+  ylab = NULL,
+  title = NULL,
+  subtitle = NULL,
+  caption = NULL,
+  fill_scale = NULL,
+  ...
+) {
+  # check arguments
+  assertthat::assert_that(is.logical(graph))
+  assertthat::assert_that(is.logical(circular))
+  assertthat::assert_that(is.character(layout))
+
+  # what to plot
+  plt <- if (isTRUE(graph)) {
+    # penalty as a graph
+    plot_penalty_graph(
+      x,
+      layout = layout,
+      circular = circular,
+      ...
+    )
+  } else {
+    # penalty as a matrix
+    plot_penalty_matrix(
+      x,
+      xlab = xlab,
+      ylab = ylab,
+      title = title,
+      subtitle = subtitle,
+      caption = caption,
+      fill_scale = fill_scale,
+      ...
     )
   }
 
@@ -132,11 +195,7 @@
   c_levs <- colnames(x)
   mtrx <- x |>
     as.data.frame() |>
-    dplyr::as_tibble() |>
-    mutate(
-      # want a row id for matrix
-      .row = row_number() |> as.character()
-    ) |>
+    dplyr::as_tibble(rownames = ".row") |>
     pivot_longer(
       cols = -.row,
       names_to = ".col", # pivoting produces a column id
@@ -144,8 +203,8 @@
     ) |>
     mutate(
       # set levels to data order from penalty matrix
-      .row = factor(.row, levels = r_levs),
-      .col = factor(.col, levels = c_levs)
+      .row = factor(.row, labels = r_levs, levels = r_levs),
+      .col = factor(.col, labels = r_levs, levels = c_levs)
     )
 
   # set up default labels if none supplied
@@ -185,12 +244,19 @@
 #' @importFrom tidygraph as_tbl_graph
 #' @importFrom ggraph ggraph create_layout geom_edge_link geom_node_label
 #' @importFrom ggplot2 .data aes
+#' @importFrom rlang abort caller_env
 #'
 `plot_penalty_graph` <- function(
   x,
   layout,
-  circular = FALSE
+  circular = FALSE,
+  edge = "link",
+  label_nodes = TRUE,
+  ...
 ) {
+  edge_fun <- get_edge_fun(edge, call = rlang::caller_env())
+
+  # convert to adjacency matrix and thence to a tbl_graph
   grph <- x |>
     abs() |>
     tidygraph::as_tbl_graph(directed = FALSE) |>
@@ -198,13 +264,58 @@
     dplyr::mutate(node_index = 1:dplyr::n())
     
 
+  # start from a layout base don the graph
   lyt <- grph |>
-    ggraph::create_layout(layout = layout, circular = circular)
+    ggraph::create_layout(layout = layout, circular = circular, ...)
 
-  lyt |>
+  # start the plot
+  plt <- lyt |>
     ggraph::ggraph() +
-    ggraph::geom_edge_link() +
-    ggraph::geom_node_label(ggplot2::aes(label = .data$name))
+    edge_fun()
+
+  # should we label the nodes
+  if (label_nodes) {
+    plt <- plt +
+      ggraph::geom_node_label(
+        ggplot2::aes(label = .data$name)
+      )
+  }
+
+  # return
+  plt
+}
+
+stop_edge_fun_not_found <- function(
+  msg,
+  fun,
+  call = rlang::caller_env()
+) {
+  rlang::abort(
+    msg,
+    class = "edge_not_found",
+    fun = fun,
+    call = call
+  )
+}
+
+get_edge_fun <- function(x, call = rlang::caller_env()) {
+  x <- paste0("geom_edge_", x)
+  fun <- try(match.fun(x), silent = TRUE)
+  if (inherits(fun, "try-error")) {
+    msg <- c(
+      "Problem with 'edge'",
+      "x" = paste0("Function '", x, "()' was not found."),
+      "i" = "Did you forget to load 'tidygraph'?",
+      "i" = "Run 'library(\"tidygraphy\")' and try again."
+    )
+    stop_edge_fun_not_found(
+      msg,
+      fun = x,
+      call = call
+    )
+  } else {
+    fun
+  }
 }
 
 

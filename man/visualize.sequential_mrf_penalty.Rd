@@ -33,7 +33,8 @@
 \item{fill_scale}{a suitable fill scale to use if plotting the penalty
 matrix}
 
-\item{...}{arguments passed to other methods}
+\item{...}{arguments passed to other methods and ultimately on to
+\code{\link[ggraph:ggraph]{ggraph::create_layout()}} if \code{graph = TRUE}.}
 }
 \description{
 Plot a thing

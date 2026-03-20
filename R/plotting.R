@@ -193,7 +193,10 @@
 ) {
   grph <- x |>
     abs() |>
-    tidygraph::as_tbl_graph(directed = FALSE)
+    tidygraph::as_tbl_graph(directed = FALSE) |>
+    tidygraph::activate("nodes") |>
+    dplyr::mutate(node_index = 1:dplyr::n())
+    
 
   lyt <- grph |>
     ggraph::create_layout(layout = layout, circular = circular)
@@ -243,14 +246,22 @@
   
   if(isTRUE(graph)){
     #remove the previous node label layer
-    v@layers = v@layers[1]
+    v@layers <- v@layers[1]
     #add colours denoting the start and end points of the graph
+    n <- nrow(x)
+    node_id <- rep(c("start",NA, "end"), times = c(1, n-2,1))
+    node_id <- factor(node_id, levels = c("start","end"))
+    v@data$node_id <- node_id
+    rm(node_id)
+
     v <- v +
-      ggraph::geom_node_label(ggplot2::aes(label = name,
-                                             color = node_id)) +
+      ggraph::geom_node_label(
+        ggplot2::aes(label = name, color = node_id)
+        ) +
       ggplot2::scale_color_manual(
         name = NULL,
-        values = c("red","blue","black"), 
+        values = c("red", "blue"), 
+        labels = c("start","end"),
         breaks = c("start","end"),
         na.value = "black"
         )

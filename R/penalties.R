@@ -11,9 +11,12 @@
 `mrf_penalty.default` <- function(object, ...) {
   ## want to bail with a useful error;
   ## see Jenny Bryan's Code Smells UseR 2018 talk: rstd.io/code-smells
-  stop("Unable to create an MRF penalty from <",
-    class(object)[[1L]], ">",
-    call. = FALSE)           # don't show the call, simpler error
+  stop(
+    "Unable to create an MRF penalty from <",
+    class(object)[[1L]],
+    ">",
+    call. = FALSE
+  ) # don't show the call, simpler error
 }
 
 #' @title Fully connected graph and random effect MRF penalties from a factor
@@ -45,18 +48,25 @@
 #' p <- mrf_penalty(fv, model = "individual")
 #' p
 #' as.matrix(p)
-`mrf_penalty.factor` <- function(object, model = c("full", "individual"),
-    node_labels = NULL, delta = FALSE, ..., type) {
+`mrf_penalty.factor` <- function(
+    object, 
+    model = c("full", "individual"),
+    node_labels = NULL, 
+    delta = FALSE,
+    ..., 
+    type) {
   delta <- check_delta(delta)
   model <- match.arg(model)
   node_labels <- levels(object)
   n_levels <- length(node_labels)
+  
   if (model == "full") {
     pen <- matrix(-1, n_levels, n_levels)
     diag(pen) <- n_levels - 1 + delta
   } else if (model == "individual") {
     pen <- diag(1, n_levels)
   }
+  
   pen_config <- mrf_config(type = "categorical",
                            model = model,
                            node_labels = node_labels,
@@ -85,6 +95,10 @@
 #' @examples
 #' # rw1: 1st order continuous-time random walk
 #' p <- mrf_penalty(1:10, model = "rw1")
+#'
+#' @examples
+#' # linear rw1:
+#' p <- mrf_penalty(1:10)
 #' as.matrix(p)
 #'
 #' # cyclic rw1:
@@ -92,7 +106,7 @@
 #' as.matrix(p)
 #'
 #' # cyclic with user-specified end points
-#' p <- mrf_penalty(1:10, model = "rw1",  end_points = c(0,11))
+#' p <- mrf_penalty(1:10, model = "rw1", cyclic = TRUE, end_points = c(0,11))
 #' as.matrix(p)
 `mrf_penalty.numeric` <- function(
     object, 
@@ -106,6 +120,7 @@
     end_dist = NULL, 
     delta = FALSE, 
     ...
+    type
 ){
   
   delta <- check_delta(delta)
@@ -135,7 +150,8 @@
   object <- sort(object)
   n <- length(object)
   
-  #dealing with possible misspecification of end_dist, end_points for cyclic penalties
+  #dealing with possible misspecification of end_dist, end_points for cyclic
+  #penalties
   if(cyclic){
     
     if(!is.null(end_dist)){
@@ -236,6 +252,7 @@
   )
     
   pen <- as_mrf_penalty(pen, config = pen_config)
+
   pen
 }
 
@@ -249,11 +266,13 @@
 #' @importFrom sf st_geometry_type st_geometry st_buffer st_sf st_intersects
 #'
 #' @export
-`mrf_penalty.sf` <- function(object, 
-                             model = "icar",
-                             node_labels = NULL, 
-                             buffer = NULL,
-    delta = FALSE, ...){
+`mrf_penalty.sf` <- function(
+    object, 
+    model = "icar",
+    node_labels = NULL, 
+    buffer = NULL,
+    delta = FALSE, 
+    ...){
   if(!all(st_geometry_type(object) %in% c("POLYGON", "MULTIPOLYGON"))){
     stop("mrf_penalty.sf does not know how to handle geometry types besides 'POLYGON' and 'MULTIPOLYGON'")
   }
@@ -269,13 +288,17 @@
         stop("node_labels is not a variable that occurs in object")
       }
       object[[node_labels]]
-    } else if(is.atomic(node_labels)) {
+    } else if (is.atomic(node_labels)) {
       if (length(node_labels) != n) {
-        stop("node_labels either has to be length 1 or be the same length as the number of rows in object.")
+        stop(
+          "node_labels either has to be length 1 or be the same length as the number of rows in object."
+        )
       }
       node_labels
     } else {
-      stop("node_labels is not an atomic vector or the name of a vector in object")
+      stop(
+        "node_labels is not an atomic vector or the name of a vector in object"
+      )
     }
   }
   node_labels <- as.character(node_labels)
@@ -290,11 +313,13 @@
   pen <- -st_intersects(obj_geom, sparse = FALSE)
   diag(pen) <- -(rowSums(pen) - diag(pen)) + delta
 
-  pen <- as_mrf_penalty(pen, 
-                        config = mrf_config(type = "spatial",
+  pen <- as_mrf_penalty(
+    pen, 
+    config = mrf_config(type = "spatial",
     node_labels = node_labels,
     obj = obj_geom, 
     delta = delta))
+  
   pen
 }
 
@@ -304,26 +329,39 @@
 #'
 #' @importFrom stats cophenetic
 #' @export
-`mrf_penalty.dendrogram` <- function(object, 
-                                     model = NULL, 
-                                     node_labels = NULL,
-    delta = FALSE, ...) {
+`mrf_penalty.dendrogram` <- function(
+    object, 
+    model = NULL, 
+    node_labels = NULL,
+    delta = FALSE, 
+    ...) {
   delta <- check_delta(delta)
+
   pen <- as.matrix(cophenetic(object))
   pen <- pen - max(pen)
   diag(pen) <- -(rowSums(pen) - diag(pen)) + delta
+  
   if (!is.null(node_labels)) {
-      if (length(node_labels) != nrow(pen)) {
-          stop("'node_labels' is not the same length as the number of observations.")
-      }
+    if (length(node_labels) != nrow(pen)) {
+      stop(
+        "'node_labels' is not the same length as the number of observations."
+      )
+    }
   } else {
-      node_labels <- rownames(pen)
+    node_labels <- rownames(pen)
   }
-  pen <- as_mrf_penalty(pen, config = mrf_config(type = "dendrogram",
-                                                 model = model,
-    dendrogram = object,
-    node_labels = node_labels,
-    delta = delta))
+  
+  pen <- as_mrf_penalty(
+    pen, 
+    config = mrf_config(
+      type = "dendrogram",
+      model = model,
+      dendrogram = object,
+      node_labels = node_labels,
+      delta = delta
+      )
+    )
+
   pen
 }
 
@@ -335,35 +373,45 @@
 #' @param eps A value to add to the variance-covariance matrix diagonal to
 #' make it positive definite
 #' @export
-`mrf_penalty.phylo` <- function(object, 
-                                model = c("rw1","Brownian"),
-                                node_labels = NULL, 
-                                delta = FALSE,
-    eps = 0, ...) {
+`mrf_penalty.phylo` <- function(
+    object, 
+    model = c("rw1","Brownian"),
+    node_labels = NULL, 
+    delta = FALSE,
+    eps = 0, 
+    ...) {
+  
+  model <- match.arg(model)
   delta <- check_delta(delta)
+
   tip_labs <- object[["tip.label"]]
   if (!is.null(node_labels)) {
-      if (length(node_labels) > length(tip_labs)) {
-          stop("There are more 'node_labels' than tips in the phylogeny.")
-      } else if(length(node_labels) < length(tip_labs)){
-          if (!all(node_labels %in% tip_labs)){
-              stop("Not all node_labels are found in the phylogeny's tip labels.")
-          } else{
-              object <- drop.tip(object, tip_labs[!tip_labs %in% node_labels])
-          }
+    if (length(node_labels) > length(tip_labs)) {
+      stop("There are more 'node_labels' than tips in the phylogeny.")
+    } else if (length(node_labels) < length(tip_labs)) {
+      if (!all(node_labels %in% tip_labs)) {
+        stop("Not all node_labels are found in the phylogeny's tip labels.")
       } else {
-          object[["tip.labels"]] <- node_labels
+        object <- drop.tip(object, tip_labs[!tip_labs %in% node_labels])
       }
+    } else {
+      object[["tip.labels"]] <- node_labels
+    }
   } else {
-      node_labels <- tip_labs
+    node_labels <- tip_labs
   }
   ## create penalty matrix
   pen <- chol2inv(chol(vcv(object) + eps*diag(length(object$tip.label))))  # faster/more robust than solve(vcv(object)) ??
   diag(pen) <- diag(pen) + delta
-  pen <- as_mrf_penalty(pen, config = mrf_config(model = "phylo",
-    node_labels = node_labels,
-    phylogeny = object,
+  
+  pen <- as_mrf_penalty(
+    pen, 
+    config = mrf_config(
+      model = "phylo",
+      node_labels = node_labels,
+      obj = object,
     delta = delta))
+
   pen
 }
 
@@ -376,36 +424,54 @@
 #' @importFrom sf st_as_sf st_geometry
 #'
 #' @export
-`mrf_penalty.SpatialPolygonsDataFrame` <- function(object, node_labels = NULL,
-    buffer = NULL, delta = FALSE, ...){
+`mrf_penalty.SpatialPolygonsDataFrame` <- function(
+    object, 
+    model = "icar",
+    node_labels = NULL,
+    buffer = NULL, 
+    delta = FALSE, 
+    ...){
+  
+  model <- match.arg(model)
   delta <- check_delta(delta)
 
   n <- nrow(object)
 
   node_labels <- if (is.null(node_labels)) {
     seq_len(n)
-  } else{
-    if (is.character(node_labels) && length(node_labels) == 1){
+  } else {
+    if (is.character(node_labels) && length(node_labels) == 1) {
       if (!node_labels %in% names(object)) {
         stop("node_labels is not a variable that occurs in object")
       }
       object[[node_labels]]
     } else if (is.atomic(node_labels)) {
       if (length(node_labels) != n) {
-        stop("node_labels either has to be length 1 or be the same length as the number of rows in object.")
+        stop(
+          "node_labels either has to be length 1 or be the same length as the number of rows in object."
+        )
       }
       node_labels
     } else {
-      stop("node_labels is not an atomic vector or the name of a vector in object")
+      stop(
+        "node_labels is not an atomic vector or the name of a vector in object"
+      )
     }
   }
   node_labels <- as.character(node_labels)
 
   obj_geom <- st_as_sf(object)
   obj_geom[["node_labels"]] <- node_labels
-  obj_geom <- obj_geom[!duplicated(st_geometry(obj_geom)),]
-  mrf_penalty(obj_geom, node_labels = node_labels, buffer = buffer,
-    delta = delta, ...)
+  obj_geom <- obj_geom[!duplicated(st_geometry(obj_geom)), ]
+  
+  mrf_penalty(
+    obj_geom,
+    model = model,
+    node_labels = node_labels,
+    buffer = buffer,
+    delta = delta,
+    ...
+  )
 }
 
 #' @title MRF penalty from a SpatialPolygons
@@ -417,18 +483,26 @@
 #' @importFrom sf st_as_sf st_geometry
 #'
 #' @export
-`mrf_penalty.SpatialPolygons` <- function(object, node_labels = NULL,
-    buffer = NULL, delta = FALSE, ...) {
+`mrf_penalty.SpatialPolygons` <- function(
+    object, 
+    model = "icar",
+    node_labels = NULL,
+    buffer = NULL, 
+    delta = FALSE,
+    ...) {
+  model <- match.arg(model)
   delta <- check_delta(delta)
 
   n <- length(object)
 
   node_labels <- if (is.null(node_labels)) {
     seq_len(n)
-  } else{
+  } else {
     if (is.atomic(node_labels)) {
       if (length(node_labels) != n) {
-        stop("node_labels either has to the same length as the number of rows in object.")
+        stop(
+          "node_labels either has to the same length as the number of rows in object."
+        )
       }
       node_labels
     } else {
@@ -440,9 +514,15 @@
   obj_geom <- st_as_sf(object)
   obj_geom[["node_labels"]] <- node_labels
   obj_geom <- obj_geom[!duplicated(st_geometry(obj_geom)), ]
-  mrf_penalty(obj_geom, node_labels = node_labels, buffer = buffer,
-              delta = delta, ...)
 
+  mrf_penalty(
+    obj_geom,
+    model = model,
+    node_labels = node_labels,
+    buffer = buffer,
+    delta = delta,
+    ...
+  )
 }
 
 #' @title MRF penalty from a hclust object
@@ -453,5 +533,5 @@
 #'
 #' @export
 `mrf_penalty.hclust` <- function(object, ...) {
-    mrf_penalty(as.dendrogram(object), ...)
+  mrf_penalty(as.dendrogram(object), ...)
 }

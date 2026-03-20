@@ -37,8 +37,7 @@ Imports:
     ggplot2,
     tidyr,
     dplyr,
-    rlang,
-    glue
+    rlang
 Suggests:
     testthat,
     vdiffr,

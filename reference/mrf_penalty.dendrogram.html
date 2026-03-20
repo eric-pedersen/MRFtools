@@ -51,7 +51,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for class 'dendrogram'</span></span>
-<span><span class="fu"><a href="mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span><span class="va">object</span>, node_labels <span class="op">=</span> <span class="cn">NULL</span>, add_delta <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span><span class="va">object</span>, model <span class="op">=</span> <span class="cn">NULL</span>, node_labels <span class="op">=</span> <span class="cn">NULL</span>, delta <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -62,12 +62,18 @@
 <dd><p>an R object to create the MRF penalty from.</p></dd>
 
 
+<dt id="arg-model">model<a class="anchor" aria-label="anchor" href="#arg-model"></a></dt>
+<dd><p>character; one of <code>"full"</code> or <code>"individual"</code> indicating if a
+fully connected graph (<code>"full"</code>) or a random effect (random intercepts;
+<code>"individual"</code>) penalty is created.</p></dd>
+
+
 <dt id="arg-node-labels">node_labels<a class="anchor" aria-label="anchor" href="#arg-node-labels"></a></dt>
 <dd><p>character; a vector of alternative labels for the levels
 of the factor.</p></dd>
 
 
-<dt id="arg-add-delta">add_delta<a class="anchor" aria-label="anchor" href="#arg-add-delta"></a></dt>
+<dt id="arg-delta">delta<a class="anchor" aria-label="anchor" href="#arg-delta"></a></dt>
 <dd><p>numeric or logical; either the numeric value to add to the
 diagonal of the MRF penalty matrix, or a logical value indicating if such
 an adjustment should be made. The default is to not alter the diagonal of

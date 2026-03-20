@@ -28,11 +28,19 @@ for details on the models}
 \item{cyclic}{logical; If TRUE, the end points are treated as neighbouring
 each other. See Description for details}
 
+\item{rho}{numeric;}
+
+\item{at_nodes}{numeric;}
+
 \item{node_labels}{character; a vector of alternative labels for the levels
 of the factor.}
 
+\item{add_missing}{logical;}
+
 \item{end_points}{numeric; an optional vector of length 2 providing the end
 points of the period of cycle.}
+
+\item{end_dist}{numeric;}
 
 \item{delta}{numeric or logical; either the numeric value to add to the
 diagonal of the MRF penalty matrix, or a logical value indicating if such
@@ -40,15 +48,14 @@ an adjustment should be made. The default is to not alter the diagonal of
 the penalty matrix.}
 
 \item{...}{arguments passed to other methods.}
+
+\item{type}{character; deprecated. Use, \code{model} instead.}
 }
 \description{
-Models one-dimensional numeric vectors as random-walk models. \strong{STUB}
+Models one-dimensional numeric vectors as random-walk models.
 }
 \examples{
-# rw1: 1st order continuous-time random walk
-p <- mrf_penalty(1:10, model = "rw1")
-
-# linear rw1:
+# linear rw1: 1st order continuous-time random walk
 p <- mrf_penalty(1:10)
 as.matrix(p)
 

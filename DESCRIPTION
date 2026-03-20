@@ -24,6 +24,8 @@ Authors@R: c(
         comment = c(ORCID = "0000-0003-0268-818X")
     ))
 Maintainer: Eric J. Pedersen <eric.j.pedersen@gmail.com>
+Depends:
+    R (>= 4.1.0)
 Imports:
     gratia,
     stats,
@@ -37,8 +39,7 @@ Imports:
     ggplot2,
     tidyr,
     dplyr,
-    rlang,
-    glue
+    rlang
 Suggests:
     testthat,
     vdiffr,

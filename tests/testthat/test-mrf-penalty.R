@@ -8,7 +8,7 @@ test_that("linear mrf_penalty with a numeric", {
 
 # test the numeric method with cyclic option
 test_that("cyclic mrf_penalty with a numeric", {
-  expect_silent(pen <- mrf_penalty(nv, type = "cyclic"))
+  expect_silent(pen <- mrf_penalty(nv, cyclic=TRUE))
   expect_snapshot(print(pen), variant = "print")
   expect_snapshot(print(as.matrix(pen)), variant = "matrix")
   expect_s3_class(pen, "mrf_penalty")
@@ -16,7 +16,7 @@ test_that("cyclic mrf_penalty with a numeric", {
 
 # test the numeric method with cyclic option and endpoint
 test_that("cyclic mrf_penalty with a numeric and user end points", {
-  expect_silent(pen <- mrf_penalty(nv, type = "cyclic", end_points = c(0, 11)))
+  expect_silent(pen <- mrf_penalty(nv, cyclic = TRUE, end_points = c(0, 11)))
   expect_snapshot(print(pen), variant = "print")
   expect_snapshot(print(as.matrix(pen)), variant = "matrix")
   expect_s3_class(pen, "mrf_penalty")

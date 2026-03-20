@@ -23,7 +23,7 @@ Authors@R: c(
         role = c("ctb"),
         comment = c(ORCID = "0000-0003-0268-818X")
     ))
-Maintainer: Eric J. Petersen <eric.j.pedersen@gmail.com>
+Maintainer: Eric J. Pedersen <eric.j.pedersen@gmail.com>
 Imports:
     gratia,
     stats,

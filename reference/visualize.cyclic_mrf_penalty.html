@@ -51,7 +51,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for class 'cyclic_mrf_penalty'</span></span>
-<span><span class="fu"><a href="https://generics.r-lib.org/reference/visualize.html" class="external-link">visualize</a></span><span class="op">(</span><span class="va">x</span>, graph <span class="op">=</span> <span class="cn">TRUE</span>, layout <span class="op">=</span> <span class="st">"linear"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://generics.r-lib.org/reference/visualize.html" class="external-link">visualize</a></span><span class="op">(</span><span class="va">x</span>, graph <span class="op">=</span> <span class="cn">TRUE</span>, layout <span class="op">=</span> <span class="st">"linear"</span>, circular <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -72,6 +72,11 @@
 
 <dt id="arg-circular">circular<a class="anchor" aria-label="anchor" href="#arg-circular"></a></dt>
 <dd><p>logical;</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>arguments passed to other methods and ultimately on to
+<code><a href="https://ggraph.data-imaginist.com/reference/ggraph.html" class="external-link">ggraph::create_layout()</a></code> if <code>graph = TRUE</code>.</p></dd>
 
 </dl></div>
 

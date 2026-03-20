@@ -4,7 +4,7 @@
 \alias{visualize.cyclic_mrf_penalty}
 \title{Visualizing penalty matrix or graph object for a cyclic 1D MRF}
 \usage{
-\method{visualize}{cyclic_mrf_penalty}(x, graph = TRUE, layout = "linear", ...)
+\method{visualize}{cyclic_mrf_penalty}(x, graph = TRUE, layout = "linear", circular = TRUE, ...)
 }
 \arguments{
 \item{x}{an object of class \code{"cyclic_mrf_penalty"}}

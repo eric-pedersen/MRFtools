@@ -23,6 +23,7 @@
 <url><loc>/reference/reexports.html</loc></url>
 <url><loc>/reference/vis.html</loc></url>
 <url><loc>/reference/visualize.cyclic_mrf_penalty.html</loc></url>
+<url><loc>/reference/visualize.dendrogram_mrf_penalty.html</loc></url>
 <url><loc>/reference/visualize.fully_connected_graph_mrf_penalty.html</loc></url>
 <url><loc>/reference/visualize.sequential_mrf_penalty.html</loc></url>
 </urlset>

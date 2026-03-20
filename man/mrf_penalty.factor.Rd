@@ -6,23 +6,24 @@
 \usage{
 \method{mrf_penalty}{factor}(
   object,
-  type = c("full", "individual"),
+  model = c("full", "individual"),
   node_labels = NULL,
-  add_delta = FALSE,
-  ...
+  delta = FALSE,
+  ...,
+  type
 )
 }
 \arguments{
 \item{object}{an R object to create the MRF penalty from.}
 
-\item{type}{character; one of \code{"full"} or \code{"individual"} indicating if a
+\item{model}{character; one of \code{"full"} or \code{"individual"} indicating if a
 fully connected graph (\code{"full"}) or a random effect (random intercepts;
 \code{"individual"}) penalty is created.}
 
 \item{node_labels}{character; a vector of alternative labels for the levels
 of the factor.}
 
-\item{add_delta}{numeric or logical; either the numeric value to add to the
+\item{delta}{numeric or logical; either the numeric value to add to the
 diagonal of the MRF penalty matrix, or a logical value indicating if such
 an adjustment should be made. The default is to not alter the diagonal of
 the penalty matrix.}
@@ -37,12 +38,12 @@ Fully connected graph and random effect MRF penalties from a factor
 fv <- factor(letters[1:10])
 
 # create the MRF penalty for a fully connected graph
-p <- mrf_penalty(fv, type = "full")
+p <- mrf_penalty(fv, model = "full")
 p
 as.matrix(p)
 
 # create the MRF penalty equivalent of random effects
-p <- mrf_penalty(fv, type = "individual")
+p <- mrf_penalty(fv, model = "individual")
 p
 as.matrix(p)
 }

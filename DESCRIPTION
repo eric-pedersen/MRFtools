@@ -11,7 +11,7 @@ Authors@R: c(person(given = "Eric J.", family = "Pedersen",
              person(given = "Valentin", family = "Lucet",
                     email = "valentin.lucet@gmail.com",
                     role = c("ctb")))
-Maintainer: Eric J. Petersen <eric.j.pedersen@gmail.com>
+Maintainer: Eric J. Pedersen <eric.j.pedersen@gmail.com>
 Imports:
     gratia,
     stats,

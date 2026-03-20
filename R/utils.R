@@ -75,29 +75,32 @@
   list()
 }
 
-`mrf_config` <- function(type = NULL,
-                         node_labels = NULL,
-                         delta = NULL,
-                         geometry = NULL,
-                         phylogeny = NULL,
-                         random_walk = NULL,
-                         dendrogram = NULL,
-                         graph  = NULL,
-                         dissimiliarities = NULL) {
-    ## could return:
-    ## unique factor levels associated with the data
-    ## MRF type
-    ## information for plotting (e.g. the graph, phylogeny, etc.)
-    ## geographic information
+`mrf_config` <- function(
+    type = NULL,
+    model = NULL,
+    params = NULL,
+    node_labels = NULL,
+    delta = NULL,
+    obj = NULL){
+    # type: type of MRF used
+     # "categorical": factor values 
+     # "interval": continuous or discrete 1d numeric
+     # "lattice": 2- or more-dimensional regular array
+     # "tree": 'tree-like' values, including phylogenies, dendrograms
+     # "spatial": non-lattice spatial data
+     # "dissimilarity": MRF based off of either a distance or dissimiliarity object
+     # "network": General network (without special properties as above)
+  
+  #params should never be null, even if none are needed for the model
+  if(is.null(params)){
+    params <- list()
+  }
     config <- list(type = type,
+                   model = model, 
+                   params = params,
                    node_labels = node_labels,
                    delta = delta,
-                   geometry = geometry,
-                   phylogeny = phylogeny,
-                   random_walk = random_walk,
-                   dendrogram = dendrogram,
-                   graph  = graph,
-                   dissimiliarities = dissimiliarities)
+                   obj = obj)
     class(config) <- "mrf_config"
     config
 }
@@ -119,6 +122,23 @@
 `get_labels` <- function(penalty) {
     config <- get_config(penalty)
     config[["node_labels"]]
+}
+
+#' @title Extract the model type and parameters from an MRF penalty
+#'
+#' @param penalty an object of class `"mrf_penalty"`
+#'
+#' @export
+`get_model` <- function(penalty){
+  config <- get_config(penalty)
+  out <- list()
+  out[["model"]] <- config[["model"]]
+  out[["parameters"]] <- config[["params"]]
+  #return the delta parameter if one was specified
+  if(config[["delta"]]){
+    out[["delta"]]  <- config[["delta"]]
+  }
+  out
 }
 
 #' @title Extract configuration details of an MRF penalty
@@ -164,17 +184,17 @@
     object[["type"]]
 }
 
-`check_delta` <- function(add_delta) {
-    if (length(add_delta) > 1) {
-        stop("'add_delta' has to be a single value, either logical or numeric")
+`check_delta` <- function(delta) {
+    if (length(delta) > 1) {
+        stop("'delta' has to be a single value, either logical or numeric")
     }
-    if (!(is.logical(add_delta) || is.numeric(add_delta))) {
-        stop("'add_delta' has to be either logical or numeric")
+    if (!(is.logical(delta) || is.numeric(delta))) {
+        stop("'delta' has to be either logical or numeric")
     }
-    if (is.numeric(add_delta) && add_delta < 0) {
-        stop("'add_delta' has to be zero or a positive number")
+    if (is.numeric(delta) && delta < 0) {
+        stop("'delta' has to be zero or a positive number")
         }
-    as.numeric(add_delta)
+    as.numeric(delta)
 }
 
 #' @title Extract a MRF penalty matrix

@@ -4,7 +4,7 @@
       print(pen)
     Output
       Markov Random Field penalty
-      Type: first order random walk
+      Type: sequential
       N   : 10
 
 # cyclic mrf_penalty with a numeric
@@ -13,7 +13,8 @@
       print(pen)
     Output
       Markov Random Field penalty
-      Type: cyclic first order random walk
+      Type: cyclic
+      Type: sequential
       N   : 10
 
 # cyclic mrf_penalty with a numeric and user end points
@@ -22,7 +23,8 @@
       print(pen)
     Output
       Markov Random Field penalty
-      Type: cyclic first order random walk
+      Type: cyclic
+      Type: sequential
       N   : 10
 
 # fully connected mrf_penalty with a factor
@@ -31,7 +33,7 @@
       print(pen)
     Output
       Markov Random Field penalty
-      Type: fully connected graph
+      Type: categorical
       N   : 10
 
 # ranef mrf_penalty with a factor
@@ -40,7 +42,7 @@
       print(pen)
     Output
       Markov Random Field penalty
-      Type: random intercept
+      Type: categorical
       N   : 10
 
 # mrf_penalty with a dendrogram

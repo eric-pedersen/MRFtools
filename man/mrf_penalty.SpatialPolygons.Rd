@@ -4,10 +4,21 @@
 \alias{mrf_penalty.SpatialPolygons}
 \title{MRF penalty from a SpatialPolygons}
 \usage{
-\method{mrf_penalty}{SpatialPolygons}(object, node_labels = NULL, buffer = NULL, delta = FALSE, ...)
+\method{mrf_penalty}{SpatialPolygons}(
+  object,
+  model = "icar",
+  node_labels = NULL,
+  buffer = NULL,
+  delta = FALSE,
+  ...
+)
 }
 \arguments{
 \item{object}{an R object to create the MRF penalty from.}
+
+\item{model}{character; one of \code{"full"} or \code{"individual"} indicating if a
+fully connected graph (\code{"full"}) or a random effect (random intercepts;
+\code{"individual"}) penalty is created.}
 
 \item{node_labels}{character; a vector of alternative labels for the levels
 of the factor.}

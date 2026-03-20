@@ -15,7 +15,8 @@
   end_points = NULL,
   end_dist = NULL,
   delta = FALSE,
-  ...
+  ...,
+  type
 )
 }
 \arguments{
@@ -46,6 +47,9 @@ Models one-dimensional numeric vectors as random-walk models. \strong{STUB}
 \examples{
 # rw1: 1st order continuous-time random walk
 p <- mrf_penalty(1:10, model = "rw1")
+
+# linear rw1:
+p <- mrf_penalty(1:10)
 as.matrix(p)
 
 # cyclic rw1:
@@ -53,6 +57,6 @@ p <- mrf_penalty(1:10, model = "rw1", cyclic = TRUE)
 as.matrix(p)
 
 # cyclic with user-specified end points
-p <- mrf_penalty(1:10, model = "rw1",  end_points = c(0,11))
+p <- mrf_penalty(1:10, model = "rw1", cyclic = TRUE, end_points = c(0,11))
 as.matrix(p)
 }

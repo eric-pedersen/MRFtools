@@ -119,7 +119,7 @@
     end_points = NULL,
     end_dist = NULL, 
     delta = FALSE, 
-    ...
+    ..., 
     type
 ){
   

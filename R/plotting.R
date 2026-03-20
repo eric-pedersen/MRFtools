@@ -63,7 +63,7 @@
 #'
 #' @param x an object of class `"fully_connected_graph_mrf_penalty"`
 #'
-#' @inheritParams visualize.first_order_random_walk_mrf_penalty
+#' @inheritParams visualize.sequential_mrf_penalty
 #'
 #' @export
 #'

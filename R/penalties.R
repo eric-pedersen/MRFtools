@@ -356,7 +356,7 @@
     config = mrf_config(
       type = "dendrogram",
       model = model,
-      dendrogram = object,
+      obj = object,
       node_labels = node_labels,
       delta = delta
       )

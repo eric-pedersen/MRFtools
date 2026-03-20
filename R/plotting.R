@@ -321,9 +321,8 @@ get_edge_fun <- function(x, call = rlang::caller_env()) {
 #' @title Visualizing penalty matrix or graph object for a cyclic 1D MRF
 #'
 #' @param x an object of class `"cyclic_mrf_penalty"`
-#' @param graph logical;
-#' @param layout character;
-#' @param circular logical;
+#'
+#' @inheritParams visualize.sequential_mrf_penalty
 #'
 #' @importFrom tidygraph as_tbl_graph
 #' @importFrom ggraph ggraph create_layout geom_edge_link geom_node_label
@@ -368,7 +367,7 @@ get_edge_fun <- function(x, call = rlang::caller_env()) {
 
     v <- v +
       ggraph::geom_node_label(
-        ggplot2::aes(label = name, color = node_id)
+        ggplot2::aes(label = .data$name, color = .data$node_id)
       ) +
       ggplot2::scale_color_manual(
         name = NULL,

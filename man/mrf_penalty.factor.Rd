@@ -29,6 +29,8 @@ an adjustment should be made. The default is to not alter the diagonal of
 the penalty matrix.}
 
 \item{...}{arguments passed to other methods.}
+
+\item{type}{character; deprecated. Use, \code{model} instead.}
 }
 \description{
 Fully connected graph and random effect MRF penalties from a factor

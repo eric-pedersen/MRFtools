@@ -1,3 +1,5 @@
+## Helper functions for extracting information from MRF penalty objects
+
 #' @title Extract a fitted MRF
 #'
 #' @param object An object from which to extract the fitted MRF. Currently only
@@ -12,6 +14,7 @@
   UseMethod("get_mrf")
 }
 
+## TODO: Add documentation
 #' @export
 `get_mrf.default` <- function(object, ...) {
   ## want to bail with a useful error;
@@ -47,6 +50,7 @@
   get_mrf(object, ...)
 }
 
+## TODO: Add documentation
 #' @param term character; the MRF term to extract. Can be a partial match to a
 #'   term, which is matched against the smooth label.
 #'
@@ -62,6 +66,7 @@
   smooths
 }
 
+## TODO: Add documentation
 #' @export
 `print.mrf_penalty` <- function(x, ...) {
   ## grab the configuration of the MRF
@@ -72,56 +77,6 @@
   writeLines("Markov Random Field penalty")
   writeLines(paste0("Type: ", gsub("_", " ", type)))
   writeLines(paste0("N   : ", nrow(x)))
-}
-
-`check_penalty` <- function(...) {
-  list()
-}
-
-`mrf_config` <- function(
-    type = NULL,
-    model = NULL,
-    params = NULL,
-    node_labels = NULL,
-    delta = NULL,
-    obj = NULL){
-    # type: type of MRF used
-     # "categorical": factor values 
-     # "interval": continuous or discrete 1d numeric
-     # "lattice": 2- or more-dimensional regular array
-     # "tree": 'tree-like' values, including phylogenies, dendrograms
-     # "spatial": non-lattice spatial data
-     # "dissimilarity": MRF based off of either a distance or dissimiliarity object
-     # "network": General network (without special properties as above)
-  
-  #params should never be null, even if none are needed for the model
-  if(is.null(params)){
-    params <- list()
-  }
-  ## could return:
-  ## unique factor levels associated with the data
-  ## MRF type
-  ## information for plotting (e.g. the graph, phylogeny, etc.) stored in obj
-    config <- list(type = type,
-                   model = model, 
-                   params = params,
-                   node_labels = node_labels,
-                   delta = delta,
-                   obj = obj)
-    class(config) <- "mrf_config"
-    config
-}
-
-`as_mrf_penalty` <- function(penalty, config) {
-  #need to check if penalty is a matrix
-  dimnames(penalty) <- list(config[["node_labels"]], config[["node_labels"]])
-  class(penalty) <- c(
-    paste0(config[["type"]], "_mrf_penalty"),
-    "mrf_penalty",
-    "matrix"
-  )
-  attr(penalty, which = "mrf_config") <- config
-  penalty
 }
 
 #' @title Extract MRF node labels from an MRF penalty
@@ -173,6 +128,7 @@
   UseMethod("get_type")
 }
 
+## TODO: Add documentation
 #' @export
 `get_type.default` <- function(object, ...) {
   ## want to bail with a useful error;
@@ -185,29 +141,18 @@
   ) # don't show the call, simpler error
 }
 
+## TODO: Add documentation
 #' @export
 #' @rdname get_type
 `get_type.mrf_penalty` <- function(object) {
   get_type(get_config(object))
 }
 
+## TODO: Add documentation
 #' @export
 #' @rdname get_type
 `get_type.mrf_config` <- function(object) {
   object[["type"]]
-}
-
-`check_delta` <- function(delta) {
-    if (length(delta) > 1) {
-        stop("'delta' has to be a single value, either logical or numeric")
-    }
-    if (!(is.logical(delta) || is.numeric(delta))) {
-        stop("'delta' has to be either logical or numeric")
-    }
-    if (is.numeric(delta) && delta < 0) {
-        stop("'delta' has to be zero or a positive number")
-        }
-    as.numeric(delta)
 }
 
 #' @title Extract a MRF penalty matrix
@@ -222,6 +167,7 @@
   UseMethod("get_penalty")
 }
 
+## TODO: Add documentation
 #' @export
 `get_penalty.default` <- function(penalty, ...) {
   ## want to bail with a useful error;
@@ -234,6 +180,7 @@
   ) # don't show the call, simpler error
 }
 
+## TODO: Add documentation
 #' @rdname get_penalty
 #'
 #' @export
@@ -243,16 +190,5 @@
   penalty
 }
 
-#' Convert a MRF penalty object to a matrix
-#'
-#' @param x an object inheriting from class `"mrf_penalty"`
-#' @param ... arguments passed to other methods
-#'
-#' @export
-#'
-#' @examples
-#' p <- mrf_penalty(1:10)
-#' as.matrix(p)
-`as.matrix.mrf_penalty` <- function(x, ...) {
-  get_penalty(x)
-}
+
+## TODO: implement helper functions to construct penalties for tensor-product MRFs

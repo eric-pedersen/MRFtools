@@ -2,8 +2,9 @@
 # functions from other scripts AT YOUR OWN RISK, as the interface for these 
 # functions may change without notice.
 
-# TODO: extend this function. Should validate that the penalty has the right
-# dimensions and is positive semidefinite
+## TODO: extend this function: 
+##   Should validate that the penalty has the right  dimensions and is positive
+##   semidefinite
 `check_penalty` <- function(...) {
   list()
 }

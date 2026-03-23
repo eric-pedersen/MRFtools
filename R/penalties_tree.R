@@ -1,4 +1,5 @@
-## functions for creating "tree-like" penalties (e.g. phylogenies, 
+## functions for creating "tree-like" penalties (e.g. phylogenies, dendrograms,
+## hierarchical clusters)
 
 
 #' @title MRF penalty from a phylogeny

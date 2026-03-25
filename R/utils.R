@@ -190,5 +190,4 @@
   penalty
 }
 
-
 ## TODO: implement helper functions to construct penalties for tensor-product MRFs

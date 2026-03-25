@@ -6,10 +6,11 @@
 \usage{
 \method{mrf_penalty}{phylo}(
   object,
-  model = c("rw1", "Brownian"),
-  node_labels = NULL,
+  model = c("rw1", "ou", "Brownian"),
+  at_tips = NULL,
+  tip_labels = NULL,
+  include_internal = TRUE,
   delta = FALSE,
-  eps = 0,
   ...
 )
 }
@@ -20,18 +21,15 @@
 fully connected graph (\code{"full"}) or a random effect (random intercepts;
 \code{"individual"}) penalty is created.}
 
-\item{node_labels}{character; a vector of alternative labels for the levels
-of the factor.}
-
 \item{delta}{numeric or logical; either the numeric value to add to the
 diagonal of the MRF penalty matrix, or a logical value indicating if such
 an adjustment should be made. The default is to not alter the diagonal of
 the penalty matrix.}
 
+\item{...}{arguments passed to other methods.}
+
 \item{eps}{A value to add to the variance-covariance matrix diagonal to
 make it positive definite}
-
-\item{...}{arguments passed to other methods.}
 }
 \description{
 MRF penalty from a phylogeny

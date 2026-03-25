@@ -31,8 +31,7 @@ This vignette will briefly describe how to use *MRFtools* to specify a penalty m
 
 If you have the tools to build source packages, you can use the *remotes* package to install *MRFtools*.
 
-```{r}
-#| label: install-package
+```r
 # do we need to install remotes?
 if (isFALSE(require("remotes"))) {
   install.packages("remotes")

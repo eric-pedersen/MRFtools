@@ -41,3 +41,5 @@ rsconnect/
 
 # Emacs backup files
 *~
+/doc/
+/Meta/

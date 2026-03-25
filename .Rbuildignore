@@ -21,3 +21,5 @@
 ^.lintr$
 ^[.]?air[.]toml$
 ^vignettes/*_files$
+^doc$
+^Meta$

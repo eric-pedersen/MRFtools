@@ -42,7 +42,7 @@
 
 #' @export
 #' @rdname get_mrf
-`get_mrf.list` <- function(object, ...) {
+`get_mrf.gamm4` <- function(object, ...) {
   if (!"gam" %in% names(object)) {
     stop("Not a gamm or gamm4 object. No smooth object for get_mrf to use")
   }
@@ -94,14 +94,14 @@
 #' @param penalty an object of class `"mrf_penalty"`
 #'
 #' @export
-`get_model` <- function(penalty){
+`get_model` <- function(penalty) {
   config <- get_config(penalty)
   out <- list()
   out[["model"]] <- config[["model"]]
   out[["parameters"]] <- config[["params"]]
   #return the delta parameter if one was specified
-  if(config[["delta"]]){
-    out[["delta"]]  <- config[["delta"]]
+  if (config[["delta"]]) {
+    out[["delta"]] <- config[["delta"]]
   }
   out
 }

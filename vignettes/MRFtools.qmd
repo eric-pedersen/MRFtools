@@ -13,8 +13,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-
-
 The Gaussian Markov random field basis (`bs = "mrf"`) in *mgcv* is an extremely powerful and flexible "spline", which can be used to include a range of effects into a GAM that one would not typically think of as smooth effects. As with many powerful tools in R, that power and flexibility can often bring with it additional complexity when you try to actually use the thing.
 
 The MRF basis (`bs = "mrf"`) allows for the definition of a Gaussian MRF in one of three ways
@@ -45,13 +43,26 @@ Soon, we'll have *MRFtools* available for installation via ROpenSci's R Universe
 
 ## Setup
 
-To follow this vignette, you'll need the following packages loaded
+To follow this vignette, you'll need the following packages
+
+```{r}
+#| label: pkg-list
+pkgs <- c("ape", "mgcv", "MRFtools", "dplyr", "ggplot2", "gratia", "ggtree")
+```
+
+The *ggtree* package is from BioConductor, so if you do not have it installed, you'll need to install the *BiocManager* package first to perform the installation:
+
+```r
+if (!require("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install("ggtree")
+```
 
 ```{r}
 #| label: setup
 #| cache: false
 #| message: false
-pkgs <- c("ape", "mgcv", "MRFtools", "dplyr", "ggplot2", "gratia", "ggtree")
 vapply(
   pkgs,
   library,

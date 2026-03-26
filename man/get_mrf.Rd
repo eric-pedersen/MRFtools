@@ -4,7 +4,7 @@
 \alias{get_mrf}
 \alias{get_mrf.bam}
 \alias{get_mrf.gamm}
-\alias{get_mrf.list}
+\alias{get_mrf.gamm4}
 \alias{get_mrf.gam}
 \title{Extract a fitted MRF}
 \usage{
@@ -14,7 +14,7 @@ get_mrf(object, ...)
 
 \method{get_mrf}{gamm}(object, ...)
 
-\method{get_mrf}{list}(object, ...)
+\method{get_mrf}{gamm4}(object, ...)
 
 \method{get_mrf}{gam}(object, term, ...)
 }

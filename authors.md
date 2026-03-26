@@ -5,7 +5,7 @@
 - **Eric J. Pedersen**. Author, maintainer.
   [](https://orcid.org/0000-0003-1016-540X)
 
-- **Gavin L. Simpson**. Author.
+- **[Gavin L. Simpson](https://fromthebottomoftheheap.net)**. Author.
   [](https://orcid.org/0000-0002-4842-3657)
 
 - **Valentin Lucet**. Contributor.

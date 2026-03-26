@@ -2,4 +2,5 @@
 
 ### All vignettes
 
-- [Getting started with the MRFtools package](getting-started.md):
+- [Getting started with the MRFtools
+  package](https://gam-mafia.github.io/MRFtools/articles/getting-started.md):

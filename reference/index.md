@@ -2,67 +2,74 @@
 
 ## All functions
 
-- [`as.matrix(`*`<mrf_penalty>`*`)`](as.matrix.mrf_penalty.md) : Convert
-  a MRF penalty object to a matrix
+- [`as.matrix(`*`<mrf_penalty>`*`)`](https://gam-mafia.github.io/MRFtools/reference/as.matrix.mrf_penalty.md)
+  : Convert a MRF penalty object to a matrix
 
-- [`as_mrf_penalty()`](as_mrf_penalty.md) :
+- [`as_mrf_penalty()`](https://gam-mafia.github.io/MRFtools/reference/as_mrf_penalty.md)
+  :
 
   Create a `"mrf_penalty"` object from a matrix and a config
 
-- [`get_config()`](get_config.md) : Extract configuration details of an
-  MRF penalty
+- [`get_config()`](https://gam-mafia.github.io/MRFtools/reference/get_config.md)
+  : Extract configuration details of an MRF penalty
 
-- [`get_labels()`](get_labels.md) : Extract MRF node labels from an MRF
-  penalty
+- [`get_labels()`](https://gam-mafia.github.io/MRFtools/reference/get_labels.md)
+  : Extract MRF node labels from an MRF penalty
 
-- [`get_model()`](get_model.md) : Extract the model type and parameters
-  from an MRF penalty
+- [`get_model()`](https://gam-mafia.github.io/MRFtools/reference/get_model.md)
+  : Extract the model type and parameters from an MRF penalty
 
-- [`get_mrf()`](get_mrf.md) : Extract a fitted MRF
+- [`get_mrf()`](https://gam-mafia.github.io/MRFtools/reference/get_mrf.md)
+  : Extract a fitted MRF
 
-- [`get_penalty()`](get_penalty.md) : Extract a MRF penalty matrix
+- [`get_penalty()`](https://gam-mafia.github.io/MRFtools/reference/get_penalty.md)
+  : Extract a MRF penalty matrix
 
-- [`get_type()`](get_type.md) : Extract the type of MRF from the penalty
+- [`get_type()`](https://gam-mafia.github.io/MRFtools/reference/get_type.md)
+  : Extract the type of MRF from the penalty
 
-- [`mrf_config()`](mrf_config.md) : MRF penalty configuration data
+- [`mrf_config()`](https://gam-mafia.github.io/MRFtools/reference/mrf_config.md)
+  : MRF penalty configuration data
 
-- [`mrf_penalty()`](mrf_penalty.md) : Markov Random Field Penalty
+- [`mrf_penalty()`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.md)
+  : Markov Random Field Penalty
 
-- [`mrf_penalty(`*`<SpatialPolygons>`*`)`](mrf_penalty.SpatialPolygons.md)
+- [`mrf_penalty(`*`<SpatialPolygons>`*`)`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.SpatialPolygons.md)
   : MRF penalty from a SpatialPolygons
 
-- [`mrf_penalty(`*`<SpatialPolygonsDataFrame>`*`)`](mrf_penalty.SpatialPolygonsDataFrame.md)
+- [`mrf_penalty(`*`<SpatialPolygonsDataFrame>`*`)`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.SpatialPolygonsDataFrame.md)
   : MRF penalty from a SpatialPoylgonsDataFrame
 
-- [`mrf_penalty(`*`<dendrogram>`*`)`](mrf_penalty.dendrogram.md) : MRF
-  penalty from a dendrogram
+- [`mrf_penalty(`*`<dendrogram>`*`)`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.dendrogram.md)
+  : MRF penalty from a dendrogram
 
-- [`mrf_penalty(`*`<factor>`*`)`](mrf_penalty.factor.md) : Fully
-  connected graph and random effect MRF penalties from a factor
+- [`mrf_penalty(`*`<factor>`*`)`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.factor.md)
+  : Fully connected graph and random effect MRF penalties from a factor
 
-- [`mrf_penalty(`*`<hclust>`*`)`](mrf_penalty.hclust.md) : MRF penalty
-  from a hclust object
+- [`mrf_penalty(`*`<hclust>`*`)`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.hclust.md)
+  : MRF penalty from a hclust object
 
-- [`mrf_penalty(`*`<numeric>`*`)`](mrf_penalty.numeric.md) :
-  Continuous-time random walk MRF penalty from a numeric vector
+- [`mrf_penalty(`*`<numeric>`*`)`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.numeric.md)
+  : Continuous-time random walk MRF penalty from a numeric vector
 
-- [`mrf_penalty(`*`<phylo>`*`)`](mrf_penalty.phylo.md) : MRF penalty
-  from a phylogeny
+- [`mrf_penalty(`*`<phylo>`*`)`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.phylo.md)
+  : MRF penalty from a phylogeny
 
-- [`mrf_penalty(`*`<sf>`*`)`](mrf_penalty.sf.md) : MRF penalty from
-  polygon or multi-polygon simple features
+- [`mrf_penalty(`*`<sf>`*`)`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.sf.md)
+  : MRF penalty from polygon or multi-polygon simple features
 
-- [`vis()`](vis.md) [`visualise()`](vis.md) : Visualize a data set or
-  object
+- [`vis()`](https://gam-mafia.github.io/MRFtools/reference/vis.md)
+  [`visualise()`](https://gam-mafia.github.io/MRFtools/reference/vis.md)
+  : Visualize a data set or object
 
-- [`visualize(`*`<cyclic_mrf_penalty>`*`)`](visualize.cyclic_mrf_penalty.md)
+- [`visualize(`*`<cyclic_mrf_penalty>`*`)`](https://gam-mafia.github.io/MRFtools/reference/visualize.cyclic_mrf_penalty.md)
   : Visualizing penalty matrix or graph object for a cyclic 1D MRF
 
-- [`visualize(`*`<dendrogram_mrf_penalty>`*`)`](visualize.dendrogram_mrf_penalty.md)
+- [`visualize(`*`<dendrogram_mrf_penalty>`*`)`](https://gam-mafia.github.io/MRFtools/reference/visualize.dendrogram_mrf_penalty.md)
   : Plot a thing
 
-- [`visualize(`*`<fully_connected_graph_mrf_penalty>`*`)`](visualize.fully_connected_graph_mrf_penalty.md)
+- [`visualize(`*`<fully_connected_graph_mrf_penalty>`*`)`](https://gam-mafia.github.io/MRFtools/reference/visualize.fully_connected_graph_mrf_penalty.md)
   : Plot a thing
 
-- [`visualize(`*`<sequential_mrf_penalty>`*`)`](visualize.sequential_mrf_penalty.md)
+- [`visualize(`*`<sequential_mrf_penalty>`*`)`](https://gam-mafia.github.io/MRFtools/reference/visualize.sequential_mrf_penalty.md)
   : Plot a thing

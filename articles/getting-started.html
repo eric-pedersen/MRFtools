@@ -18,7 +18,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">MRFtools</a>
 
@@ -31,13 +31,13 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/getting-started.html">Getting started with the MRFtools package</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -464,18 +464,18 @@ Generalized Additive Model with 2 terms
 <span><span class="va">phylo_df</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 120 × 4
-   species weight truth     y
-   &lt;fct&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
- 1 sp_11        1 0.863 0.823
- 2 sp_11        1 0.863 1.00
- 3 sp_11        1 0.863 1.02
- 4 sp_11        1 0.863 0.580
- 5 sp_11        1 0.863 0.700
- 6 sp_11        1 0.863 0.789
- 7 sp_11        1 0.863 0.880
- 8 sp_11        1 0.863 0.947
- 9 sp_11        1 0.863 0.677
-10 sp_11        1 0.863 0.841
+   species weight  truth      y
+   &lt;fct&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+ 1 sp_11        1 -0.686 -1.04
+ 2 sp_11        1 -0.686 -0.845
+ 3 sp_11        1 -0.686 -0.738
+ 4 sp_11        1 -0.686 -0.610
+ 5 sp_11        1 -0.686 -0.445
+ 6 sp_11        1 -0.686 -0.516
+ 7 sp_11        1 -0.686 -0.706
+ 8 sp_11        1 -0.686 -0.787
+ 9 sp_11        1 -0.686 -0.371
+10 sp_11        1 -0.686 -0.331
 # ℹ 110 more rows</code></pre>
 </div>
 </div>
@@ -503,8 +503,8 @@ Generalized Additive Model with 2 terms
 
   term       type           k   edf ref.edf statistic p.value
   &lt;chr&gt;      &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;
-1 Intercept  parametric    NA   1         1      2.41 0.0175
-2 s(species) MRF           11  10.8      11    287.   &lt;0.001 </code></pre>
+1 Intercept  parametric    NA   1         1      2.07 0.0413
+2 s(species) MRF           11  10.8      11    362.   &lt;0.001 </code></pre>
 </div>
 </div>
 <p>In this contrived example, there is little benefit to the MRF smooth over using random intercepts for the species mean trait values, but it is include to illustrate the general workflow involved in including phylogenetic information in to a GAM.</p>
@@ -604,7 +604,7 @@ Pedersen, Eric J, David L Miller, Gavin L Simpson, and Noam Ross. 2019. <span>�
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Eric J. Pedersen, Gavin L. Simpson.</p>
+  <p>Developed by Eric J. Pedersen, <a href="https://fromthebottomoftheheap.net" class="external-link">Gavin L. Simpson</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">

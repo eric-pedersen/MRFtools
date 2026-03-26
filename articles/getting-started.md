@@ -146,9 +146,9 @@ discrete areal data.
 ### Creating $\mathbf{S}$
 
 The penalty matrix $S$ is created using
-[`mrf_penalty()`](../reference/mrf_penalty.md), which for the RW1 talks
-a vector of regularly spaced discrete time points. To create $S$ for our
-series, we use
+[`mrf_penalty()`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.md),
+which for the RW1 talks a vector of regularly spaced discrete time
+points. To create $S$ for our series, we use
 
 ``` r
 S <- with(df, mrf_penalty(x))
@@ -320,8 +320,9 @@ identical as there are the same number of time points and they have the
 same labels.
 
 To create the factor, we can use the
-[`get_labels()`](../reference/get_labels.md) helper function. This will
-ensure that the factor of time points we create has the correct levels
+[`get_labels()`](https://gam-mafia.github.io/MRFtools/reference/get_labels.md)
+helper function. This will ensure that the factor of time points we
+create has the correct levels
 
 ``` r
 df2 <- df2 |>
@@ -330,11 +331,13 @@ df2 <- df2 |>
   )
 ```
 
-While [`get_labels()`](../reference/get_labels.md) is not necessary
-here, there are many situations where you will want to create the
-penalty matrix for a set of levels, some of which are not observed in
-the data you will use to fit the model. Careful construction of the
-factor you will pass to the MRF smooth is required in those cases.
+While
+[`get_labels()`](https://gam-mafia.github.io/MRFtools/reference/get_labels.md)
+is not necessary here, there are many situations where you will want to
+create the penalty matrix for a set of levels, some of which are not
+observed in the data you will use to fit the model. Careful construction
+of the factor you will pass to the MRF smooth is required in those
+cases.
 
 Now we can fit the GAM to the simulated data, again passing along the
 penalty matrix to the `xt` argument of *mgcv*’s `s()` function
@@ -406,8 +409,9 @@ If we believe the true relationship between, in this case, time and the
 response, $Y$, is smooth (in the usual sense), then we should instead
 fit a model using one of the standard spline bases provided by *mgcv*.
 The RW1, and most models that
-[`mrf_penalty()`](../reference/mrf_penalty.md) can (or is planned to)
-fit, are for use when we want to fit a stochastic trend to the data.
+[`mrf_penalty()`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.md)
+can (or is planned to) fit, are for use when we want to fit a stochastic
+trend to the data.
 
 That said, we *can* get a smoother fit using the RW1 penalty; we just
 need to reduce the dimensionality of the penalty we use. Instead of
@@ -538,26 +542,28 @@ phylo_df
 ```
 
     # A tibble: 120 × 4
-       species weight truth     y
-       <fct>    <dbl> <dbl> <dbl>
-     1 sp_11        1 0.863 0.823
-     2 sp_11        1 0.863 1.00
-     3 sp_11        1 0.863 1.02
-     4 sp_11        1 0.863 0.580
-     5 sp_11        1 0.863 0.700
-     6 sp_11        1 0.863 0.789
-     7 sp_11        1 0.863 0.880
-     8 sp_11        1 0.863 0.947
-     9 sp_11        1 0.863 0.677
-    10 sp_11        1 0.863 0.841
+       species weight  truth      y
+       <fct>    <dbl>  <dbl>  <dbl>
+     1 sp_11        1 -0.686 -1.04
+     2 sp_11        1 -0.686 -0.845
+     3 sp_11        1 -0.686 -0.738
+     4 sp_11        1 -0.686 -0.610
+     5 sp_11        1 -0.686 -0.445
+     6 sp_11        1 -0.686 -0.516
+     7 sp_11        1 -0.686 -0.706
+     8 sp_11        1 -0.686 -0.787
+     9 sp_11        1 -0.686 -0.371
+    10 sp_11        1 -0.686 -0.331
     # ℹ 110 more rows
 
-*MRFtools* has a [`mrf_penalty()`](../reference/mrf_penalty.md) method
-for phylogentic trees like `tree`; at the time of writing we support the
-`"phylo"` class from package *ape*, but we plan to add support for the
-`"phylo4"` class from *phylobase* before *MRFtools* is released to CRAN.
-To create the phylogenetic penalty matrix, we pass `tree` to
-[`mrf_penalty()`](../reference/mrf_penalty.md)
+*MRFtools* has a
+[`mrf_penalty()`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.md)
+method for phylogentic trees like `tree`; at the time of writing we
+support the `"phylo"` class from package *ape*, but we plan to add
+support for the `"phylo4"` class from *phylobase* before *MRFtools* is
+released to CRAN. To create the phylogenetic penalty matrix, we pass
+`tree` to
+[`mrf_penalty()`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.md)
 
 ``` r
 S_phylo <- mrf_penalty(tree)
@@ -591,8 +597,8 @@ overview(m_phylo)
 
       term       type           k   edf ref.edf statistic p.value
       <chr>      <chr>      <dbl> <dbl>   <dbl>     <dbl> <chr>
-    1 Intercept  parametric    NA   1         1      2.41 0.0175
-    2 s(species) MRF           11  10.8      11    287.   <0.001 
+    1 Intercept  parametric    NA   1         1      2.07 0.0413
+    2 s(species) MRF           11  10.8      11    362.   <0.001 
 
 In this contrived example, there is little benefit to the MRF smooth
 over using random intercepts for the species mean trait values, but it

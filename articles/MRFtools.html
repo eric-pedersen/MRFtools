@@ -461,16 +461,16 @@ Generalized Additive Model with 2 terms
 <pre><code># A tibble: 120 × 4
    species weight truth     y
    &lt;fct&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
- 1 sp_11        1  1.89  1.77
- 2 sp_11        1  1.89  1.81
- 3 sp_11        1  1.89  1.93
- 4 sp_11        1  1.89  1.98
- 5 sp_11        1  1.89  2.02
- 6 sp_11        1  1.89  1.92
- 7 sp_11        1  1.89  1.75
- 8 sp_11        1  1.89  1.83
- 9 sp_11        1  1.89  1.86
-10 sp_11        1  1.89  1.91
+ 1 sp_11        1  2.90  2.92
+ 2 sp_11        1  2.90  3.12
+ 3 sp_11        1  2.90  2.60
+ 4 sp_11        1  2.90  3.31
+ 5 sp_11        1  2.90  2.76
+ 6 sp_11        1  2.90  3.07
+ 7 sp_11        1  2.90  2.91
+ 8 sp_11        1  2.90  2.95
+ 9 sp_11        1  2.90  2.70
+10 sp_11        1  2.90  2.76
 # ℹ 110 more rows</code></pre>
 </div>
 </div>
@@ -498,8 +498,8 @@ Generalized Additive Model with 2 terms
 
   term       type           k   edf ref.edf statistic p.value
   &lt;chr&gt;      &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;
-1 Intercept  parametric    NA   1         1     0.985 0.327
-2 s(species) MRF           11  11.0      11   477.    &lt;0.001 </code></pre>
+1 Intercept  parametric    NA   1         1    -0.989 0.325
+2 s(species) MRF           11  10.9      11  1288.    &lt;0.001 </code></pre>
 </div>
 </div>
 <p>In this contrived example, there is little benefit to the MRF smooth over using random intercepts for the species mean trait values, but it is include to illustrate the general workflow involved in including phylogenetic information in to a GAM.</p>

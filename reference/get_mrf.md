@@ -13,7 +13,7 @@ get_mrf(object, ...)
 # S3 method for class 'gamm'
 get_mrf(object, ...)
 
-# S3 method for class 'list'
+# S3 method for class 'gamm4'
 get_mrf(object, ...)
 
 # S3 method for class 'gam'

@@ -29,17 +29,20 @@ Depends:
 Imports:
     gratia,
     stats,
+    methods,
     generics,
+    Matrix,
     assertthat,
     sf,
-    ape,
+    phylobase,
     colorspace,
     tidygraph,
     ggraph,
     ggplot2,
     tidyr,
     dplyr,
-    rlang
+    rlang,
+    ape
 Suggests:
     testthat,
     vdiffr,
@@ -47,7 +50,8 @@ Suggests:
     gamm4,
     sp,
     quarto,
-    withr
+    withr,
+    ggtree
 Description: Utility functions for using Markov Random Field smooths in Generalized Additive Models fitted with the 'mgcv' package.
 License: GPL-3
 LazyData: true

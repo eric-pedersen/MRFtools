@@ -4,10 +4,27 @@
 \alias{mrf_penalty.hclust}
 \title{MRF penalty from a hclust object}
 \usage{
-\method{mrf_penalty}{hclust}(object, ...)
+\method{mrf_penalty}{hclust}(
+  object,
+  model = c("rw1", "ou", "brownian"),
+  alpha = NULL,
+  at_tips = NULL,
+  internal_nodes = TRUE,
+  delta = FALSE,
+  ...
+)
 }
 \arguments{
 \item{object}{an R object to create the MRF penalty from.}
+
+\item{model}{character; one of \code{"full"} or \code{"individual"} indicating if a
+fully connected graph (\code{"full"}) or a random effect (random intercepts;
+\code{"individual"}) penalty is created.}
+
+\item{delta}{numeric or logical; either the numeric value to add to the
+diagonal of the MRF penalty matrix, or a logical value indicating if such
+an adjustment should be made. The default is to not alter the diagonal of
+the penalty matrix.}
 
 \item{...}{arguments passed to other methods.}
 }

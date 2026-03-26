@@ -11,6 +11,8 @@ get_type(object)
 \method{get_type}{mrf_penalty}(object)
 
 \method{get_type}{mrf_config}(object)
+
+\method{get_type}{mrf_penalty}(object)
 }
 \arguments{
 \item{object}{an object of class \code{"mrf_penalty"} or \code{"mrf_config"}.}

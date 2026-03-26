@@ -41,6 +41,10 @@ rsconnect/
 
 # Emacs backup files
 *~
+
+# local experiments
+local_experiments/
+
 /doc/
 /Meta/
 docs

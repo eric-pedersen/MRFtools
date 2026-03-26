@@ -38,7 +38,6 @@ data(geospiza)
 
 #Random-walk (rw1) penalty for both tips and nodes:
 pen_rw <- mrf_penalty(geospiza, model = "rw1")
-print(signif(as.matrix(pen_rw),2)
 
 #Same model, but for a reduced number of species
 species <- c("fortis", "pauper", "fusca", "olivacea")
@@ -47,7 +46,7 @@ plot(get_obj(pen_rw_subset))
 
 #Random-walk penalty matrix for just the tips for all geospiza data:
 pen_rw_tips <- mrf_penalty(geospiza, model = "rw1", internal_nodes = FALSE)
-print(pen_rw_tips)
+pen_rw_tips
 
 #Ornstein-Uhlenbeck ("ou") process penalty matrix, specifying rho parameter (autocorrelation)
 pen_ou <- mrf_penalty(geospiza, model = "ou",params = list(rho = 0.5))
@@ -55,6 +54,6 @@ pen_ou <- mrf_penalty(geospiza, model = "ou",params = list(rho = 0.5))
 #It is also possible to specify the out process using 
 #the alpha parameter from the stochastic process formulation
 pen_ou <- mrf_penalty(geospiza, model = "ou",params = list(alpha = -log(0.5)))
-
+pen_ou
 
 }

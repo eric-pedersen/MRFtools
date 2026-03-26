@@ -8,6 +8,7 @@
 #' @inheritParams mrf_penalty.factor
 #'
 #' @importFrom phylobase subset
+#' @importFrom methods as
 #' @importMethodsFrom phylobase phylo4
 #' @importFrom Matrix Diagonal sparseMatrix Matrix diag
 #' @importMethodsFrom Matrix t colMeans colSums
@@ -18,7 +19,6 @@
 #'
 #' #Random-walk (rw1) penalty for both tips and nodes:
 #' pen_rw <- mrf_penalty(geospiza, model = "rw1")
-#' print(signif(as.matrix(pen_rw),2)
 #'
 #' #Same model, but for a reduced number of species
 #' species <- c("fortis", "pauper", "fusca", "olivacea")
@@ -27,7 +27,7 @@
 #'
 #' #Random-walk penalty matrix for just the tips for all geospiza data:
 #' pen_rw_tips <- mrf_penalty(geospiza, model = "rw1", internal_nodes = FALSE)
-#' print(pen_rw_tips)
+#' pen_rw_tips
 #'
 #' #Ornstein-Uhlenbeck ("ou") process penalty matrix, specifying rho parameter (autocorrelation)
 #' pen_ou <- mrf_penalty(geospiza, model = "ou",params = list(rho = 0.5))
@@ -35,7 +35,7 @@
 #' #It is also possible to specify the out process using 
 #' #the alpha parameter from the stochastic process formulation
 #' pen_ou <- mrf_penalty(geospiza, model = "ou",params = list(alpha = -log(0.5)))
-#'
+#' pen_ou
 #'
 #' @export
 `mrf_penalty.phylo4` <- function(
@@ -84,6 +84,9 @@
   }
   
   tip_labs <- phylobase::tipLabels(object)
+  if(!phylobase::hasNodeLabels(object)){
+    phylobase::nodeLabels(object) <- paste0("N", names(phylobase::nodeLabels(object)))
+  }
   node_labs <- phylobase::labels(object)
   
   n_nodes <- length(unique(object@label))
@@ -146,9 +149,7 @@
 #'
 #' @inheritParams mrf_penalty.phylo4
 #'
-#' @importFrom ape vcv drop.tip
-#' @param eps A value to add to the variance-covariance matrix diagonal to
-#' make it positive definite
+#' @importFrom ape vcv drop.tip 
 #' 
 #' @examples
 #' #Example code
@@ -156,10 +157,9 @@
 #' @export
 `mrf_penalty.phylo` <- function(
     object,
-    model = c("rw1", "ou", "Brownian"),
+    model = c("rw1", "ou", "brownian"),
     params = list(),
     at_tips = NULL,
-    tip_labels = NULL,
     internal_nodes = TRUE,
     delta = FALSE,
     ...
@@ -210,8 +210,6 @@
     pen <- prec_ou(start = i, end = j, n = n_nodes, dists = edge_lengths, rho = rho)
   }
   
-  is_tip <- node_labs %in% tip_labs
-  
   if(delta){
     #add delta onto the diagonal if requested
     diag(pen) <- diag(pen) + delta
@@ -220,15 +218,16 @@
   if(internal_nodes){
     node_labels <- as.vector(node_labs)
   } else{
-    node_labels <- as.vector(tip_labs)
-    tip_nodes <- edgelist$node[is_tip]
+    is_tip <- node_labs %in% tip_labs
+    tip_nodes <- (1:n_nodes)[is_tip]
     
     # Need to use a block-matrix inversion to get the precision matrix.
     internal_mat <- pen[-tip_nodes, -tip_nodes]
     cross_mat <- pen[tip_nodes, -tip_nodes]
     
     pen <- pen[tip_nodes, tip_nodes] - cross_mat %*% solve(internal_mat) %*% t(cross_mat)
-  }
+    node_labels <- as.vector(tip_labs)
+    }
   
   pen <- as.matrix(pen)
   pen <- as_mrf_penalty(
@@ -246,15 +245,49 @@
   pen
 }
 
+#' @title MRF penalty from a dendrogram
+#'
+#' @inheritParams mrf_penalty.phylo4
+#'
+#' @importFrom ape as.phylo.hclust
+#' @export
+`mrf_penalty.dendrogram` <- function(
+    object,
+    model = c("rw1", "ou", "brownian"),
+    params = list(),
+    at_tips = NULL,
+    internal_nodes = TRUE,
+    delta = FALSE,
+    ...) {
+  mrf_penalty(ape::as.phylo.hclust(stats::as.hclust(object)),
+              model,
+              params, 
+              at_tips,
+              internal_nodes,
+              delta,...)
+}
 
 
 #' @title MRF penalty from a hclust object
 #'
-#' @inheritParams mrf_penalty.factor
+#' @inheritParams mrf_penalty.phylo4
 #'
-#' @importFrom stats as.dendrogram
+#' @importFrom ape as.phylo.hclust
 #'
 #' @export
-`mrf_penalty.hclust` <- function(object, ...) {
-  mrf_penalty(as.dendrogram(object), ...)
+`mrf_penalty.hclust` <- function(
+    object,
+    model = c("rw1", "ou", "brownian"),
+    params = list(),
+    at_tips = NULL,
+    internal_nodes = TRUE,
+    delta = FALSE,
+    ...)  {
+  mrf_penalty(ape::as.phylo.hclust(object), 
+              model,
+              params, 
+              at_tips,
+              internal_nodes,
+              delta,
+              ...)
 }

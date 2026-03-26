@@ -23,3 +23,4 @@
 ^vignettes/*_files$
 ^doc$
 ^Meta$
+^local_experiments$

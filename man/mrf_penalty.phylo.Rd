@@ -6,10 +6,9 @@
 \usage{
 \method{mrf_penalty}{phylo}(
   object,
-  model = c("rw1", "ou", "Brownian"),
+  model = c("rw1", "ou", "brownian"),
   params = list(),
   at_tips = NULL,
-  tip_labels = NULL,
   internal_nodes = TRUE,
   delta = FALSE,
   ...

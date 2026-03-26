@@ -10,7 +10,6 @@ v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/li
 [![R-CMD-check](https://github.com/gam-mafia/MRFtools/workflows/R-CMD-check/badge.svg)](https://github.com/gam-mafia/MRFtools/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/gam-mafia/MRFtools/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gam-mafia/MRFtools)
-–\>
 <!-- [![Downloads](https://cranlogs.r-pkg.org/badges/sspm?color=brightgreen)](https://CRAN.R-project.org/package=sspm/) -->
 <!-- [![Latest Release](https://img.shields.io/github/v/release/eric-pedersen/MRFtools?label=Latest%20Release)](https://github.com/eric-pedersen/MRFtools/releases/latest) -->
 <!-- [![CRAN Version](https://img.shields.io/cran/v/sspm?label=CRAN%20Version)](https://CRAN.R-project.org/package=sspm) -->

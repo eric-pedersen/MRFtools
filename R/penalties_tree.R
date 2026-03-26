@@ -23,7 +23,7 @@ get_treedist <- function(tree, tip1, tip2){
 #' @export
 `mrf_penalty.phylo4` <- function(
     object,
-    model = c("rw1", "ou", "Brownian"),
+    model = c("rw1", "ou", "brownian"),
     rho = NULL, 
     at_tips = NULL,
     internal_nodes = TRUE,
@@ -32,10 +32,6 @@ get_treedist <- function(tree, tip1, tip2){
 ) {
   
   model <- match.arg(model)
-  if(model == "Brownian"){
-    message("Note that the 'Brownian' model type is a synonym for the Random Walk model (model = 'rw'). Model has been renamed to 'rw'")
-    model <- "rw1"
-  }
   
   delta <- check_delta(delta)
   
@@ -64,7 +60,7 @@ get_treedist <- function(tree, tip1, tip2){
   
   edge_lengths <- edgelist$edge.length
   
-  if(model =="rw1"){
+  if(model %in% c("rw1", "brownian")){
     pen <- prec_rw1(start = i, end = j, n = n_nodes, dists = edge_lengths)
   } else if(model == "ou"){
     pen <- prec_ou(start = i, end = j, n = n_nodes, dists = edge_lengths, rho = rho)
@@ -108,6 +104,7 @@ get_treedist <- function(tree, tip1, tip2){
 }
 
 
+
 #' @title MRF penalty from a phylogeny
 #'
 #' @inheritParams mrf_penalty.phylo4
@@ -115,6 +112,10 @@ get_treedist <- function(tree, tip1, tip2){
 #' @importFrom ape vcv drop.tip
 #' @param eps A value to add to the variance-covariance matrix diagonal to
 #' make it positive definite
+#' 
+#' @examples
+#' # example code
+#' 
 #' @export
 `mrf_penalty.phylo` <- function(
     object,
@@ -125,6 +126,8 @@ get_treedist <- function(tree, tip1, tip2){
     delta = FALSE,
     ...
 ) {
+  
+  
   
   object <- as(object, "phylo4")
   

@@ -34,3 +34,7 @@ make it positive definite}
 \description{
 MRF penalty from a phylogeny
 }
+\examples{
+# example code
+
+}

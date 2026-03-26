@@ -24,7 +24,8 @@
 }
 
 
-`prec_rw` <- function(start, end, n, dists){
+
+`prec_rw1` <- function(start, end, n, dists){
   assertthat::assert_that(
     is.numeric(dists), 
     all(dists>0),
@@ -46,6 +47,7 @@
   return(prec)
   
 }
+
 
 `prec_ou` <- function(start, end, n, dists, rho){ 
   assertthat::assert_that(
@@ -81,29 +83,6 @@
   return(prec)
 }
 
-
-`prec_rw1` <- function(start, end, n, dists){
-  assertthat::assert_that(
-    is.numeric(dists), 
-    all(dists>0),
-    length(start) == length(end),
-    length(start) == length(dists),
-    all(start < end),
-    anyDuplicated(cbind(start,end))==0)
-  
-  values <- -1/dists
-  
-  #create the precision matrix
-  prec <- Matrix::sparseMatrix(
-    i = start, j = end, x = values,
-    dims = c(n, n),
-    symmetric = TRUE)
-  
-  diag(prec) <- -colSums(prec)
-  
-  return(prec)
-  
-}
 
 `prec_ar1` <- function(start, end, n, dists, rho){ 
   assertthat::assert_that(

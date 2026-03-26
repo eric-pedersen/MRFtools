@@ -40,14 +40,14 @@ Imports:
     ggplot2,
     tidyr,
     dplyr,
-    rlang
+    rlang,
+    ape
 Suggests:
     testthat,
     vdiffr,
     mgcv,
     gamm4,
-    sp,
-    ape
+    sp
 Description: Utility functions for using Markov Random Field smooths in Generalized Additive Models fitted with the 'mgcv' package.
 License: GPL-3
 LazyData: true

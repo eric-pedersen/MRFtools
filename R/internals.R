@@ -49,19 +49,19 @@
 }
 
 
-`prec_ou` <- function(start, end, n, dists, rho){ 
+`prec_ou` <- function(start, end, n, dists, alpha){ 
   assertthat::assert_that(
     is.numeric(dists), 
     all(dists>0),
     length(start) == length(end),
     length(start) == length(dists),
     all(start < end),
-    is.numeric(rho),
-    length(rho) == 1,
-    rho > 0,
-    rho < 1 - 1e-6
+    is.numeric(alpha),
+    length(alpha) == 1,
+    alpha > 1e-5
     )
-  
+  #rescale alpha to the range 0-1 (more numerically stable this way)
+  rho <- exp(-alpha)
   dist_exp <- rho^dists
   
   #scales covariances so that, in the limit of rho -> 1, results in a rw matrixs

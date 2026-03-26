@@ -74,10 +74,9 @@ test_that("mrf_penalty with a phylo4 ojbect", {
   
   #testing the OU model
   expect_error(
-    mrf_penalty(tr4,model = "ou"),
-    regexp = "one and only one of 'alpha' or 'rho'"
+    mrf_penalty(tr4,model = "ou")
     )
-  expect_silent(pen4 <- mrf_penalty(tr4,model = "ou", params = list(rho = 0.5)))
+  expect_silent(pen4 <- mrf_penalty(tr4,model = "ou", alpha = 1))
   expect_snapshot(print(as.matrix(pen4)), variant = "matrix")
   
 })

@@ -29,44 +29,34 @@
 #' pen_rw_tips <- mrf_penalty(geospiza, model = "rw1", internal_nodes = FALSE)
 #' pen_rw_tips
 #'
-#' #Ornstein-Uhlenbeck ("ou") process penalty matrix, specifying rho parameter (autocorrelation)
-#' pen_ou <- mrf_penalty(geospiza, model = "ou",params = list(rho = 0.5))
+#' #Ornstein-Uhlenbeck ("ou") process penalty matrix, specifying alpha parameter (autocorrelation)
+#' pen_ou <- mrf_penalty(geospiza, model = "ou", alpha = 1)
 #'
-#' #It is also possible to specify the out process using 
-#' #the alpha parameter from the stochastic process formulation
-#' pen_ou <- mrf_penalty(geospiza, model = "ou",params = list(alpha = -log(0.5)))
-#' pen_ou
+
 #'
 #' @export
 `mrf_penalty.phylo4` <- function(
     object,
     model = c("rw1", "ou", "brownian"),
-    params = list(),
+    alpha = NULL,
     at_tips = NULL,
     internal_nodes = TRUE,
     delta = FALSE,
     ...
 ) {
   
-  assertthat::assert_that(is.list(params),
-                          is.logical(internal_nodes))
+  assertthat::assert_that(is.logical(internal_nodes))
   
   model <- match.arg(model)
   
   if(model == "ou"){
-    #ou model needs to have at least one one 'rho' or 'alpha' specified as parameters
+    #ou model needs  'alpha' specified
     assertthat::assert_that(
-      xor(exists("rho",params), exists("alpha", params)),
-      msg = "For model 'ou', one and only one of 'alpha' or 'rho' should be specified in `params`")
-    if(exists("alpha", params)){
-      alpha <- params[["alpha"]]
-      assertthat::assert_that(is.numeric(alpha), length(alpha)==1,alpha > 1e-5)
-      rho <- exp(-alpha)
-    } else{
-      rho <- params[["rho"]]
-      assertthat::assert_that(is.numeric(rho), length(rho)==1,rho>0, rho<(1-1e-6))
+      is.numeric(alpha),
+      length(alpha)==1, 
+      alpha > 1e-5
+    )
     }
-  }
   
   delta <- check_delta(delta)
   
@@ -102,7 +92,7 @@
   if(model %in% c("rw1", "brownian")){
     pen <- prec_rw1(start = i, end = j, n = n_nodes, dists = edge_lengths)
   } else if(model == "ou"){
-    pen <- prec_ou(start = i, end = j, n = n_nodes, dists = edge_lengths, rho = rho)
+    pen <- prec_ou(start = i, end = j, n = n_nodes, dists = edge_lengths, alpha = alpha)
   }
   
   is_tip <- node_labs %in% tip_labs
@@ -132,7 +122,7 @@
     config = mrf_config(
       type = "tree",
       model = model,
-      params = params,
+      params = list(alpha = alpha),
       node_labels = node_labels,
       obj = object,
       delta = delta
@@ -158,30 +148,23 @@
 `mrf_penalty.phylo` <- function(
     object,
     model = c("rw1", "ou", "brownian"),
-    params = list(),
+    alpha = NULL,
     at_tips = NULL,
     internal_nodes = TRUE,
     delta = FALSE,
     ...
 ) {
-  assertthat::assert_that(is.list(params),
-                          is.logical(internal_nodes))
+  assertthat::assert_that(is.logical(internal_nodes))
   
   model <- match.arg(model)
   
   if(model == "ou"){
-    #ou model needs to have at least one one 'rho' or 'alpha' specified as parameters
+    #ou model needs to have 'alpha' specified 
     assertthat::assert_that(
-      xor(exists("rho",params), exists("alpha", params)),
-      msg = "For model 'ou', one and only one of 'alpha' or 'rho' should be specified in `params`")
-    if(exists("alpha", params)){
-      alpha <- params[["alpha"]]
-      assertthat::assert_that(is.numeric(alpha), length(alpha)==1,alpha > 1e-5)
-      rho <- exp(-alpha)
-    } else{
-      rho <- params[["rho"]]
-      assertthat::assert_that(is.numeric(rho), length(rho)==1,rho>0, rho<(1-1e-6))
-    }
+      is.numeric(alpha), 
+      length(alpha)==1,
+      alpha > 1e-5
+      )
   }
   
   delta <- check_delta(delta)
@@ -207,7 +190,7 @@
   if(model %in% c("rw1", "brownian")){
     pen <- prec_rw1(start = i, end = j, n = n_nodes, dists = edge_lengths)
   } else if(model == "ou"){
-    pen <- prec_ou(start = i, end = j, n = n_nodes, dists = edge_lengths, rho = rho)
+    pen <- prec_ou(start = i, end = j, n = n_nodes, dists = edge_lengths, alpha=alpha)
   }
   
   if(delta){
@@ -235,7 +218,7 @@
     config = mrf_config(
       type = "tree",
       model = model,
-      params = params,
+      params = list(alpha = alpha), 
       node_labels = node_labels,
       obj = object,
       delta = delta
@@ -254,14 +237,14 @@
 `mrf_penalty.dendrogram` <- function(
     object,
     model = c("rw1", "ou", "brownian"),
-    params = list(),
+    alpha = NULL, 
     at_tips = NULL,
     internal_nodes = TRUE,
     delta = FALSE,
     ...) {
   mrf_penalty(ape::as.phylo.hclust(stats::as.hclust(object)),
               model,
-              params, 
+              alpha, 
               at_tips,
               internal_nodes,
               delta,...)
@@ -278,14 +261,14 @@
 `mrf_penalty.hclust` <- function(
     object,
     model = c("rw1", "ou", "brownian"),
-    params = list(),
+    alpha = NULL, 
     at_tips = NULL,
     internal_nodes = TRUE,
     delta = FALSE,
     ...)  {
   mrf_penalty(ape::as.phylo.hclust(object), 
               model,
-              params, 
+              alpha, 
               at_tips,
               internal_nodes,
               delta,

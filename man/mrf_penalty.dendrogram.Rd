@@ -7,7 +7,7 @@
 \method{mrf_penalty}{dendrogram}(
   object,
   model = c("rw1", "ou", "brownian"),
-  params = list(),
+  alpha = NULL,
   at_tips = NULL,
   internal_nodes = TRUE,
   delta = FALSE,

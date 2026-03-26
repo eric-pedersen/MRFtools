@@ -29,6 +29,7 @@ Depends:
 Imports:
     gratia,
     stats,
+    methods,
     generics,
     Matrix,
     assertthat,

@@ -7,7 +7,7 @@
 \method{mrf_penalty}{phylo4}(
   object,
   model = c("rw1", "ou", "brownian"),
-  params = list(),
+  alpha = NULL,
   at_tips = NULL,
   internal_nodes = TRUE,
   delta = FALSE,
@@ -48,12 +48,8 @@ plot(get_obj(pen_rw_subset))
 pen_rw_tips <- mrf_penalty(geospiza, model = "rw1", internal_nodes = FALSE)
 pen_rw_tips
 
-#Ornstein-Uhlenbeck ("ou") process penalty matrix, specifying rho parameter (autocorrelation)
-pen_ou <- mrf_penalty(geospiza, model = "ou",params = list(rho = 0.5))
+#Ornstein-Uhlenbeck ("ou") process penalty matrix, specifying alpha parameter (autocorrelation)
+pen_ou <- mrf_penalty(geospiza, model = "ou", alpha = 1)
 
-#It is also possible to specify the out process using 
-#the alpha parameter from the stochastic process formulation
-pen_ou <- mrf_penalty(geospiza, model = "ou",params = list(alpha = -log(0.5)))
-pen_ou
 
 }

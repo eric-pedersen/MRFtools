@@ -7,7 +7,7 @@
 \method{mrf_penalty}{phylo}(
   object,
   model = c("rw1", "ou", "brownian"),
-  params = list(),
+  alpha = NULL,
   at_tips = NULL,
   internal_nodes = TRUE,
   delta = FALSE,
@@ -27,9 +27,6 @@ an adjustment should be made. The default is to not alter the diagonal of
 the penalty matrix.}
 
 \item{...}{arguments passed to other methods.}
-
-\item{eps}{A value to add to the variance-covariance matrix diagonal to
-make it positive definite}
 }
 \description{
 MRF penalty from a phylogeny

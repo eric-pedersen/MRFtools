@@ -542,18 +542,18 @@ phylo_df
 ```
 
     # A tibble: 120 × 4
-       species weight  truth      y
-       <fct>    <dbl>  <dbl>  <dbl>
-     1 sp_11        1 -0.821 -0.668
-     2 sp_11        1 -0.821 -0.682
-     3 sp_11        1 -0.821 -0.955
-     4 sp_11        1 -0.821 -0.569
-     5 sp_11        1 -0.821 -0.722
-     6 sp_11        1 -0.821 -0.763
-     7 sp_11        1 -0.821 -0.737
-     8 sp_11        1 -0.821 -1.10
-     9 sp_11        1 -0.821 -0.946
-    10 sp_11        1 -0.821 -0.837
+       species weight  truth       y
+       <fct>    <dbl>  <dbl>   <dbl>
+     1 sp_11        1 0.0662  0.0177
+     2 sp_11        1 0.0662  0.115
+     3 sp_11        1 0.0662 -0.0206
+     4 sp_11        1 0.0662  0.0145
+     5 sp_11        1 0.0662  0.250
+     6 sp_11        1 0.0662 -0.186
+     7 sp_11        1 0.0662  0.0180
+     8 sp_11        1 0.0662  0.257
+     9 sp_11        1 0.0662  0.146
+    10 sp_11        1 0.0662  0.0243
     # ℹ 110 more rows
 
 *MRFtools* has a
@@ -597,8 +597,8 @@ overview(m_phylo)
 
       term       type           k   edf ref.edf statistic p.value
       <chr>      <chr>      <dbl> <dbl>   <dbl>     <dbl> <chr>
-    1 Intercept  parametric    NA   1         1    -0.241 0.81
-    2 s(species) MRF           11  10.9      11   926.    <0.001 
+    1 Intercept  parametric    NA   1         1     0.117 0.907
+    2 s(species) MRF           11  10.9      11   497.    <0.001 
 
 In this contrived example, there is little benefit to the MRF smooth
 over using random intercepts for the species mean trait values, but it

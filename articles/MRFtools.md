@@ -61,7 +61,7 @@ Universe system.
 To follow this vignette, you’ll need the following packages loaded
 
 ``` r
-pkgs <- c("ape", "mgcv", "MRFtools", "dplyr", "ggplot2", "gratia")
+pkgs <- c("ape", "mgcv", "MRFtools", "dplyr", "ggplot2", "gratia", "ggtree")
 vapply(
   pkgs,
   library,
@@ -71,8 +71,10 @@ vapply(
 )
 ```
 
-         ape     mgcv MRFtools    dplyr  ggplot2   gratia
-        TRUE     TRUE     TRUE     TRUE     TRUE     TRUE 
+    Warning: S3 method 'get_mrf.list' was declared in NAMESPACE but not found
+
+         ape     mgcv MRFtools    dplyr  ggplot2   gratia   ggtree
+        TRUE     TRUE     TRUE     TRUE     TRUE     TRUE     TRUE 
 
 ## Discrete random walks
 
@@ -473,7 +475,7 @@ trend, you would be better served with one of *mgcv*’s standard
 smoothers, and perhaps fit the model using NCV or include an
 autocorrelation process (via `bam()` or `gamm()` say).
 
-## Phylogenetic smooth
+## Phylogenetic smooths
 
 Next, we consider how to include phylogenetic information into a GAM,
 such that genetically more-similar species are assumed to have more
@@ -496,7 +498,7 @@ We being by simulating a simple phylogenetic tree using the *ape*
 package
 
 ``` r
-n_species <- 12
+n_species <- 20
 tree <- withr::with_seed(
   2026-3-25,
   rcoal(n_species, tip.label = paste0('sp_', seq_len(n_species)))
@@ -507,106 +509,207 @@ plot(tree)
 
 ![](MRFtools_files/figure-html/sim-phylo-data-1.png)
 
-Next, we simulate some response data for each species, where the mean of
-$y$ for each species depends on the sum of two phylogentic weights (`w1`
-and `w2`). Think of the simulated `y` as some continuous trait, which
-takes positive and negative values about each species mean trait value.
+Next, we simulate some response data for each species to demonstrate the
+utility of the MRF smoothers. Here, we assume that we have observed some
+outcomes $y_{1}$ and $y_{2}$ for multiple individuals from each species
+in our dataset.
+
+The species-level mean value ($\mu_{1}$) for trait $y_{1}$ follows a
+phylogenetic random walk (specifically an OU model). The species-level
+mean value for trait $y_{2}$ ($\mu_{2}$) is not conserved; it is
+normally distributed at the species level.
+
+We will also generate some observation-level error for each trait in
+each observed individual.
 
 ``` r
-n <- 10
-w1 <- as.vector(scale(rTraitCont(tree)))
-w2 <- as.vector(scale(rTraitCont(tree)))
+n_obs <- 5
+withr::with_seed(
+  seed = 20260326,
+{
+  mu1 <- rTraitCont(tree,model = "OU",sigma = 0.05, alpha=0.2) |>
+    scale(center = FALSE, scale = TRUE) |>
+    as.vector()
+  mu2 <- rnorm(n_species) |>
+    scale(center = FALSE, scale = TRUE) |>
+    as.vector()
 
-phylo_df <- lapply(
-  seq_len(n_species),
-  function(i) {
-    sp_mean <- w1[i] + w2[i]
-    obs <- rnorm(
-      n, 
-      mean = sp_mean,
-      sd = 0.15
-    )
-    tibble(
-      species = species_names[i],
-      weight = 1,
-      truth = sp_mean,
-      y = obs
-    )
-  }
-) |> bind_rows() |>
-  mutate(
-    species = factor(species, levels = species_names)
-  )
+  e1 <- rnorm(n_species*n_obs, mean = 0, sd = 0.5)
+  e2 <- rnorm(n_species*n_obs, mean = 0, sd = 0.5)
+}
+)
+
+phylo_df <- tibble(
+  species = rep(species_names, times = n_obs),
+  mu1 = rep(mu1, times = n_obs),
+  mu2 = rep(mu2, times = n_obs),
+  y1 = mu1 + e1,
+  y2 = mu2 + e2
+)
 
 phylo_df
 ```
 
-    # A tibble: 120 × 4
-       species weight  truth       y
-       <fct>    <dbl>  <dbl>   <dbl>
-     1 sp_11        1 0.0662  0.0177
-     2 sp_11        1 0.0662  0.115
-     3 sp_11        1 0.0662 -0.0206
-     4 sp_11        1 0.0662  0.0145
-     5 sp_11        1 0.0662  0.250
-     6 sp_11        1 0.0662 -0.186
-     7 sp_11        1 0.0662  0.0180
-     8 sp_11        1 0.0662  0.257
-     9 sp_11        1 0.0662  0.146
-    10 sp_11        1 0.0662  0.0243
-    # ℹ 110 more rows
+    # A tibble: 100 × 5
+       species     mu1     mu2      y1     y2
+       <chr>     <dbl>   <dbl>   <dbl>  <dbl>
+     1 sp_10    1.60   -0.580   1.17   -0.781
+     2 sp_12    1.12   -0.728   0.508  -0.672
+     3 sp_3     1.88    0.0687  1.67   -0.614
+     4 sp_2    -0.0877  0.112   0.0950  0.613
+     5 sp_7    -0.213  -0.177  -0.170  -0.379
+     6 sp_4     0.0419  0.975   0.218   1.57
+     7 sp_14   -0.0167 -0.974  -0.580  -1.24
+     8 sp_18   -1.09    1.03   -1.02    0.431
+     9 sp_16   -1.03    1.33   -0.882   1.29
+    10 sp_15    0.667   2.06    0.154   2.13
+    # ℹ 90 more rows
+
+We can visualize the distribution of true means of the two traits across
+the tree using the `ggtree` package:
+
+``` r
+library(ggtree)
+mu1_tree <- data.frame(label=tree$tip.label, variable = mu1) |>
+  full_join(tree,y = _, by = "label")
+
+mu2_tree <- data.frame(label=tree$tip.label, variable = mu2) |>
+  full_join(tree,y = _, by = "label")
+
+trs <- list(`Trait 1` = mu1_tree, `Trait 2` = mu2_tree)
+class(trs) <- 'treedataList'
+
+trait_plot = ggtree(trs) + 
+  facet_wrap(~.id) +
+  geom_tippoint(aes(colour=variable))+ 
+  scale_colour_gradient2("mean trait value", 
+                         low = "blue",high = "red") +
+  theme(legend.position = "bottom")
+
+trait_plot
+```
+
+![](MRFtools_files/figure-html/plot-trait-trees-1.png)
 
 *MRFtools* has a
 [`mrf_penalty()`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.md)
 method for phylogentic trees like `tree`; at the time of writing we
-support the `"phylo"` class from package *ape*, but we plan to add
-support for the `"phylo4"` class from *phylobase* before *MRFtools* is
-released to CRAN. To create the phylogenetic penalty matrix, we pass
-`tree` to
-[`mrf_penalty()`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.md)
+support both the `"phylo"` class from package *ape* and the `"phylo4"`
+class from *phylobase*. To create the phylogenetic penalty matrix, we
+pass `tree` to
+[`mrf_penalty()`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.md).
 
 ``` r
 S_phylo <- mrf_penalty(tree)
 ```
 
-This penalty matrix is created by inverting the covariance matrix of the
-phylogenetic tree. *ape* only creating a covariance matrix from a
-phylogentic tree under the assumption of a Brownian motion model. This
-is a model of continuous trait evolution via a random walk wherein
+The default penalty for phylogenies is “rw1”, which is a first-order
+random walk model of trait evolution (synonymous with the standard
+“Brownian motion” model of trait evolution). Also by default, the
+penalty matrix generated is for the entire tree (including internal
+nodes)[¹](#fn1). The precision matrix ($Q$) for “rw1” for a whole tree
+is:
+
+$$Q_{i,j} = \begin{cases}
+{-1/l_{ij}} & {{\text{if}\mspace{6mu}}i \neq j{\mspace{6mu}\text{and node i is a direct ancestor/descendant of j}}} \\
+{\sum\limits_{k \neq i} - Q_{ik}} & {{\text{if}\mspace{6mu}}i = j} \\
+0 & {\mspace{6mu}\text{otherwise}}
+\end{cases}$$
+
+This is a model of continuous trait evolution via a random walk wherein
 phenotypic change accumulates in both directions at random. Future
 versions of *MRFtools* will support alternative models for phenotypic
 change.
 
-As with the previous examples, we pass the `species` factor to `s()`,
-set the basis to `"mrf"`, and provide the penalty matrix via the `xt`
-argument:
+Since our penalty matrix includes levels for both the observed species
+(tips) and their common ancestors (nodes), we need to add those extra
+node names into the data. We will create a second factor variable
+(`species_plus`) to denote the augmented vector of species names.
 
 ``` r
-m_phylo <- gam(
-  y ~ s(species, bs = "mrf", xt = list(penalty = S_phylo)),
+#|label: relabel-phylo
+
+phylo_df <- phylo_df |>
+  mutate(
+    species  = factor(species), 
+    species_plus = factor(species, levels = get_labels(S_phylo)))
+```
+
+We will fit one model to each of the two traits.
+
+As with the previous examples, we pass the `species_plus` factor to
+`s()`, set the basis to `"mrf"`, and provide the penalty matrix via the
+`xt` argument. We have also included a standard random effect smoother,
+to help assess the degree of phylogenetic information in the variable;
+if there is little phylogenetic information, the phylogenetic smoother
+will be shrunk toward zero, whereas if there is strong phylogenetic
+signal, the random effect smoother will be shrunk toward zero (as the
+model is able to capture the amount of interspecific variation in trait
+means using fewer degrees of freedom from the phylogenetic smoother).
+
+We also have to specify `drop.unused.levels = FALSE` within the gam, as
+otherwise `mgcv` will treat the unobserved nodes as missing and drop
+them from the model.
+
+``` r
+m_phylo1 <- gam(
+  y1 ~ s(species_plus, bs = "mrf", xt = list(penalty = S_phylo)) +
+       s(species, bs = "re"),
   data = phylo_df,
-  method = "REML"
+  method = "REML", 
+  drop.unused.levels = FALSE
+)
+
+m_phylo2 <- gam(
+  y2 ~ s(species_plus, bs = "mrf", xt = list(penalty = S_phylo)) +
+       s(species, bs = "re"),
+  data = phylo_df,
+  method = "REML", 
+  drop.unused.levels = FALSE
 )
 ```
 
 ``` r
-overview(m_phylo)
+overview(m_phylo1)
 ```
 
-    Generalized Additive Model with 2 terms
+    Generalized Additive Model with 3 terms
 
-      term       type           k   edf ref.edf statistic p.value
-      <chr>      <chr>      <dbl> <dbl>   <dbl>     <dbl> <chr>
-    1 Intercept  parametric    NA   1         1     0.117 0.907
-    2 s(species) MRF           11  10.9      11   497.    <0.001 
+      term            type              k       edf ref.edf  statistic p.value
+      <chr>           <chr>         <dbl>     <dbl>   <dbl>      <dbl> <chr>
+    1 Intercept       parametric       NA  1              1  3.64      <0.001
+    2 s(species_plus) MRF              38 16.7           19 26.2       <0.001
+    3 s(species)      Random effect    20  0.000826      19  0.0000430 0.0135 
 
-In this contrived example, there is little benefit to the MRF smooth
-over using random intercepts for the species mean trait values, but it
-is include to illustrate the general workflow involved in including
-phylogenetic information in to a GAM.
+We can see that the MRF term in the first model ends up with a large
+assigned degrees of freedom (edf) with almost no edf for the random
+effect term, indicating a strong phylogenetic signal in the trait value.
+
+Now let’s look at the overview for the second model:
+
+``` r
+overview(m_phylo2)
+```
+
+    Generalized Additive Model with 3 terms
+
+      term            type              k    edf ref.edf statistic p.value
+      <chr>           <chr>         <dbl>  <dbl>   <dbl>     <dbl> <chr>
+    1 Intercept       parametric       NA  1           1      2.23 0.0287
+    2 s(species_plus) MRF              38  0.927      19      1.72 0.3520
+    3 s(species)      Random effect    20 16.8        19      9.39 <0.001 
+
+We can see that there is almost no variation assigned to the MRF, while
+the random effect term has an EDF almost equal to the number of species.
 
 ## References
 
 Pedersen, Eric J, David L Miller, Gavin L Simpson, and Noam Ross. 2019.
 “Hierarchical Generalized Additive Models in Ecology: An Introduction
 with Mgcv.” *PeerJ* 7: e6876. <https://doi.org/10.7717/peerj.6876>.
+
+------------------------------------------------------------------------
+
+1.  If you want instead to calculate a penalty for just the observed
+    species (excluding internal nodes), you can set the option
+    `internal_nodes = FALSE` inside the `mrf_penalty` call.

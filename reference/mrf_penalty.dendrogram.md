@@ -6,7 +6,15 @@ MRF penalty from a dendrogram
 
 ``` r
 # S3 method for class 'dendrogram'
-mrf_penalty(object, model = NULL, node_labels = NULL, delta = FALSE, ...)
+mrf_penalty(
+  object,
+  model = c("rw1", "ou", "brownian"),
+  alpha = NULL,
+  at_tips = NULL,
+  internal_nodes = TRUE,
+  delta = FALSE,
+  ...
+)
 ```
 
 ## Arguments
@@ -20,11 +28,6 @@ mrf_penalty(object, model = NULL, node_labels = NULL, delta = FALSE, ...)
   character; one of `"full"` or `"individual"` indicating if a fully
   connected graph (`"full"`) or a random effect (random intercepts;
   `"individual"`) penalty is created.
-
-- node_labels:
-
-  character; a vector of alternative labels for the levels of the
-  factor.
 
 - delta:
 

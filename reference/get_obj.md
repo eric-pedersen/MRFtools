@@ -1,20 +1,17 @@
-# Extract the type of MRF from the penalty
+# Extract the original object used to construct an MRF penalty
 
-Extract the type of MRF from the penalty
+Extract the original object used to construct an MRF penalty
 
 ## Usage
 
 ``` r
-get_type(object)
-
-# S3 method for class 'mrf_penalty'
-get_type(object)
+get_obj(object)
 
 # S3 method for class 'mrf_config'
-get_type(object)
+get_obj(object)
 
 # S3 method for class 'mrf_penalty'
-get_type(object)
+get_obj(object)
 ```
 
 ## Arguments

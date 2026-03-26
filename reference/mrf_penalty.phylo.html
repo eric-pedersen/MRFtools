@@ -42,10 +42,11 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for class 'phylo'</span></span>
 <span><span class="fu"><a href="mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span></span>
 <span>  <span class="va">object</span>,</span>
-<span>  model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rw1"</span>, <span class="st">"Brownian"</span><span class="op">)</span>,</span>
-<span>  node_labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rw1"</span>, <span class="st">"ou"</span>, <span class="st">"brownian"</span><span class="op">)</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  at_tips <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  internal_nodes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  delta <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  eps <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -64,11 +65,6 @@ fully connected graph (<code>"full"</code>) or a random effect (random intercept
 <code>"individual"</code>) penalty is created.</p></dd>
 
 
-<dt id="arg-node-labels">node_labels<a class="anchor" aria-label="anchor" href="#arg-node-labels"></a></dt>
-<dd><p>character; a vector of alternative labels for the levels
-of the factor.</p></dd>
-
-
 <dt id="arg-delta">delta<a class="anchor" aria-label="anchor" href="#arg-delta"></a></dt>
 <dd><p>numeric or logical; either the numeric value to add to the
 diagonal of the MRF penalty matrix, or a logical value indicating if such
@@ -76,16 +72,17 @@ an adjustment should be made. The default is to not alter the diagonal of
 the penalty matrix.</p></dd>
 
 
-<dt id="arg-eps">eps<a class="anchor" aria-label="anchor" href="#arg-eps"></a></dt>
-<dd><p>A value to add to the variance-covariance matrix diagonal to
-make it positive definite</p></dd>
-
-
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>arguments passed to other methods.</p></dd>
 
 </dl></div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#Example code</span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

@@ -22,6 +22,9 @@
 - [`get_mrf()`](https://gam-mafia.github.io/MRFtools/reference/get_mrf.md)
   : Extract a fitted MRF
 
+- [`get_obj()`](https://gam-mafia.github.io/MRFtools/reference/get_obj.md)
+  : Extract the original object used to construct an MRF penalty
+
 - [`get_penalty()`](https://gam-mafia.github.io/MRFtools/reference/get_penalty.md)
   : Extract a MRF penalty matrix
 
@@ -55,6 +58,9 @@
 - [`mrf_penalty(`*`<phylo>`*`)`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.phylo.md)
   : MRF penalty from a phylogeny
 
+- [`mrf_penalty(`*`<phylo4>`*`)`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.phylo4.md)
+  : MRF penalty from a phylogeny from a phylo4 object
+
 - [`mrf_penalty(`*`<sf>`*`)`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.sf.md)
   : MRF penalty from polygon or multi-polygon simple features
 
@@ -65,11 +71,11 @@
 - [`visualize(`*`<cyclic_mrf_penalty>`*`)`](https://gam-mafia.github.io/MRFtools/reference/visualize.cyclic_mrf_penalty.md)
   : Visualizing penalty matrix or graph object for a cyclic 1D MRF
 
-- [`visualize(`*`<dendrogram_mrf_penalty>`*`)`](https://gam-mafia.github.io/MRFtools/reference/visualize.dendrogram_mrf_penalty.md)
-  : Plot a thing
-
 - [`visualize(`*`<fully_connected_graph_mrf_penalty>`*`)`](https://gam-mafia.github.io/MRFtools/reference/visualize.fully_connected_graph_mrf_penalty.md)
   : Plot a thing
 
 - [`visualize(`*`<sequential_mrf_penalty>`*`)`](https://gam-mafia.github.io/MRFtools/reference/visualize.sequential_mrf_penalty.md)
+  : Plot a thing
+
+- [`visualize(`*`<tree_mrf_penalty>`*`)`](https://gam-mafia.github.io/MRFtools/reference/visualize.tree_mrf_penalty.md)
   : Plot a thing

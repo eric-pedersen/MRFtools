@@ -11,6 +11,7 @@
 <url><loc>https://gam-mafia.github.io/MRFtools/reference/get_labels.html</loc></url>
 <url><loc>https://gam-mafia.github.io/MRFtools/reference/get_model.html</loc></url>
 <url><loc>https://gam-mafia.github.io/MRFtools/reference/get_mrf.html</loc></url>
+<url><loc>https://gam-mafia.github.io/MRFtools/reference/get_obj.html</loc></url>
 <url><loc>https://gam-mafia.github.io/MRFtools/reference/get_penalty.html</loc></url>
 <url><loc>https://gam-mafia.github.io/MRFtools/reference/get_type.html</loc></url>
 <url><loc>https://gam-mafia.github.io/MRFtools/reference/index.html</loc></url>
@@ -23,12 +24,13 @@
 <url><loc>https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.html</loc></url>
 <url><loc>https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.numeric.html</loc></url>
 <url><loc>https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.phylo.html</loc></url>
+<url><loc>https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.phylo4.html</loc></url>
 <url><loc>https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.sf.html</loc></url>
 <url><loc>https://gam-mafia.github.io/MRFtools/reference/reexports.html</loc></url>
 <url><loc>https://gam-mafia.github.io/MRFtools/reference/vis.html</loc></url>
 <url><loc>https://gam-mafia.github.io/MRFtools/reference/visualize.cyclic_mrf_penalty.html</loc></url>
-<url><loc>https://gam-mafia.github.io/MRFtools/reference/visualize.dendrogram_mrf_penalty.html</loc></url>
 <url><loc>https://gam-mafia.github.io/MRFtools/reference/visualize.fully_connected_graph_mrf_penalty.html</loc></url>
 <url><loc>https://gam-mafia.github.io/MRFtools/reference/visualize.sequential_mrf_penalty.html</loc></url>
+<url><loc>https://gam-mafia.github.io/MRFtools/reference/visualize.tree_mrf_penalty.html</loc></url>
 </urlset>
 

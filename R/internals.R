@@ -117,3 +117,14 @@
   return(prec)
 }
 
+
+# internal function to get the shortest phylogenetic distance between two nodes
+# in a given tree
+get_treedist <- function(tree, tip1, tip2){
+  path <- names(phylobase::shortestPath(tree, tip1, tip2))
+  #drop the most recent common ancestor of the two nodes
+  path <- path[-1]
+  #add the two tips in for calculating the total path
+  path <- c(path, tip1, tip2)
+  sum(phylobase::edgeLength(tree, path))
+}

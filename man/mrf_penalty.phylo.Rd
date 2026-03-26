@@ -7,9 +7,10 @@
 \method{mrf_penalty}{phylo}(
   object,
   model = c("rw1", "ou", "Brownian"),
+  params = list(),
   at_tips = NULL,
   tip_labels = NULL,
-  include_internal = TRUE,
+  internal_nodes = TRUE,
   delta = FALSE,
   ...
 )
@@ -35,6 +36,6 @@ make it positive definite}
 MRF penalty from a phylogeny
 }
 \examples{
-# example code
+#Example code
 
 }

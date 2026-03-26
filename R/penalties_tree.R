@@ -1,13 +1,4 @@
-# internal function to get the shortest phylogenetic distance between two nodes
-# in a given tree
-get_treedist <- function(tree, tip1, tip2){
-  path <- names(phylobase::shortestPath(tree, tip1, tip2))
-  #drop the most recent common ancestor of the two nodes
-  path <- path[-1]
-  #add the two tips in for calculating the total path
-  path <- c(path, tip1, tip2)
-  sum(phylobase::edgeLength(tree, path))
-}
+
 
 ## functions for creating "tree-like" penalties (e.g. phylogenies, dendrograms,
 ## hierarchical clusters)
@@ -19,36 +10,81 @@ get_treedist <- function(tree, tip1, tip2){
 #' @importFrom phylobase subset
 #' @importMethodsFrom phylobase phylo4
 #' @importFrom Matrix Diagonal sparseMatrix Matrix diag
-#' @importMethodsFrom Matrix t colMeans colSums 
+#' @importMethodsFrom Matrix t colMeans colSums
+#' @examples
+#' #loading the geospiza dataset from phylobase
+#' library(phylobase)
+#' data(geospiza)
+#'
+#' #Random-walk (rw1) penalty for both tips and nodes:
+#' pen_rw <- mrf_penalty(geospiza, model = "rw1")
+#' print(signif(as.matrix(pen_rw),2)
+#'
+#' #Same model, but for a reduced number of species
+#' species <- c("fortis", "pauper", "fusca", "olivacea")
+#' pen_rw_subset <- mrf_penalty(geospiza, model = "rw1", at_tips = species)
+#' plot(get_obj(pen_rw_subset))
+#'
+#' #Random-walk penalty matrix for just the tips for all geospiza data:
+#' pen_rw_tips <- mrf_penalty(geospiza, model = "rw1", internal_nodes = FALSE)
+#' print(pen_rw_tips)
+#'
+#' #Ornstein-Uhlenbeck ("ou") process penalty matrix, specifying rho parameter (autocorrelation)
+#' pen_ou <- mrf_penalty(geospiza, model = "ou",params = list(rho = 0.5))
+#'
+#' #It is also possible to specify the out process using 
+#' #the alpha parameter from the stochastic process formulation
+#' pen_ou <- mrf_penalty(geospiza, model = "ou",params = list(alpha = -log(0.5)))
+#'
+#'
 #' @export
 `mrf_penalty.phylo4` <- function(
     object,
     model = c("rw1", "ou", "brownian"),
-    rho = NULL, 
+    params = list(),
     at_tips = NULL,
     internal_nodes = TRUE,
     delta = FALSE,
     ...
 ) {
   
+  assertthat::assert_that(is.list(params),
+                          is.logical(internal_nodes))
+  
   model <- match.arg(model)
+  
+  if(model == "ou"){
+    #ou model needs to have at least one one 'rho' or 'alpha' specified as parameters
+    assertthat::assert_that(
+      xor(exists("rho",params), exists("alpha", params)),
+      msg = "For model 'ou', one and only one of 'alpha' or 'rho' should be specified in `params`")
+    if(exists("alpha", params)){
+      alpha <- params[["alpha"]]
+      assertthat::assert_that(is.numeric(alpha), length(alpha)==1,alpha > 1e-5)
+      rho <- exp(-alpha)
+    } else{
+      rho <- params[["rho"]]
+      assertthat::assert_that(is.numeric(rho), length(rho)==1,rho>0, rho<(1-1e-6))
+    }
+  }
   
   delta <- check_delta(delta)
   
-  tip_labs <- phylobase::tipLabels(object)
-  node_labs <- phylobase::labels(object)
-  
+
   if(!is.null(at_tips)){
     object_tips <- as.character(phylobase::tipLabels(object))
     if(any(!at_tips %in% object_tips)){
       stop("One or more values listed in `at_tips` are not named tips in `object`") 
     }
-    object <- phylobase::subset(object, tips_include = at_tips) |>
+    object <- object[at_tips] |>
       phylobase::extractTree()
   } else{
-    #remove any additional data beyond the phylogenetic object itself
+    #remove any additional data beyond the phylogeny object itself
     object <- phylobase::extractTree(object)
   }
+  
+  tip_labs <- phylobase::tipLabels(object)
+  node_labs <- phylobase::labels(object)
   
   n_nodes <- length(unique(object@label))
   edgelist <- as(object, "data.frame") 
@@ -93,6 +129,7 @@ get_treedist <- function(tree, tip1, tip2){
     config = mrf_config(
       type = "tree",
       model = model,
+      params = params,
       node_labels = node_labels,
       obj = object,
       delta = delta
@@ -114,71 +151,94 @@ get_treedist <- function(tree, tip1, tip2){
 #' make it positive definite
 #' 
 #' @examples
-#' # example code
+#' #Example code
 #' 
 #' @export
 `mrf_penalty.phylo` <- function(
     object,
     model = c("rw1", "ou", "Brownian"),
+    params = list(),
     at_tips = NULL,
     tip_labels = NULL,
-    include_internal = TRUE,
+    internal_nodes = TRUE,
     delta = FALSE,
     ...
 ) {
+  assertthat::assert_that(is.list(params),
+                          is.logical(internal_nodes))
   
+  model <- match.arg(model)
   
-  
-  object <- as(object, "phylo4")
-  
-  mrf_penalty(
-    as(object,"phylo4"),
-    model=model, 
-    at_tips=at_tips, 
-    tip_labels=tip_labels,
-    include_internal=include_internal, 
-    ...
-    )
-  
-}
-
-
-#' @title MRF penalty from a dendrogram
-#'
-#' @inheritParams mrf_penalty.phylo4
-#'
-#' @importFrom stats cophenetic
-#' @export
-`mrf_penalty.dendrogram` <- function(
-    object,
-    model = NULL,
-    node_labels = NULL,
-    delta = FALSE,
-    ...
-) {
-  delta <- check_delta(delta)
-  
-  pen <- as.matrix(cophenetic(object))
-  pen <- pen - max(pen)
-  diag(pen) <- -(rowSums(pen) - diag(pen)) + delta
-  
-  if (!is.null(node_labels)) {
-    if (length(node_labels) != nrow(pen)) {
-      stop(
-        "'node_labels' is not the same length as the number of observations."
-      )
+  if(model == "ou"){
+    #ou model needs to have at least one one 'rho' or 'alpha' specified as parameters
+    assertthat::assert_that(
+      xor(exists("rho",params), exists("alpha", params)),
+      msg = "For model 'ou', one and only one of 'alpha' or 'rho' should be specified in `params`")
+    if(exists("alpha", params)){
+      alpha <- params[["alpha"]]
+      assertthat::assert_that(is.numeric(alpha), length(alpha)==1,alpha > 1e-5)
+      rho <- exp(-alpha)
+    } else{
+      rho <- params[["rho"]]
+      assertthat::assert_that(is.numeric(rho), length(rho)==1,rho>0, rho<(1-1e-6))
     }
-  } else {
-    node_labels <- rownames(pen)
   }
   
+  delta <- check_delta(delta)
+  
+  if(!is.null(at_tips)){
+    if(any(!at_tips %in% object$tip.label)){
+      stop("One or more values listed in `at_tips` are not named tips in `object`") 
+    }
+    object <- ape::keep.tip(object, tip = at_tips) 
+  } 
+  
+  tip_labs <- object$tip.label
+  n_tips <- length(tip_labs)
+  #we are defining "nodes" here as both internal nodes and tips
+  n_nodes <- n_tips + object$Nnode
+  node_labs <- c(tip_labs, paste0("N", (n_tips+1):n_nodes))
+  
+  i <- pmin(object$edge[,1], object$edge[,2])
+  j <- pmax(object$edge[,1], object$edge[,2])
+  
+  edge_lengths <- object$edge.length
+  
+  if(model %in% c("rw1", "brownian")){
+    pen <- prec_rw1(start = i, end = j, n = n_nodes, dists = edge_lengths)
+  } else if(model == "ou"){
+    pen <- prec_ou(start = i, end = j, n = n_nodes, dists = edge_lengths, rho = rho)
+  }
+  
+  is_tip <- node_labs %in% tip_labs
+  
+  if(delta){
+    #add delta onto the diagonal if requested
+    diag(pen) <- diag(pen) + delta
+  }
+  
+  if(internal_nodes){
+    node_labels <- as.vector(node_labs)
+  } else{
+    node_labels <- as.vector(tip_labs)
+    tip_nodes <- edgelist$node[is_tip]
+    
+    # Need to use a block-matrix inversion to get the precision matrix.
+    internal_mat <- pen[-tip_nodes, -tip_nodes]
+    cross_mat <- pen[tip_nodes, -tip_nodes]
+    
+    pen <- pen[tip_nodes, tip_nodes] - cross_mat %*% solve(internal_mat) %*% t(cross_mat)
+  }
+  
+  pen <- as.matrix(pen)
   pen <- as_mrf_penalty(
     pen,
     config = mrf_config(
-      type = "dendrogram",
+      type = "tree",
       model = model,
-      obj = object,
+      params = params,
       node_labels = node_labels,
+      obj = object,
       delta = delta
     )
   )

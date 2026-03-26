@@ -155,6 +155,52 @@
   object[["type"]]
 }
 
+## TODO: Add documentation
+#' @export
+#' @rdname get_type
+`get_type.mrf_penalty` <- function(object) {
+  get_type(get_config(object))
+}
+
+#' @title Extract the original object used to construct an MRF penalty
+#'
+#' @param object an object of class `"mrf_penalty"` or `"mrf_config"`.
+#'
+#' @return A length 1 character vector containing the type of MRF penalty.
+#'
+#' @export
+`get_obj` <- function(object) {
+  UseMethod("get_obj")
+}
+
+## TODO: Add documentation
+#' @export
+`get_obj.default` <- function(object, ...) {
+  ## want to bail with a useful error;
+  ## see Jenny Bryan's Code Smells UseR 2018 talk: rstd.io/code-smells
+  stop(
+    "Don't know how to extract objects from <",
+    class(object)[[1L]],
+    ">",
+    call. = FALSE
+  ) # don't show the call, simpler error
+}
+
+
+## TODO: Add documentation
+#' @export
+#' @rdname get_obj
+`get_obj.mrf_config` <- function(object) {
+  object[["obj"]]
+}
+
+## TODO: Add documentation
+#' @export
+#' @rdname get_obj
+`get_obj.mrf_penalty` <- function(object) {
+  get_obj(get_config(object))
+}
+
 #' @title Extract a MRF penalty matrix
 #'
 #' @param penalty an R object from which to extract the MRF penalty matrix.

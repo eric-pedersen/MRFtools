@@ -2,8 +2,8 @@ pandoc: 3.1.11
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
-  getting-started: getting-started.html
-last_built: 2026-03-26T09:14Z
+  MRFtools: MRFtools.html
+last_built: 2026-03-26T10:00Z
 urls:
   reference: https://gam-mafia.github.io/MRFtools/reference
   article: https://gam-mafia.github.io/MRFtools/articles

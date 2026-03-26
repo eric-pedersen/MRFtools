@@ -95,9 +95,6 @@
 <span>  character.only <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  logical.return <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: S3 method 'get_mrf.list' was declared in NAMESPACE but not found</code></pre>
-</div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     ape     mgcv MRFtools    dplyr  ggplot2   gratia   ggtree
     TRUE     TRUE     TRUE     TRUE     TRUE     TRUE     TRUE </code></pre>
@@ -116,7 +113,7 @@ x_t = x_{t-1} + \varepsilon_t,
 </annotation></semantics></math></p>
 <p>We can simulate a RW1 using the following function</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rw1_sim</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">sigma</span> <span class="op">=</span> <span class="fl">1</span>, <span class="va">tau</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># n    = length of the random walk</span></span>
 <span>  <span class="co"># sigma = sd of initial state x1</span></span>
@@ -140,7 +137,7 @@ x_t = x_{t-1} + \varepsilon_t,
 </div>
 <p>Let’s simulate a 100 time step series from a RW1 and store the data in a data frame</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span></span>
 <span>  y <span class="op">=</span> <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_seed.html" class="external-link">with_seed</a></span><span class="op">(</span><span class="fl">2026</span> <span class="op">-</span> <span class="fl">3</span> <span class="op">-</span> <span class="fl">24</span>, <span class="fu">rw1_sim</span><span class="op">(</span>n <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span>
@@ -148,7 +145,7 @@ x_t = x_{t-1} + \varepsilon_t,
 </div>
 <p>and visualise it</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">ggplot</span><span class="op">(</span></span>
 <span>    <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span></span>
@@ -171,12 +168,12 @@ x_t = x_{t-1} + \varepsilon_t,
 </h3>
 <p>The penalty matrix <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">S</mi><annotation encoding="application/x-tex">\mathrm{S}</annotation></semantics></math> is created using <code><a href="../reference/mrf_penalty.html">mrf_penalty()</a></code>, which for the RW1 talks a vector of regularly spaced discrete time points. To create <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">S</mi><annotation encoding="application/x-tex">\mathrm{S}</annotation></semantics></math> for our series, we use</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">S</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="../reference/mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <p>This creates an <code>"mrf_penalty"</code> object, a matrix with some extra attributes:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">S</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Markov Random Field penalty
@@ -186,7 +183,7 @@ N   : 100</code></pre>
 </div>
 <p>As it is a little cumbersome to visualize a 100 by 100 matrix, we’ll repeat the above using on the first 10 time points</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="../reference/mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -208,7 +205,7 @@ N   : 100</code></pre>
 </h3>
 <p>The second step, creating a factor with the correct levels, is required for <em>mgcv</em> to align observations for each <em>unit</em> with a particular row and column of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">S</mi><annotation encoding="application/x-tex">\mathrm{S}</annotation></semantics></math>. This is done by using a factor for the time variable, where the levels of the factor identify the time points. This construction allows for multiple observations for each row/column in <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">S</mi><annotation encoding="application/x-tex">\mathrm{S}</annotation></semantics></math>. We’ll look at examples like that in other vignettes. For now, we just need to create a new factor, <code>fx</code>, from <code>x</code> with the correct levels.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="va">df</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span></span>
 <span>    fx <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">x</span>, levels <span class="op">=</span> <span class="va">x</span><span class="op">)</span></span>
@@ -218,7 +215,7 @@ N   : 100</code></pre>
 </h3>
 <p>Now we are ready to fit the GAM using <em>mgcv</em></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m_rw1</span> <span class="op">&lt;-</span> <span class="fu">gam</span><span class="op">(</span></span>
 <span>  <span class="va">y</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">fx</span>, bs <span class="op">=</span> <span class="st">"mrf"</span>, xt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>penalty <span class="op">=</span> <span class="va">S</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">df</span>,</span>
@@ -230,7 +227,7 @@ N   : 100</code></pre>
 </h3>
 <p>Neither <em>mgcv</em> nor <em>gratia</em> are currently capable of plotting arbitrary MRF smooths of the type we just fitted. We plan on providing plotting methods that can be used by <em>gratia</em>, but these are yet to be implemented. Instead, we can evaluate the fitted model at the observed time points and plot the predicted values.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m_rw1</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">fitted_values</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">fx</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -256,7 +253,7 @@ N   : 100</code></pre>
 </div>
 <p>The fitted trend is extremely wiggly and, by the usual conventions of models involving smooths, not very, well, smooth. This isn’t surprising in this case, however, as the underlying data generation process is a RW1. Importantly, the fitted trend hasn’t interpolated the data; there has been some shrinkage of the coefficients. This is a full-rank MRF, with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n-1</annotation></semantics></math> (99) basis functions. If we consult the model summary, we that the effective degrees of freedom for the fitted trend is 79.05</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">overview</span><span class="op">(</span><span class="va">m_rw1</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -275,7 +272,7 @@ Generalized Additive Model with 2 terms
 </annotation></semantics></math></p>
 <p>To simulate from this function plus AR(1) noise we can use</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span> <span class="op">=</span> <span class="fl">100</span>, <span class="va">rho</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">time</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="va">n</span></span>
 <span>  <span class="va">xt</span> <span class="op">&lt;-</span> <span class="va">time</span> <span class="op">/</span> <span class="va">n</span></span>
@@ -286,7 +283,7 @@ Generalized Additive Model with 2 terms
 </div>
 <p>which we use to generate 100 observations, with moderate autocorrelation (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math> = 0.1713)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_seed.html" class="external-link">with_seed</a></span><span class="op">(</span></span>
 <span>  <span class="fl">321</span>,</span>
 <span>  <span class="fu">sim_fun</span><span class="op">(</span>rho <span class="op">=</span> <span class="fl">0.1713</span><span class="op">)</span></span>
@@ -294,13 +291,13 @@ Generalized Additive Model with 2 terms
 </div>
 <p>Next, we generate the penalty matrix for these observations</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">S2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">df2</span>, <span class="fu"><a href="../reference/mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span><span class="va">time</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <p>As there are 100 observations, this and the earlier penalty matrix are identical as there are the same number of time points and they have the same labels.</p>
 <p>To create the factor, we can use the <code><a href="../reference/get_labels.html">get_labels()</a></code> helper function. This will ensure that the factor of time points we create has the correct levels</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="va">df2</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span></span>
 <span>    f_time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">time</span>, levels <span class="op">=</span> <span class="fu"><a href="../reference/get_labels.html">get_labels</a></span><span class="op">(</span><span class="va">S2</span><span class="op">)</span><span class="op">)</span></span>
@@ -309,7 +306,7 @@ Generalized Additive Model with 2 terms
 <p>While <code><a href="../reference/get_labels.html">get_labels()</a></code> is not necessary here, there are many situations where you will want to create the penalty matrix for a set of levels, some of which are not observed in the data you will use to fit the model. Careful construction of the factor you will pass to the MRF smooth is required in those cases.</p>
 <p>Now we can fit the GAM to the simulated data, again passing along the penalty matrix to the <code>xt</code> argument of <em>mgcv</em>’s <code>s()</code> function</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m2_rw1</span> <span class="op">&lt;-</span> <span class="fu">gam</span><span class="op">(</span></span>
 <span>  <span class="va">y</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">f_time</span>, bs <span class="op">=</span> <span class="st">"mrf"</span>, xt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>penalty <span class="op">=</span> <span class="va">S2</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">df2</span>,</span>
@@ -318,7 +315,7 @@ Generalized Additive Model with 2 terms
 </div>
 <p>Looking at the model summary we see strong penalization.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">overview</span><span class="op">(</span><span class="va">m2_rw1</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -333,7 +330,7 @@ Generalized Additive Model with 2 terms
 <p>As with the previous example, the smooth was initialised with 99 basis functions (number of time points - 1), but the smoothness selection process has shrunk the coefficients for the basis functions to the extent that the fitted smooth uses just 26.73 effective degrees of freedom.</p>
 <p>Plotting the fitted smooth is again illustrative of the behaviour of the discrete RW1:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m2_rw1</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">fitted_values</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">f_time</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -367,7 +364,7 @@ Generalized Additive Model with 2 terms
 <p>If we believe the true relationship between, in this case, time and the response, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Y</mi><annotation encoding="application/x-tex">Y</annotation></semantics></math>, is smooth (in the usual sense), then we should instead fit a model using one of the standard spline bases provided by <em>mgcv</em>. The RW1, and most models that <code><a href="../reference/mrf_penalty.html">mrf_penalty()</a></code> can (or is planned to) fit, are for use when we want to fit a stochastic trend to the data.</p>
 <p>That said, we <em>can</em> get a smoother fit using the RW1 penalty; we just need to reduce the dimensionality of the penalty we use. Instead of creating the rull penalty matrix, here</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 100 100</code></pre>
@@ -376,7 +373,7 @@ Generalized Additive Model with 2 terms
 <p>we instead can fit a reduced rank penalty, by setting <code>k</code> for the smooth to a lower value than 99.</p>
 <p>Returning to the original example, we fit a visually smooth RW1 by restricting <code>k</code> so that the penalty uses at most 20 basis functions. Note that this is done when specifying the smooth in the model formula; we still need to pass the full RW1 penalty matrix to <code>gam()</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m3_rw1</span> <span class="op">&lt;-</span> <span class="fu">gam</span><span class="op">(</span></span>
 <span>  <span class="va">y</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">fx</span>, bs <span class="op">=</span> <span class="st">"mrf"</span>, xt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>penalty <span class="op">=</span> <span class="va">S</span><span class="op">)</span>, k <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">df</span>,</span>
@@ -385,7 +382,7 @@ Generalized Additive Model with 2 terms
 </div>
 <p>When we visualise the model predictions, we note that the fitted smooth is now, well, smooth:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m3_rw1</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">fitted_values</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">fx</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -416,7 +413,7 @@ Generalized Additive Model with 2 terms
 <p>The example below is a simplified version of Nick Clark’s <a href="https://ecogambler.netlify.app/blog/phylogenetic-smooths-mgcv/" class="external-link">blog post</a> on including phylogenetic information into GAMs. Users of <em>MRFtools</em> are encouraged to read Nick’s post as it represents an excellent use case for a hierarchical GAM <span class="citation" data-cites="pedersen-miller-etal-2019">(sensu <a href="#ref-pedersen-miller-etal-2019" role="doc-biblioref">Pedersen et al. 2019</a>)</span> and of <em>MRFtools</em> to include phylogenetic information into the model.</p>
 <p>We being by simulating a simple phylogenetic tree using the <em>ape</em> package</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n_species</span> <span class="op">&lt;-</span> <span class="fl">20</span></span>
 <span><span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_seed.html" class="external-link">with_seed</a></span><span class="op">(</span></span>
 <span>  <span class="fl">2026</span><span class="op">-</span><span class="fl">3</span><span class="op">-</span><span class="fl">25</span>,</span>
@@ -435,7 +432,7 @@ Generalized Additive Model with 2 terms
 <p>The species-level mean value (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>μ</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\mu_1</annotation></semantics></math>) for trait <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mn>1</mn></msub><annotation encoding="application/x-tex">y_1</annotation></semantics></math> follows a phylogenetic random walk (specifically an OU model). The species-level mean value for trait <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mn>2</mn></msub><annotation encoding="application/x-tex">y_2</annotation></semantics></math> (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>μ</mi><mn>2</mn></msub><annotation encoding="application/x-tex">\mu_2</annotation></semantics></math>) is not conserved; it is normally distributed at the species level.</p>
 <p>We will also generate some observation-level error for each trait in each observed individual.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
 <span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_seed.html" class="external-link">with_seed</a></span><span class="op">(</span></span>
 <span>  seed <span class="op">=</span> <span class="fl">20260326</span>,</span>
@@ -480,7 +477,7 @@ Generalized Additive Model with 2 terms
 </div>
 <p>We can visualize the distribution of true means of the two traits across the tree using the <code>ggtree</code> package:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.amazon.com/Integration-Manipulation-Visualization-Phylogenetic-Computational-ebook/dp/B0B5NLZR1Z/" class="external-link">ggtree</a></span><span class="op">)</span></span>
 <span><span class="va">mu1_tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>label<span class="op">=</span><span class="va">tree</span><span class="op">$</span><span class="va">tip.label</span>, variable <span class="op">=</span> <span class="va">mu1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">full_join</span><span class="op">(</span><span class="va">tree</span>,y <span class="op">=</span> <span class="va">_</span>, by <span class="op">=</span> <span class="st">"label"</span><span class="op">)</span></span>
@@ -508,7 +505,7 @@ Generalized Additive Model with 2 terms
 </div>
 <p><em>MRFtools</em> has a <code><a href="../reference/mrf_penalty.html">mrf_penalty()</a></code> method for phylogentic trees like <code>tree</code>; at the time of writing we support both the <code>"phylo"</code> class from package <em>ape</em> and the <code>"phylo4"</code> class from <em>phylobase</em>. To create the phylogenetic penalty matrix, we pass <code>tree</code> to <code><a href="../reference/mrf_penalty.html">mrf_penalty()</a></code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">S_phylo</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span><span class="va">tree</span><span class="op">)</span></span></code></pre></div>
 </div>
 <p>The default penalty for phylogenies is “rw1”, which is a first-order random walk model of trait evolution (synonymous with the standard “Brownian motion” model of trait evolution). Also by default, the penalty matrix generated is for the entire tree (including internal nodes)<a class="footnote-ref" role="doc-noteref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;If you want instead to calculate a penalty for just the observed species (excluding internal nodes), you can set the option &lt;code&gt;internal_nodes = FALSE&lt;/code&gt; inside the &lt;code&gt;mrf_penalty&lt;/code&gt; call.&lt;/p&gt;"><sup>1</sup></a>. The precision matrix (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>) for “rw1” for a whole tree is:</p>
@@ -525,7 +522,7 @@ Q_{i,j}=
 <p>This is a model of continuous trait evolution via a random walk wherein phenotypic change accumulates in both directions at random. Future versions of <em>MRFtools</em> will support alternative models for phenotypic change.</p>
 <p>Since our penalty matrix includes levels for both the observed species (tips) and their common ancestors (nodes), we need to add those extra node names into the data. We will create a second factor variable (<code>species_plus</code>) to denote the augmented vector of species names.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#|label: relabel-phylo</span></span>
 <span></span>
 <span><span class="va">phylo_df</span> <span class="op">&lt;-</span> <span class="va">phylo_df</span> <span class="op">|&gt;</span></span>
@@ -537,7 +534,7 @@ Q_{i,j}=
 <p>As with the previous examples, we pass the <code>species_plus</code> factor to <code>s()</code>, set the basis to <code>"mrf"</code>, and provide the penalty matrix via the <code>xt</code> argument. We have also included a standard random effect smoother, to help assess the degree of phylogenetic information in the variable; if there is little phylogenetic information, the phylogenetic smoother will be shrunk toward zero, whereas if there is strong phylogenetic signal, the random effect smoother will be shrunk toward zero (as the model is able to capture the amount of interspecific variation in trait means using fewer degrees of freedom from the phylogenetic smoother).</p>
 <p>We also have to specify <code>drop.unused.levels = FALSE</code> within the gam, as otherwise <code>mgcv</code> will treat the unobserved nodes as missing and drop them from the model.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m_phylo1</span> <span class="op">&lt;-</span> <span class="fu">gam</span><span class="op">(</span></span>
 <span>  <span class="va">y1</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">species_plus</span>, bs <span class="op">=</span> <span class="st">"mrf"</span>, xt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>penalty <span class="op">=</span> <span class="va">S_phylo</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>       <span class="fu">s</span><span class="op">(</span><span class="va">species</span>, bs <span class="op">=</span> <span class="st">"re"</span><span class="op">)</span>,</span>
@@ -555,7 +552,7 @@ Q_{i,j}=
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">overview</span><span class="op">(</span><span class="va">m_phylo1</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -571,7 +568,7 @@ Generalized Additive Model with 3 terms
 <p>We can see that the MRF term in the first model ends up with a large assigned degrees of freedom (edf) with almost no edf for the random effect term, indicating a strong phylogenetic signal in the trait value.</p>
 <p>Now let’s look at the overview for the second model:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">overview</span><span class="op">(</span><span class="va">m_phylo2</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>

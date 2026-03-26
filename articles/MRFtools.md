@@ -71,8 +71,6 @@ vapply(
 )
 ```
 
-    Warning: S3 method 'get_mrf.list' was declared in NAMESPACE but not found
-
          ape     mgcv MRFtools    dplyr  ggplot2   gratia   ggtree
         TRUE     TRUE     TRUE     TRUE     TRUE     TRUE     TRUE 
 

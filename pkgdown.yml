@@ -3,7 +3,7 @@ pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   MRFtools: MRFtools.html
-last_built: 2026-03-26T16:32Z
+last_built: 2026-03-26T17:48Z
 urls:
   reference: https://gam-mafia.github.io/MRFtools/reference
   article: https://gam-mafia.github.io/MRFtools/articles

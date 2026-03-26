@@ -1,9 +1,12 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>/404.html</loc></url>
 <url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/articles/getting-started.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
 <url><loc>/reference/as.matrix.mrf_penalty.html</loc></url>
+<url><loc>/reference/as_mrf_penalty.html</loc></url>
 <url><loc>/reference/get_config.html</loc></url>
 <url><loc>/reference/get_labels.html</loc></url>
 <url><loc>/reference/get_model.html</loc></url>
@@ -11,6 +14,7 @@
 <url><loc>/reference/get_penalty.html</loc></url>
 <url><loc>/reference/get_type.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/mrf_config.html</loc></url>
 <url><loc>/reference/mrf_penalty.SpatialPolygons.html</loc></url>
 <url><loc>/reference/mrf_penalty.SpatialPolygonsDataFrame.html</loc></url>
 <url><loc>/reference/mrf_penalty.dendrogram.html</loc></url>

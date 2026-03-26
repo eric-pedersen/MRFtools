@@ -58,10 +58,24 @@ Universe system.
 
 ## Setup
 
-To follow this vignette, you’ll need the following packages loaded
+To follow this vignette, you’ll need the following packages
 
 ``` r
 pkgs <- c("ape", "mgcv", "MRFtools", "dplyr", "ggplot2", "gratia", "ggtree")
+```
+
+The *ggtree* package is from BioConductor, so if you do not have it
+installed, you’ll need to install the *BiocManager* package first to
+perform the installation:
+
+``` r
+if (!require("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install("ggtree")
+```
+
+``` r
 vapply(
   pkgs,
   library,

@@ -29,6 +29,19 @@ mrf_penalty(
   connected graph (`"full"`) or a random effect (random intercepts;
   `"individual"`) penalty is created.
 
+- alpha:
+
+  numeric
+
+- at_tips:
+
+  TODO
+
+- internal_nodes:
+
+  logical; should the internal nodes of the tree be included in the
+  penalty (`TRUE`), or just the tips (terminal nodes; `FALSE`)
+
 - delta:
 
   numeric or logical; either the numeric value to add to the diagonal of

@@ -44,3 +44,7 @@ rsconnect/
 
 # local experiments
 local_experiments/
+
+/doc/
+/Meta/
+docs

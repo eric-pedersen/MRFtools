@@ -1,0 +1,19 @@
+url: https://gam-mafia.github.io/MRFtools/
+
+home:
+  title: Tools for constructing and plotting Markov Random Fields in R for graphical data
+  description: Utility functions for using Markov Random Field smooths in Generalized Additive Models fitted with the 'mgcv' package.
+
+authors:
+  Eric J. Pedersen:
+  Gavin L. Simpson:
+    href: https://fromthebottomoftheheap.net
+
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+navbar:
+  structure:
+    left: [intro, articles, reference, news]
+    right: [search, github]

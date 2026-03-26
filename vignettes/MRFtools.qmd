@@ -1,0 +1,434 @@
+---
+title: Getting started with the MRFtools package
+format: 
+  html:
+    toc: true
+    html-math-method: mathjax
+bibliography: references.bib
+vignette: >
+  %\VignetteIndexEntry{Vignette's Title}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+The Gaussian Markov random field basis (`bs = "mrf"`) in *mgcv* is an extremely powerful and flexible "spline", which can be used to include a range of effects into a GAM that one would not typically think of as smooth effects. As with many powerful tools in R, that power and flexibility can often bring with it additional complexity when you try to actually use the thing.
+
+The MRF basis (`bs = "mrf"`) allows for the definition of a Gaussian MRF in one of three ways
+
+1. `polys` --- providing a list containing numeric vectors of points defining one or more polygons, one per level of the factor provided to the smooth, where the spatial arrangement of polygons is used to build a neighbourhood structure and from that a penalty matrix $\mathbf{S}$,
+
+2. `nb` --- providing the neighbourhood structure itself, as a list, with one element per level of the factor supplied to the smooth. Each element of this list provides the indices of the levels for the neighbours of that element. From this list, the corresponding penalty matrix $\mathbf{S}$ is created, and
+
+3. `penalty` --- providing the penalty matrix $\mathbf{S}$ directly.
+
+The flexibility of the MRF basis arises from the last of these --- the ability to provide a penalty matrix directly. However, many users of *mgcv* are unlikely to be able to specify `penalty` themselves, especially because there are some strict rules that must be followed in order for the correct $\mathbf{S}$ to be specified without producing an error from *mgcv*. *MRFtools* aims to take some of the pain out of using the MRF basis by providing functions that create the `penalty` matrix for you for a range of commonly encountered R objects and structures.
+
+This vignette will briefly describe how to use *MRFtools* to specify a penalty matrix, and how to use that penalty matrix with *mgcv*. The aim is to demonstrate the basic workflow, not to provide an exhaustive overview of *MRFtools* capabilities. Also, the specific details of workflow are in a bit of flux as Eric and I work towards an initial CRAN release of *MRFtools*.
+
+## Installing *MRFtools*
+
+If you have the tools to build source packages, you can use the *remotes* package to install *MRFtools*.
+
+```r
+# do we need to install remotes?
+if (isFALSE(require("remotes"))) {
+  install.packages("remotes")
+}
+remotes::install_github("eric-pedersen/MRFtools")
+```
+
+Soon, we'll have *MRFtools* available for installation via ROpenSci's R Universe system.
+
+## Setup
+
+To follow this vignette, you'll need the following packages loaded
+
+```{r}
+#| label: setup
+#| cache: false
+#| message: false
+pkgs <- c("ape", "mgcv", "MRFtools", "dplyr", "ggplot2", "gratia")
+vapply(
+  pkgs,
+  library,
+  logical(1),
+  character.only = TRUE,
+  logical.return = TRUE
+)
+```
+
+## Discrete random walks
+
+One of the ways in which regular temporal data can be modelled in general is through a discrete random walk (RW). In this section I'll illustrate how to create the corresponding penalty matrix $\mathbf{S}$ for a first order discrete random walk and include this in a GAM.
+
+A discrete first order random walk (RW1) is defined by
+
+$$
+x_1 \sim \mathcal{N}(0, \sigma^2),
+\qquad
+x_t = x_{t-1} + \varepsilon_t,
+\qquad
+\varepsilon_t \sim \mathcal{N}(0, \tau^{-1}).
+$$
+
+We can simulate a RW1 using the following function
+
+```{r}
+#| label: simulate-rw1
+rw1_sim <- function(n, sigma = 1, tau = 1) {
+  # n    = length of the random walk
+  # sigma = sd of initial state x1
+  # tau   = precision of increments (var = 1/tau)
+
+  # initial state
+  x <- numeric(n)
+  x[1] <- rnorm(1, mean = 0, sd = sigma)
+
+  # RW1 increments
+  eps <- rnorm(n - 1, mean = 0, sd = 1 / sqrt(tau))
+
+  # accumulate
+  x[2:n] <- x[1] + cumsum(eps)
+
+  x
+}
+rw1_sim <- function(n, sigma = 1, x0 = 0) {
+  c(x0, x0 + cumsum(rnorm(n - 1, 0, sigma)))
+}
+```
+
+Let's simulate a 100 time step series from a RW1 and store the data in a data frame
+
+```{r}
+#| label: creater-rw1-eg1-data
+df <- tibble(
+  y = withr::with_seed(2026 - 3 - 24, rw1_sim(n = 100)),
+  x = seq_len(100)
+)
+```
+
+and visualise it
+
+```{r}
+#| label: plot-rw1-eg1-data
+df |>
+  ggplot(
+    aes(x = x, y = y)
+  ) +
+  geom_line()
+```
+
+To model this time series using a Gaussian MRF and the MRF basis, we need to do a couple of things to prepare the data for *mgcv*
+
+1. Create the penalty matrix $\mathbf{S}$, and
+
+2. Coerce the time covariate, here `x`, into a factor.
+
+This latter step seems an odd thing to do for a time series, but it is a requirement of *mgcv* and reflects the original intention of modelling discrete areal data.
+
+### Creating $\mathbf{S}$
+
+The penalty matrix $\mathrm{S}$ is created using `mrf_penalty()`, which for the RW1 talks a vector of regularly spaced discrete time points. To create $\mathrm{S}$ for our series, we use
+
+```{r}
+#| label: create-rw1-penalty-eg1
+S <- with(df, mrf_penalty(x))
+```
+
+This creates an `"mrf_penalty"` object, a matrix with some extra attributes:
+
+```{r}
+#| label: print-rw1-penalty-eg1
+S
+```
+
+As it is a little cumbersome to visualize a 100 by 100 matrix, we'll repeat the above using on the first 10 time points
+
+```{r}
+#| label: vis-penalty-matrix-rw1-eg1-subset
+with(df, mrf_penalty(x[1:10])) |>
+  as.matrix()
+```
+
+The negative values on the off-diagonals indicate that a pair of samples are (temporal) neighbours. The diagonal of the matrix counts the number of neighbours for each observation. At the start and end time points of the series, the observations have a single neighbour, while the intermediate time points have two neighbours: the observation prior ($x_{t-1}$ and the one after ($x_{t+1}$) $x_t$.
+
+### Creating the data
+
+The second step, creating a factor with the correct levels, is required for *mgcv* to align observations for each *unit* with a particular row and column of $\mathrm{S}$. This is done by using a factor for the time variable, where the levels of the factor identify the time points. This construction allows for multiple observations for each row/column in $\mathrm{S}$. We'll look at examples like that in other vignettes. For now, we just need to create a new factor, `fx`, from `x` with the correct levels.
+
+```{r}
+#| label: add-factor-rw1-eg1
+df <- df |>
+  mutate(
+    fx = factor(x, levels = x)
+  )
+```
+
+### Fitting the model
+
+Now we are ready to fit the GAM using *mgcv*
+
+```{r}
+#| label: fit-rw1-model-1
+m_rw1 <- gam(
+  y ~ s(fx, bs = "mrf", xt = list(penalty = S)),
+  data = df,
+  method = "REML"
+)
+```
+
+Instead of using a smooth of $x$, as we would in a typical GAM, we request a smooth of the factor `fx`. The `bs` argument allows us to specify the type of basis to use for the smooth function. Here, we specify `"mrf"` to use the Gaussian MRF basis. The final step is to pass the penalty matrix to the smooth constructor, which we do through the `xt` argument. This needs to be a list, and as we are passing the penalty matrix, we need to name the element of this list `penalty`.
+
+### Visualising the fitted smooth
+
+Neither *mgcv* nor *gratia* are currently capable of plotting arbitrary MRF smooths of the type we just fitted. We plan on providing plotting methods that can be used by *gratia*, but these are yet to be implemented. Instead, we can evaluate the fitted model at the observed time points and plot the predicted values.
+
+```{r}
+#| label: plot-rw1-model-1
+m_rw1 |>
+  fitted_values() |>
+  mutate(x = as.character(fx) |> as.numeric()) |>
+  ggplot(
+    aes(x = x, y = .fitted)
+  ) +
+  geom_point(
+    data = df,
+    aes(x = x, y = y),
+    col = "grey70"
+  ) +
+  geom_ribbon(
+    aes(ymin = .lower_ci, ymax = .upper_ci),
+    alpha = 0.2
+  ) +
+  geom_line()
+```
+
+The fitted trend is extremely wiggly and, by the usual conventions of models involving smooths, not very, well, smooth. This isn't surprising in this case, however, as the underlying data generation process is a RW1. Importantly, the fitted trend hasn't interpolated the data; there has been some shrinkage of the coefficients. This is a full-rank MRF, with $n-1$ (99) basis functions. If we consult the model summary, we that the effective degrees of freedom for the fitted trend is `r edf(m_rw1, select = "s(fx)") |> pull(.edf) |> round(2)`
+
+```{r}
+#| label: overview-rw1-model-1
+overview(m_rw1)
+```
+
+The trend uses ~20 fewer degrees of freedom than theoretically possible given the RW1 penalty allows.
+
+How does the discrete RW1 work with a different underlying model? In the next example we simulate autocorrelated observations from the smooth function
+
+$$
+(1280 * x_t^4) * (1- x_t)^4 .
+$$
+
+To simulate from this function plus AR(1) noise we can use
+
+```{r}
+#| label: simulation-fun-rw1-eg2
+sim_fun <- function(n = 100, rho) {
+  time <- 1:n
+  xt <- time / n
+  Y <- (1280 * xt^4) * (1 - xt)^4
+  y <- as.numeric(Y + arima.sim(list(ar = rho), n = n))
+  tibble(y = y, time = time, f = Y)
+}
+```
+
+which we use to generate 100 observations, with moderate autocorrelation ($\rho$ = 0.1713)
+
+```{r}
+#| label: simulate-data-for-rw1-eg2
+df2 <- withr::with_seed(
+  321,
+  sim_fun(rho = 0.1713)
+)
+```
+
+Next, we generate the penalty matrix for these observations
+
+```{r}
+#| label: create-penalty-rw1-model-3
+S2 <- with(df2, mrf_penalty(time))
+```
+
+As there are 100 observations, this and the earlier penalty matrix are identical as there are the same number of time points and they have the same labels.
+
+To create the factor, we can use the `get_labels()` helper function. This will ensure that the factor of time points we create has the correct levels
+
+```{r}
+#| label: add-factor-rw1-model-2
+df2 <- df2 |>
+  mutate(
+    f_time = factor(time, levels = get_labels(S2))
+  )
+```
+
+While `get_labels()` is not necessary here, there are many situations where you will want to create the penalty matrix for a set of levels, some of which are not observed in the data you will use to fit the model. Careful construction of the factor you will pass to the MRF smooth is required in those cases.
+
+Now we can fit the GAM to the simulated data, again passing along the penalty matrix to the `xt` argument of *mgcv*'s `s()` function
+
+```{r}
+#| label: fit-rw1-model-2
+m2_rw1 <- gam(
+  y ~ s(f_time, bs = "mrf", xt = list(penalty = S2)),
+  data = df2,
+  method = "REML"
+)
+```
+
+Looking at the model summary we see strong penalization.
+```{r}
+#| label: overview-rw1-model-2
+overview(m2_rw1)
+```
+
+As with the previous example, the smooth was initialised with 99 basis functions (number of time points - 1), but the smoothness selection process has shrunk the coefficients for the basis functions to the extent that the fitted smooth uses just `r edf(m2_rw1, select = "s(f_time)") |> pull(.edf) |> round(2)` effective degrees of freedom.
+
+Plotting the fitted smooth is again illustrative of the behaviour of the discrete RW1:
+
+```{r}
+#| label: plot-rw1-model-2
+m2_rw1 |>
+  fitted_values() |>
+  mutate(time = as.character(f_time) |> as.numeric()) |>
+  ggplot(
+    aes(x = time, y = .fitted)
+  ) +
+  geom_point(
+    data = df2,
+    aes(x = time, y = y),
+    col = "grey70"
+  ) +
+  geom_line(
+    data = df2,
+    aes(y = f),
+    col = "steelblue",
+    linewidth = 1
+  ) +
+  geom_ribbon(
+    aes(ymin = .lower_ci, ymax = .upper_ci),
+    alpha = 0.2
+  ) +
+  geom_line()
+```
+
+Despite the underlying model being smooth, we do not achieve a visually smooth fit (in the usual sense). The model has overfitted the sample of data; it has done this because as far as the RW1 is concerned, the AR(1) noise is part of the signal we tasked the model with finding when we fitted the RW1 process.
+
+If we believe the true relationship between, in this case, time and the response, $Y$, is smooth (in the usual sense), then we should instead fit a model using one of the standard spline bases provided by *mgcv*. The RW1, and most models that `mrf_penalty()` can (or is planned to) fit, are for use when we want to fit a stochastic trend to the data.
+
+That said, we *can* get a smoother fit using the RW1 penalty; we just need to reduce the dimensionality of the penalty we use. Instead of creating the rull penalty matrix, here
+```{r}
+#| label: dim-rw1-penalty
+dim(S)
+```
+we instead can fit a reduced rank penalty, by setting `k` for the smooth to a lower value than 99.
+
+Returning to the original example, we fit a visually smooth RW1 by restricting `k` so that the penalty uses at most 20 basis functions. Note that this is done when specifying the smooth in the model formula; we still need to pass the full RW1 penalty matrix to `gam()`:
+
+```{r}
+#| label: fit-rw1-model-3
+m3_rw1 <- gam(
+  y ~ s(fx, bs = "mrf", xt = list(penalty = S), k = 20),
+  data = df,
+  method = "REML"
+)
+```
+
+When we visualise the model predictions, we note that the fitted smooth is now, well, smooth:
+
+```{r}
+#| label: plot-rw1-model-3
+m3_rw1 |>
+  fitted_values() |>
+  mutate(x = as.character(fx) |> as.numeric()) |>
+  ggplot(
+    aes(x = x, y = .fitted)
+  ) +
+  geom_point(
+    data = df,
+    aes(x = x, y = y),
+    col = "grey70"
+  ) +
+  geom_ribbon(
+    aes(ymin = .lower_ci, ymax = .upper_ci),
+    alpha = 0.2
+  ) +
+  geom_line()
+```
+
+While this is of interest in developign an understanding of how MRF smooths work, for practical purposes it is of limited interest in this case. The choice of `k = 20` is not the *optimal* complexity for these data --- we already saw that optimal function used ~20 EDF --- and as a user you are free to set `k` to whatever value you want (as long as it is less $n_t$ and greater than 2.) If you want to obtained a smooth trend, you would be better served with one of *mgcv*'s standard smoothers, and perhaps fit the model using NCV or include an autocorrelation process (via `bam()` or `gamm()` say).
+
+## Phylogenetic smooth
+
+Next, we consider how to include phylogenetic information into a GAM, such that genetically more-similar species are assumed to have more similar response values than more genetically distant taxa. We could include species identity as a random intercept term in the model, but individual species means (intercepts) would be shrunk more or less to 0; nothing would help pull genetically similar taxa toward one another. A Gaussian MRF is a general way to represent graphical information, which makes it ideal for representing phylogenetic trees.
+
+The example below is a simplified version of Nick Clark's [blog post](https://ecogambler.netlify.app/blog/phylogenetic-smooths-mgcv/) on including phylogenetic information into GAMs. Users of *MRFtools* are encouraged to read Nick's post as it represents an excellent use case for a hierarchical GAM [sensu @pedersen-miller-etal-2019] and of *MRFtools* to include phylogenetic information into the model.
+
+We being by simulating a simple phylogenetic tree using the *ape* package
+```{r}
+#| label: sim-phylo-data
+n_species <- 12
+tree <- withr::with_seed(
+  2026-3-25,
+  rcoal(n_species, tip.label = paste0('sp_', seq_len(n_species)))
+)
+species_names <- tree$tip.label
+plot(tree)
+```
+
+Next, we simulate some response data for each species, where the mean of $y$ for each species depends on the sum of two phylogentic weights (`w1` and `w2`). Think of the simulated `y` as some continuous trait, which takes positive and negative values about each species mean trait value.
+```{r}
+#| label: sim-spp-data
+n <- 10
+w1 <- as.vector(scale(rTraitCont(tree)))
+w2 <- as.vector(scale(rTraitCont(tree)))
+
+phylo_df <- lapply(
+  seq_len(n_species),
+  function(i) {
+    sp_mean <- w1[i] + w2[i]
+    obs <- rnorm(
+      n, 
+      mean = sp_mean,
+      sd = 0.15
+    )
+    tibble(
+      species = species_names[i],
+      weight = 1,
+      truth = sp_mean,
+      y = obs
+    )
+  }
+) |> bind_rows() |>
+  mutate(
+    species = factor(species, levels = species_names)
+  )
+
+phylo_df
+```
+
+*MRFtools* has a `mrf_penalty()` method for phylogentic trees like `tree`; at the time of writing we support the `"phylo"` class from package *ape*, but we plan to add support for the `"phylo4"` class from *phylobase* before *MRFtools* is released to CRAN. To create the phylogenetic penalty matrix, we pass `tree` to `mrf_penalty()`
+```{r}
+#| label: create-phylo-penalty
+S_phylo <- mrf_penalty(tree)
+```
+
+This penalty matrix is created by inverting the covariance matrix of the phylogenetic tree. *ape* only creating a covariance matrix from a phylogentic tree under the assumption of a Brownian motion model. This is a model of continuous trait evolution via a random walk wherein phenotypic change accumulates in both directions at random. Future versions of *MRFtools* will support alternative models for phenotypic change.
+
+As with the previous examples, we pass the `species` factor to `s()`, set the basis to `"mrf"`, and provide the penalty matrix via the `xt` argument:
+```{r}
+#| label: fit-phylo-model
+m_phylo <- gam(
+  y ~ s(species, bs = "mrf", xt = list(penalty = S_phylo)),
+  data = phylo_df,
+  method = "REML"
+)
+```
+
+```{r}
+#| label: phylo-model-overview
+overview(m_phylo)
+```
+
+In this contrived example, there is little benefit to the MRF smooth over using random intercepts for the species mean trait values, but it is include to illustrate the general workflow involved in including phylogenetic information in to a GAM.
+
+## References

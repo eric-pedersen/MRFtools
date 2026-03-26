@@ -47,7 +47,9 @@ Suggests:
     vdiffr,
     mgcv,
     gamm4,
-    sp
+    sp,
+    quarto,
+    withr
 Description: Utility functions for using Markov Random Field smooths in Generalized Additive Models fitted with the 'mgcv' package.
 License: GPL-3
 LazyData: true
@@ -57,3 +59,5 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Encoding: UTF-8
 Config/testthat/edition: 3
+VignetteBuilder: 
+    quarto

@@ -14,7 +14,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/eric-pedersen/MRFtools/blob/master/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/eric-pedersen/MRFtools/blob/main/DESCRIPTION)
 
 Pedersen E, Simpson G (2026). *MRFtools: Tools for Constructing and
 Plotting Markov Random Fields in R for Graphical Data*. R package

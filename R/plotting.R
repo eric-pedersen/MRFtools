@@ -130,9 +130,9 @@
 #' @examples
 #' # example code
 #' hc <- hclust(dist(USArrests), "complete")
-#' mrf_penalty(hc) |>
+#' mrf_penalty(hc, internal_nodes = FALSE) |>
 #'   visualize()
-`visualize.dendrogram_mrf_penalty` <- function(
+`visualize.tree_mrf_penalty` <- function(
   x,
   graph = TRUE,
   layout = "stress",

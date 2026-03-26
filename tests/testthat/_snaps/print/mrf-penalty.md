@@ -51,8 +51,8 @@
       print(pen)
     Output
       Markov Random Field penalty
-      Type: dendrogram
-      N   : 10
+      Type: tree
+      N   : 19
 
 # mrf_penalty with a hclust
 
@@ -60,6 +60,15 @@
       print(pen)
     Output
       Markov Random Field penalty
-      Type: dendrogram
-      N   : 10
+      Type: tree
+      N   : 19
+
+# mrf_penalty with a phylo4 ojbect
+
+    Code
+      print(pen)
+    Output
+      Markov Random Field penalty
+      Type: tree
+      N   : 7
 

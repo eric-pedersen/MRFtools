@@ -4,7 +4,15 @@
 \alias{mrf_penalty.dendrogram}
 \title{MRF penalty from a dendrogram}
 \usage{
-\method{mrf_penalty}{dendrogram}(object, model = NULL, node_labels = NULL, delta = FALSE, ...)
+\method{mrf_penalty}{dendrogram}(
+  object,
+  model = c("rw1", "ou", "brownian"),
+  alpha = NULL,
+  at_tips = NULL,
+  internal_nodes = TRUE,
+  delta = FALSE,
+  ...
+)
 }
 \arguments{
 \item{object}{an R object to create the MRF penalty from.}
@@ -12,9 +20,6 @@
 \item{model}{character; one of \code{"full"} or \code{"individual"} indicating if a
 fully connected graph (\code{"full"}) or a random effect (random intercepts;
 \code{"individual"}) penalty is created.}
-
-\item{node_labels}{character; a vector of alternative labels for the levels
-of the factor.}
 
 \item{delta}{numeric or logical; either the numeric value to add to the
 diagonal of the MRF penalty matrix, or a logical value indicating if such

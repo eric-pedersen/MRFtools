@@ -1,5 +1,5 @@
 Package: MRFtools
-Version: 0.0-4
+Version: 0.0-5
 Title: Tools for Constructing and Plotting Markov Random Fields in R for Graphical Data
 Authors@R: c(
     person(

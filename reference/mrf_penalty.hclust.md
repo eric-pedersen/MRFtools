@@ -31,11 +31,13 @@ mrf_penalty(
 
 - alpha:
 
-  numeric
+  numeric; the autoregressive parameter for an OU stochastic process.
+  Should be \>1e-5 (alpha = 0 would correspond to a "rw1" model).
 
 - at_tips:
 
-  TODO
+  character; vector of tip labels to calculate the penalty at. All
+  values in the vector must correpond to tip name labels in the tree.
 
 - internal_nodes:
 

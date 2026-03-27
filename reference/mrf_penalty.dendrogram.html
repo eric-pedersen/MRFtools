@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">MRFtools</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0-4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0-5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,11 +66,11 @@ fully connected graph (<code>"full"</code>) or a random effect (random intercept
 
 
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
-<dd><p>numeric</p></dd>
+<dd><p>numeric; the autoregressive parameter for an OU stochastic process. Should be &gt;1e-5 (alpha = 0 would correspond to a "rw1" model).</p></dd>
 
 
 <dt id="arg-at-tips">at_tips<a class="anchor" aria-label="anchor" href="#arg-at-tips"></a></dt>
-<dd><p>TODO</p></dd>
+<dd><p>character; vector of tip labels to calculate the penalty at. All values in the vector must correpond to tip name labels in the tree.</p></dd>
 
 
 <dt id="arg-internal-nodes">internal_nodes<a class="anchor" aria-label="anchor" href="#arg-internal-nodes"></a></dt>

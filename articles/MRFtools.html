@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">MRFtools</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0-4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0-5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,7 +87,7 @@
 <p>To follow this vignette, you’ll need the following packages</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pkgs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ape"</span>, <span class="st">"mgcv"</span>, <span class="st">"MRFtools"</span>, <span class="st">"dplyr"</span>, <span class="st">"ggplot2"</span>, <span class="st">"gratia"</span>, <span class="st">"ggtree"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pkgs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ape"</span>, <span class="st">"mgcv"</span>, <span class="st">"MRFtools"</span>, <span class="st">"dplyr"</span>, <span class="st">"ggplot2"</span>, <span class="st">"gratia"</span>, <span class="st">"ggtree"</span>, <span class="st">"colorspace"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <p>The <em>ggtree</em> package is from BioConductor, so if you do not have it installed, you’ll need to install the <em>BiocManager</em> package first to perform the installation:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -105,8 +105,10 @@
 <span>  logical.return <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     ape     mgcv MRFtools    dplyr  ggplot2   gratia   ggtree
-    TRUE     TRUE     TRUE     TRUE     TRUE     TRUE     TRUE </code></pre>
+<pre><code>       ape       mgcv   MRFtools      dplyr    ggplot2     gratia     ggtree
+      TRUE       TRUE       TRUE       TRUE       TRUE       TRUE       TRUE
+colorspace
+      TRUE </code></pre>
 </div>
 </div>
 </section><section class="level2"><h2 id="discrete-random-walks">Discrete random walks<a class="anchor" aria-label="anchor" href="#discrete-random-walks"></a>
@@ -428,6 +430,10 @@ Generalized Additive Model with 2 terms
 <span>  <span class="fl">2026</span><span class="op">-</span><span class="fl">3</span><span class="op">-</span><span class="fl">25</span>,</span>
 <span>  <span class="fu">rcoal</span><span class="op">(</span><span class="va">n_species</span>, tip.label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'sp_'</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">n_species</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#assigns internal node labels to the tree; used in constructing the penalty</span></span>
+<span><span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu">makeNodeLabel</span><span class="op">(</span><span class="va">tree</span>, prefix <span class="op">=</span> <span class="st">"no_"</span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">species_names</span> <span class="op">&lt;-</span> <span class="va">tree</span><span class="op">$</span><span class="va">tip.label</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">tree</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output-display">
@@ -499,7 +505,13 @@ Generalized Additive Model with 2 terms
 <span></span>
 <span><span class="va">trait_plot</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/ggtree/man/ggtree.html" class="external-link">ggtree</a></span><span class="op">(</span><span class="va">trs</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span><span class="va">.id</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggtree/man/geom_tippoint.html" class="external-link">geom_tippoint</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>colour<span class="op">=</span><span class="va">variable</span><span class="op">)</span><span class="op">)</span><span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggtree/man/geom_tippoint.html" class="external-link">geom_tippoint</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">variable</span><span class="op">)</span>, shape <span class="op">=</span> <span class="fl">21</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu">scale_fill_continuous_divergingx</span><span class="op">(</span></span>
+<span>    name <span class="op">=</span> <span class="st">"Estimated trait value"</span>, </span>
+<span>    palette <span class="op">=</span> <span class="st">'RdBu'</span>, </span>
+<span>    mid <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>    rev <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>    <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">scale_colour_gradient2</span><span class="op">(</span><span class="st">"mean trait value"</span>, </span>
 <span>                         low <span class="op">=</span> <span class="st">"blue"</span>,high <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span>
@@ -517,19 +529,19 @@ Generalized Additive Model with 2 terms
 <div class="sourceCode cell-code" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">S_phylo</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span><span class="va">tree</span><span class="op">)</span></span></code></pre></div>
 </div>
-<p>The default penalty for phylogenies is “rw1”, which is a first-order random walk model of trait evolution (synonymous with the standard “Brownian motion” model of trait evolution). Also by default, the penalty matrix generated is for the entire tree (including internal nodes)<a class="footnote-ref" role="doc-noteref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;If you want instead to calculate a penalty for just the observed species (excluding internal nodes), you can set the option &lt;code&gt;internal_nodes = FALSE&lt;/code&gt; inside the &lt;code&gt;mrf_penalty&lt;/code&gt; call.&lt;/p&gt;"><sup>1</sup></a>. The precision matrix (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>) for “rw1” for a whole tree is:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Q</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mi>−</mi><mn>1</mn><mi>/</mi><msub><mi>l</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>i</mi><mo>≠</mo><mi>j</mi><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and node i is a direct ancestor/descendant of j</mtext></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><munder><mo>∑</mo><mrow><mi>k</mi><mo>≠</mo><mi>i</mi></mrow></munder><mo>−</mo><msub><mi>Q</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>i</mi><mo>=</mo><mi>j</mi></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>0</mn></mtd><mtd columnalign="left" style="text-align: left"><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> otherwise</mtext></mrow></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">
+<p>The default penalty for phylogenies is “rw1”, which is a first-order random walk model of trait evolution (synonymous with the standard “Brownian motion” model of trait evolution). Also by default, the penalty matrix generated is for the entire tree (including internal nodes). The precision matrix (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>) for “rw1” for a whole tree is:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mi>−</mi><mn>1</mn><mi>/</mi><msub><mi>l</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>i</mi><mo>≠</mo><mi>j</mi><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and node i is a direct ancestor/descendant of j</mtext></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><munder><mo>∑</mo><mrow><mi>k</mi><mo>≠</mo><mi>i</mi></mrow></munder><mo>−</mo><msub><mi>S</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><mi>i</mi><mo>=</mo><mi>j</mi></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>0</mn></mtd><mtd columnalign="left" style="text-align: left"><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> otherwise</mtext></mrow></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">
 \begin{equation}
-Q_{i,j}=
+S_{i,j}=
     \begin{cases}
         -1/l_{ij} &amp; \text{if } i\ne j \text{ and node i is a direct ancestor/descendant of j} \\
-        \sum_{k\ne i} -Q_{ik} &amp; \text{if } i =j \\
+        \sum_{k\ne i} -S_{ik} &amp; \text{if } i =j \\
         0 &amp; \text{ otherwise}
     \end{cases}
 \end{equation}
 </annotation></semantics></math></p>
-<p>This is a model of continuous trait evolution via a random walk wherein phenotypic change accumulates in both directions at random. Future versions of <em>MRFtools</em> will support alternative models for phenotypic change.</p>
-<p>Since our penalty matrix includes levels for both the observed species (tips) and their common ancestors (nodes), we need to add those extra node names into the data. We will create a second factor variable (<code>species_plus</code>) to denote the augmented vector of species names.</p>
+<p>This is a model of continuous trait evolution via a random walk wherein phenotypic change accumulates at random (with no bias in direction) and independently for all branches descending from the same common ancenstor. Future versions of <em>MRFtools</em> will support alternative models for phenotypic change.</p>
+<p>Since our penalty matrix includes levels for both the observed species (tips) and their common ancestors (nodes), we need to add those extra node names into the data. We will create a second factor variable (<code>species_phylo</code>) to denote the augmented vector of species names.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#|label: relabel-phylo</span></span>
@@ -537,15 +549,15 @@ Q_{i,j}=
 <span><span class="va">phylo_df</span> <span class="op">&lt;-</span> <span class="va">phylo_df</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span></span>
 <span>    species  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">species</span><span class="op">)</span>, </span>
-<span>    species_plus <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">species</span>, levels <span class="op">=</span> <span class="fu"><a href="../reference/get_labels.html">get_labels</a></span><span class="op">(</span><span class="va">S_phylo</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>    species_phylo <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">species</span>, levels <span class="op">=</span> <span class="fu"><a href="../reference/get_labels.html">get_labels</a></span><span class="op">(</span><span class="va">S_phylo</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <p>We will fit one model to each of the two traits.</p>
-<p>As with the previous examples, we pass the <code>species_plus</code> factor to <code>s()</code>, set the basis to <code>"mrf"</code>, and provide the penalty matrix via the <code>xt</code> argument. We have also included a standard random effect smoother, to help assess the degree of phylogenetic information in the variable; if there is little phylogenetic information, the phylogenetic smoother will be shrunk toward zero, whereas if there is strong phylogenetic signal, the random effect smoother will be shrunk toward zero (as the model is able to capture the amount of interspecific variation in trait means using fewer degrees of freedom from the phylogenetic smoother).</p>
+<p>As with the previous examples, we pass the <code>species_phylo</code> factor to <code>s()</code>, set the basis to <code>"mrf"</code>, and provide the penalty matrix via the <code>xt</code> argument. We have also included a standard random effect smoother, to help assess the degree of phylogenetic information in the variable; if there is little phylogenetic information, the phylogenetic smoother will be shrunk toward zero, whereas if there is strong phylogenetic signal, the random effect smoother will be shrunk toward zero (as the model is able to capture the amount of interspecific variation in trait means using fewer degrees of freedom from the phylogenetic smoother).</p>
 <p>We also have to specify <code>drop.unused.levels = FALSE</code> within the gam, as otherwise <code>mgcv</code> will treat the unobserved nodes as missing and drop them from the model.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m_phylo1</span> <span class="op">&lt;-</span> <span class="fu">gam</span><span class="op">(</span></span>
-<span>  <span class="va">y1</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">species_plus</span>, bs <span class="op">=</span> <span class="st">"mrf"</span>, xt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>penalty <span class="op">=</span> <span class="va">S_phylo</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="va">y1</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">species_phylo</span>, bs <span class="op">=</span> <span class="st">"mrf"</span>, xt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>penalty <span class="op">=</span> <span class="va">S_phylo</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>       <span class="fu">s</span><span class="op">(</span><span class="va">species</span>, bs <span class="op">=</span> <span class="st">"re"</span><span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">phylo_df</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"REML"</span>, </span>
@@ -553,7 +565,7 @@ Q_{i,j}=
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">m_phylo2</span> <span class="op">&lt;-</span> <span class="fu">gam</span><span class="op">(</span></span>
-<span>  <span class="va">y2</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">species_plus</span>, bs <span class="op">=</span> <span class="st">"mrf"</span>, xt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>penalty <span class="op">=</span> <span class="va">S_phylo</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="va">y2</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">species_phylo</span>, bs <span class="op">=</span> <span class="st">"mrf"</span>, xt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>penalty <span class="op">=</span> <span class="va">S_phylo</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>       <span class="fu">s</span><span class="op">(</span><span class="va">species</span>, bs <span class="op">=</span> <span class="st">"re"</span><span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">phylo_df</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"REML"</span>, </span>
@@ -567,11 +579,11 @@ Q_{i,j}=
 <pre><code>
 Generalized Additive Model with 3 terms
 
-  term            type              k       edf ref.edf  statistic p.value
-  &lt;chr&gt;           &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;
-1 Intercept       parametric       NA  1              1  3.64      &lt;0.001
-2 s(species_plus) MRF              38 16.7           19 26.2       &lt;0.001
-3 s(species)      Random effect    20  0.000826      19  0.0000430 0.0135 </code></pre>
+  term             type              k       edf ref.edf  statistic p.value
+  &lt;chr&gt;            &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;
+1 Intercept        parametric       NA  1              1  3.64      &lt;0.001
+2 s(species_phylo) MRF              38 16.7           19 26.2       &lt;0.001
+3 s(species)       Random effect    20  0.000826      19  0.0000430 0.0135 </code></pre>
 </div>
 </div>
 <p>We can see that the MRF term in the first model ends up with a large assigned degrees of freedom (edf) with almost no edf for the random effect term, indicating a strong phylogenetic signal in the trait value.</p>
@@ -583,15 +595,103 @@ Generalized Additive Model with 3 terms
 <pre><code>
 Generalized Additive Model with 3 terms
 
-  term            type              k    edf ref.edf statistic p.value
-  &lt;chr&gt;           &lt;chr&gt;         &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;
-1 Intercept       parametric       NA  1           1      2.23 0.0287
-2 s(species_plus) MRF              38  0.927      19      1.72 0.3520
-3 s(species)      Random effect    20 16.8        19      9.39 &lt;0.001 </code></pre>
+  term             type              k    edf ref.edf statistic p.value
+  &lt;chr&gt;            &lt;chr&gt;         &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;
+1 Intercept        parametric       NA  1           1      2.23 0.0287
+2 s(species_phylo) MRF              38  0.927      19      1.72 0.3520
+3 s(species)       Random effect    20 16.8        19      9.39 &lt;0.001 </code></pre>
 </div>
 </div>
 <p>We can see that there is almost no variation assigned to the MRF, while the random effect term has an EDF almost equal to the number of species.</p>
-</section><section class="level2 unnumbered"><h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<section class="level3"><h3 id="the-role-of-internal-nodes-for-phylogenetic-smoothers">The role of internal nodes for phylogenetic smoothers<a class="anchor" aria-label="anchor" href="#the-role-of-internal-nodes-for-phylogenetic-smoothers"></a>
+</h3>
+<p>As noted above, by default the penalty matrix constructed by <code>mrf_penalty.phlyo</code> includes the internal nodes of the tree. This is because, under Brownian motion, the distribution of traits for two species is independent of one another after conditioning on the trait values of their common ancestor, leading to a sparse precision matrix when the internal nodes of three are included. This approach will allow for future development of more complex evolutionary models that maintain this Markovian property. It also means that the GAM model automatically estimates values for the internal nodes (I.e. the common ancestors).</p>
+<p>To see how this can be used, we can visualize these estimates for the internal nodes by creating new prediction data and plotting the predictions on a tree:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#use gratia's data_slice function to create prediction levels for all the values of species</span></span>
+<span><span class="va">phylo_pred_data</span> <span class="op">&lt;-</span> <span class="fu">gratia</span><span class="fu">::</span><span class="fu"><a href="https://gavinsimpson.github.io/gratia/reference/data_slice.html" class="external-link">data_slice</a></span><span class="op">(</span></span>
+<span>  object <span class="op">=</span> <span class="va">m_phylo1</span>, </span>
+<span>  species_phylo <span class="op">=</span> <span class="fu">evenly</span><span class="op">(</span><span class="va">species_phylo</span><span class="op">)</span>,</span>
+<span>  species <span class="op">=</span> <span class="fu">ref_level</span><span class="op">(</span><span class="va">species</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>label <span class="op">=</span> <span class="va">species_phylo</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co">#add the predicted values for the two models, excluding the species-level random effect from the predictions</span></span>
+<span><span class="va">phylo_pred1</span> <span class="op">&lt;-</span> <span class="va">phylo_pred_data</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">add_fitted</span><span class="op">(</span>model <span class="op">=</span> <span class="va">m_phylo1</span>, value <span class="op">=</span> <span class="st">"estimate"</span>, exclude <span class="op">=</span> <span class="st">"s(species)"</span><span class="op">)</span> </span>
+<span><span class="va">phylo_pred2</span> <span class="op">&lt;-</span> <span class="va">phylo_pred_data</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">add_fitted</span><span class="op">(</span>model <span class="op">=</span> <span class="va">m_phylo2</span>, value <span class="op">=</span> <span class="st">"estimate"</span>, exclude <span class="op">=</span> <span class="st">"s(species)"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pred1_tree</span> <span class="op">&lt;-</span> <span class="va">phylo_pred1</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">full_join</span><span class="op">(</span><span class="va">tree</span>,y <span class="op">=</span> <span class="va">_</span>, by <span class="op">=</span> <span class="st">"label"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pred2_tree</span> <span class="op">&lt;-</span> <span class="va">phylo_pred2</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">full_join</span><span class="op">(</span><span class="va">tree</span>,y <span class="op">=</span> <span class="va">_</span>, by <span class="op">=</span> <span class="st">"label"</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="va">trs_pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>`Trait 1` <span class="op">=</span> <span class="va">pred1_tree</span>, `Trait 2` <span class="op">=</span> <span class="va">pred2_tree</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">trs_pred</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">'treedataList'</span></span>
+<span></span>
+<span><span class="va">trait_pred_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ggtree/man/ggtree.html" class="external-link">ggtree</a></span><span class="op">(</span><span class="va">trs_pred</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span><span class="va">.id</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggtree/man/geom_nodepoint.html" class="external-link">geom_nodepoint</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">estimate</span><span class="op">)</span>, shape <span class="op">=</span> <span class="fl">21</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggtree/man/geom_tippoint.html" class="external-link">geom_tippoint</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">estimate</span><span class="op">)</span>, shape <span class="op">=</span> <span class="fl">21</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu">scale_fill_continuous_divergingx</span><span class="op">(</span></span>
+<span>    name <span class="op">=</span> <span class="st">"Estimated trait value"</span>, </span>
+<span>    palette <span class="op">=</span> <span class="st">'RdBu'</span>, </span>
+<span>    mid <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>    rev <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>    <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">trait_pred_plot</span></span></code></pre></div>
+<div class="cell-output-display">
+<div>
+<figure><p><img src="MRFtools_files/figure-html/plot-predict-trees-1.png" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Note that the root node is estimated to have a non-zero value for both models; this is not an error; in this case, the regression model includes an unpenalized intercept term, so the estimated value of the root here corresponds to the estimated value of the intercept; the estimated phylogenetic smooth value for this node should be zero.</p>
+<p>If you instead want to fit a model for only the tips of a tree, you can do so by specifying <code>internal_nodes = FALSE</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">S_phylo_tips</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span><span class="va">tree</span>, internal_nodes <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#this should be a 20 x 20 matrix:</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">S_phylo_tips</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 20 20</code></pre>
+</div>
+</div>
+<p>We can see that this gives an almost identical model fit for the trait with phylogenetic signal. We can do this by using the new penalty, and just setting <code>drop.unused.levels = FALSE</code> (although in general you should not rely on this functionality, and instead specify factor levels explicitly in the data):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">m_tips_phylo1</span> <span class="op">&lt;-</span> <span class="fu">gam</span><span class="op">(</span></span>
+<span>  <span class="va">y1</span> <span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">species_phylo</span>, bs <span class="op">=</span> <span class="st">"mrf"</span>, xt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>penalty <span class="op">=</span> <span class="va">S_phylo_tips</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>       <span class="fu">s</span><span class="op">(</span><span class="va">species</span>, bs <span class="op">=</span> <span class="st">"re"</span><span class="op">)</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">phylo_df</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"REML"</span>, </span>
+<span>  drop.unused.levels <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">overview</span><span class="op">(</span><span class="va">m_tips_phylo1</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Generalized Additive Model with 3 terms
+
+  term             type              k      edf ref.edf  statistic p.value
+  &lt;chr&gt;            &lt;chr&gt;         &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;
+1 Intercept        parametric       NA  1             1  3.64      &lt;0.001
+2 s(species_phylo) MRF              19 16.7          19 26.2       &lt;0.001
+3 s(species)       Random effect    20  0.00113      19  0.0000587 0.0135 </code></pre>
+</div>
+</div>
+<p>However, this model is now unable to make predictions for internal nodes.</p>
+</section></section><section class="level2 unnumbered"><h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent" role="list">
 <div id="ref-pedersen-miller-etal-2019" class="csl-entry" role="listitem">

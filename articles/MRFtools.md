@@ -61,7 +61,7 @@ Universe system.
 To follow this vignette, you’ll need the following packages
 
 ``` r
-pkgs <- c("ape", "mgcv", "MRFtools", "dplyr", "ggplot2", "gratia", "ggtree")
+pkgs <- c("ape", "mgcv", "MRFtools", "dplyr", "ggplot2", "gratia", "ggtree", "colorspace")
 ```
 
 The *ggtree* package is from BioConductor, so if you do not have it
@@ -85,8 +85,10 @@ vapply(
 )
 ```
 
-         ape     mgcv MRFtools    dplyr  ggplot2   gratia   ggtree
-        TRUE     TRUE     TRUE     TRUE     TRUE     TRUE     TRUE 
+           ape       mgcv   MRFtools      dplyr    ggplot2     gratia     ggtree
+          TRUE       TRUE       TRUE       TRUE       TRUE       TRUE       TRUE
+    colorspace
+          TRUE 
 
 ## Discrete random walks
 
@@ -515,6 +517,10 @@ tree <- withr::with_seed(
   2026-3-25,
   rcoal(n_species, tip.label = paste0('sp_', seq_len(n_species)))
 )
+
+#assigns internal node labels to the tree; used in constructing the penalty
+tree <- makeNodeLabel(tree, prefix = "no_")
+
 species_names <- tree$tip.label
 plot(tree)
 ```
@@ -593,7 +599,13 @@ class(trs) <- 'treedataList'
 
 trait_plot = ggtree(trs) + 
   facet_wrap(~.id) +
-  geom_tippoint(aes(colour=variable))+ 
+  geom_tippoint(aes(fill = variable), shape = 21, size = 2) + 
+  scale_fill_continuous_divergingx(
+    name = "Estimated trait value", 
+    palette = 'RdBu', 
+    mid = 0,
+    rev = TRUE
+    ) +
   scale_colour_gradient2("mean trait value", 
                          low = "blue",high = "red") +
   theme(legend.position = "bottom")
@@ -619,24 +631,24 @@ The default penalty for phylogenies is “rw1”, which is a first-order
 random walk model of trait evolution (synonymous with the standard
 “Brownian motion” model of trait evolution). Also by default, the
 penalty matrix generated is for the entire tree (including internal
-nodes)[¹](#fn1). The precision matrix ($Q$) for “rw1” for a whole tree
-is:
+nodes). The precision matrix ($S$) for “rw1” for a whole tree is:
 
-$$Q_{i,j} = \begin{cases}
+$$S_{i,j} = \begin{cases}
 {-1/l_{ij}} & {{\text{if}\mspace{6mu}}i \neq j{\mspace{6mu}\text{and node i is a direct ancestor/descendant of j}}} \\
-{\sum\limits_{k \neq i} - Q_{ik}} & {{\text{if}\mspace{6mu}}i = j} \\
+{\sum\limits_{k \neq i} - S_{ik}} & {{\text{if}\mspace{6mu}}i = j} \\
 0 & {\mspace{6mu}\text{otherwise}}
 \end{cases}$$
 
 This is a model of continuous trait evolution via a random walk wherein
-phenotypic change accumulates in both directions at random. Future
-versions of *MRFtools* will support alternative models for phenotypic
-change.
+phenotypic change accumulates at random (with no bias in direction) and
+independently for all branches descending from the same common
+ancenstor. Future versions of *MRFtools* will support alternative models
+for phenotypic change.
 
 Since our penalty matrix includes levels for both the observed species
 (tips) and their common ancestors (nodes), we need to add those extra
 node names into the data. We will create a second factor variable
-(`species_plus`) to denote the augmented vector of species names.
+(`species_phylo`) to denote the augmented vector of species names.
 
 ``` r
 #|label: relabel-phylo
@@ -644,12 +656,12 @@ node names into the data. We will create a second factor variable
 phylo_df <- phylo_df |>
   mutate(
     species  = factor(species), 
-    species_plus = factor(species, levels = get_labels(S_phylo)))
+    species_phylo = factor(species, levels = get_labels(S_phylo)))
 ```
 
 We will fit one model to each of the two traits.
 
-As with the previous examples, we pass the `species_plus` factor to
+As with the previous examples, we pass the `species_phylo` factor to
 `s()`, set the basis to `"mrf"`, and provide the penalty matrix via the
 `xt` argument. We have also included a standard random effect smoother,
 to help assess the degree of phylogenetic information in the variable;
@@ -665,7 +677,7 @@ them from the model.
 
 ``` r
 m_phylo1 <- gam(
-  y1 ~ s(species_plus, bs = "mrf", xt = list(penalty = S_phylo)) +
+  y1 ~ s(species_phylo, bs = "mrf", xt = list(penalty = S_phylo)) +
        s(species, bs = "re"),
   data = phylo_df,
   method = "REML", 
@@ -673,7 +685,7 @@ m_phylo1 <- gam(
 )
 
 m_phylo2 <- gam(
-  y2 ~ s(species_plus, bs = "mrf", xt = list(penalty = S_phylo)) +
+  y2 ~ s(species_phylo, bs = "mrf", xt = list(penalty = S_phylo)) +
        s(species, bs = "re"),
   data = phylo_df,
   method = "REML", 
@@ -687,11 +699,11 @@ overview(m_phylo1)
 
     Generalized Additive Model with 3 terms
 
-      term            type              k       edf ref.edf  statistic p.value
-      <chr>           <chr>         <dbl>     <dbl>   <dbl>      <dbl> <chr>
-    1 Intercept       parametric       NA  1              1  3.64      <0.001
-    2 s(species_plus) MRF              38 16.7           19 26.2       <0.001
-    3 s(species)      Random effect    20  0.000826      19  0.0000430 0.0135 
+      term             type              k       edf ref.edf  statistic p.value
+      <chr>            <chr>         <dbl>     <dbl>   <dbl>      <dbl> <chr>
+    1 Intercept        parametric       NA  1              1  3.64      <0.001
+    2 s(species_phylo) MRF              38 16.7           19 26.2       <0.001
+    3 s(species)       Random effect    20  0.000826      19  0.0000430 0.0135 
 
 We can see that the MRF term in the first model ends up with a large
 assigned degrees of freedom (edf) with almost no edf for the random
@@ -705,23 +717,124 @@ overview(m_phylo2)
 
     Generalized Additive Model with 3 terms
 
-      term            type              k    edf ref.edf statistic p.value
-      <chr>           <chr>         <dbl>  <dbl>   <dbl>     <dbl> <chr>
-    1 Intercept       parametric       NA  1           1      2.23 0.0287
-    2 s(species_plus) MRF              38  0.927      19      1.72 0.3520
-    3 s(species)      Random effect    20 16.8        19      9.39 <0.001 
+      term             type              k    edf ref.edf statistic p.value
+      <chr>            <chr>         <dbl>  <dbl>   <dbl>     <dbl> <chr>
+    1 Intercept        parametric       NA  1           1      2.23 0.0287
+    2 s(species_phylo) MRF              38  0.927      19      1.72 0.3520
+    3 s(species)       Random effect    20 16.8        19      9.39 <0.001 
 
 We can see that there is almost no variation assigned to the MRF, while
 the random effect term has an EDF almost equal to the number of species.
+
+### The role of internal nodes for phylogenetic smoothers
+
+As noted above, by default the penalty matrix constructed by
+`mrf_penalty.phlyo` includes the internal nodes of the tree. This is
+because, under Brownian motion, the distribution of traits for two
+species is independent of one another after conditioning on the trait
+values of their common ancestor, leading to a sparse precision matrix
+when the internal nodes of three are included. This approach will allow
+for future development of more complex evolutionary models that maintain
+this Markovian property. It also means that the GAM model automatically
+estimates values for the internal nodes (I.e. the common ancestors).
+
+To see how this can be used, we can visualize these estimates for the
+internal nodes by creating new prediction data and plotting the
+predictions on a tree:
+
+``` r
+#use gratia's data_slice function to create prediction levels for all the values of species
+phylo_pred_data <- gratia::data_slice(
+  object = m_phylo1, 
+  species_phylo = evenly(species_phylo),
+  species = ref_level(species)
+  ) |>
+  mutate(label = species_phylo)
+
+  #add the predicted values for the two models, excluding the species-level random effect from the predictions
+phylo_pred1 <- phylo_pred_data |>
+  add_fitted(model = m_phylo1, value = "estimate", exclude = "s(species)") 
+phylo_pred2 <- phylo_pred_data |>
+  add_fitted(model = m_phylo2, value = "estimate", exclude = "s(species)")
+```
+
+``` r
+pred1_tree <- phylo_pred1 |>
+  full_join(tree,y = _, by = "label")
+
+pred2_tree <- phylo_pred2 |>
+  full_join(tree,y = _, by = "label")
+
+
+trs_pred <- list(`Trait 1` = pred1_tree, `Trait 2` = pred2_tree)
+class(trs_pred) <- 'treedataList'
+
+trait_pred_plot <- ggtree(trs_pred) + 
+  facet_wrap(~.id) +
+  geom_nodepoint(aes(fill = estimate), shape = 21, size = 2)+ 
+  geom_tippoint(aes(fill = estimate), shape = 21, size = 2) + 
+  scale_fill_continuous_divergingx(
+    name = "Estimated trait value", 
+    palette = 'RdBu', 
+    mid = 0,
+    rev = TRUE
+    ) +
+  theme(legend.position = "bottom")
+
+trait_pred_plot
+```
+
+![](MRFtools_files/figure-html/plot-predict-trees-1.png)
+
+Note that the root node is estimated to have a non-zero value for both
+models; this is not an error; in this case, the regression model
+includes an unpenalized intercept term, so the estimated value of the
+root here corresponds to the estimated value of the intercept; the
+estimated phylogenetic smooth value for this node should be zero.
+
+If you instead want to fit a model for only the tips of a tree, you can
+do so by specifying `internal_nodes = FALSE`.
+
+``` r
+S_phylo_tips <- mrf_penalty(tree, internal_nodes = FALSE)
+
+#this should be a 20 x 20 matrix:
+dim(S_phylo_tips)
+```
+
+    [1] 20 20
+
+We can see that this gives an almost identical model fit for the trait
+with phylogenetic signal. We can do this by using the new penalty, and
+just setting `drop.unused.levels = FALSE` (although in general you
+should not rely on this functionality, and instead specify factor levels
+explicitly in the data):
+
+``` r
+m_tips_phylo1 <- gam(
+  y1 ~ s(species_phylo, bs = "mrf", xt = list(penalty = S_phylo_tips)) +
+       s(species, bs = "re"),
+  data = phylo_df,
+  method = "REML", 
+  drop.unused.levels = TRUE
+)
+
+overview(m_tips_phylo1)
+```
+
+    Generalized Additive Model with 3 terms
+
+      term             type              k      edf ref.edf  statistic p.value
+      <chr>            <chr>         <dbl>    <dbl>   <dbl>      <dbl> <chr>
+    1 Intercept        parametric       NA  1             1  3.64      <0.001
+    2 s(species_phylo) MRF              19 16.7          19 26.2       <0.001
+    3 s(species)       Random effect    20  0.00113      19  0.0000587 0.0135 
+
+However, this model is now unable to make predictions for internal
+nodes.
 
 ## References
 
 Pedersen, Eric J, David L Miller, Gavin L Simpson, and Noam Ross. 2019.
 “Hierarchical Generalized Additive Models in Ecology: An Introduction
 with Mgcv.” *PeerJ* 7: e6876. <https://doi.org/10.7717/peerj.6876>.
-
-------------------------------------------------------------------------
-
-1.  If you want instead to calculate a penalty for just the observed
-    species (excluding internal nodes), you can set the option
-    `internal_nodes = FALSE` inside the `mrf_penalty` call.

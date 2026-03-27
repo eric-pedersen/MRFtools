@@ -24,3 +24,4 @@
 ^doc$
 ^Meta$
 ^local_experiments$
+^vignettes/\.quarto$

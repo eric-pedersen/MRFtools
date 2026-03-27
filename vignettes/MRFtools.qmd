@@ -13,8 +13,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-
-
 The Gaussian Markov random field basis (`bs = "mrf"`) in *mgcv* is an extremely powerful and flexible "spline", which can be used to include a range of effects into a GAM that one would not typically think of as smooth effects. As with many powerful tools in R, that power and flexibility can often bring with it additional complexity when you try to actually use the thing.
 
 The MRF basis (`bs = "mrf"`) allows for the definition of a Gaussian MRF in one of three ways
@@ -45,13 +43,26 @@ Soon, we'll have *MRFtools* available for installation via ROpenSci's R Universe
 
 ## Setup
 
-To follow this vignette, you'll need the following packages loaded
+To follow this vignette, you'll need the following packages
+
+```{r}
+#| label: pkg-list
+pkgs <- c("ape", "mgcv", "MRFtools", "dplyr", "ggplot2", "gratia", "ggtree", "colorspace")
+```
+
+The *ggtree* package is from BioConductor, so if you do not have it installed, you'll need to install the *BiocManager* package first to perform the installation:
+
+```r
+if (!require("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install("ggtree")
+```
 
 ```{r}
 #| label: setup
 #| cache: false
 #| message: false
-pkgs <- c("ape", "mgcv", "MRFtools", "dplyr", "ggplot2", "gratia", "ggtree")
 vapply(
   pkgs,
   library,
@@ -373,6 +384,10 @@ tree <- withr::with_seed(
   2026-3-25,
   rcoal(n_species, tip.label = paste0('sp_', seq_len(n_species)))
 )
+
+#assigns internal node labels to the tree; used in constructing the penalty
+tree <- makeNodeLabel(tree, prefix = "no_")
+
 species_names <- tree$tip.label
 plot(tree)
 ```
@@ -429,13 +444,18 @@ class(trs) <- 'treedataList'
 
 trait_plot = ggtree(trs) + 
   facet_wrap(~.id) +
-  geom_tippoint(aes(colour=variable))+ 
+  geom_tippoint(aes(fill = variable), shape = 21, size = 2) + 
+  scale_fill_continuous_divergingx(
+    name = "Estimated trait value", 
+    palette = 'RdBu', 
+    mid = 0,
+    rev = TRUE
+    ) +
   scale_colour_gradient2("mean trait value", 
                          low = "blue",high = "red") +
   theme(legend.position = "bottom")
 
 trait_plot
-
 ```
 
 *MRFtools* has a `mrf_penalty()` method for phylogentic trees like `tree`; at the time of writing we support both the `"phylo"` class from package *ape* and the `"phylo4"` class from *phylobase*. To create the phylogenetic penalty matrix, we pass `tree` to `mrf_penalty()`.
@@ -446,22 +466,22 @@ trait_plot
 S_phylo <- mrf_penalty(tree)
 ```
 
-The default penalty for phylogenies is "rw1", which is a first-order random walk model of trait evolution (synonymous with the standard "Brownian motion" model of trait evolution). Also by default, the penalty matrix generated is for the entire tree (including internal nodes)[^internal-nodes]. The precision matrix ($Q$)  for "rw1" for a whole tree is:
+The default penalty for phylogenies is "rw1", which is a first-order random walk model of trait evolution (synonymous with the standard "Brownian motion" model of trait evolution). Also by default, the penalty matrix generated is for the entire tree (including internal nodes). The precision matrix ($S$)  for "rw1" for a whole tree is:
 
 $$
 \begin{equation}
-Q_{i,j}=
+S_{i,j}=
     \begin{cases}
         -1/l_{ij} & \text{if } i\ne j \text{ and node i is a direct ancestor/descendant of j} \\
-        \sum_{k\ne i} -Q_{ik} & \text{if } i =j \\
+        \sum_{k\ne i} -S_{ik} & \text{if } i =j \\
         0 & \text{ otherwise}
     \end{cases}
 \end{equation}
 $$
 
-This is a model of continuous trait evolution via a random walk wherein phenotypic change accumulates in both directions at random. Future versions of *MRFtools* will support alternative models for phenotypic change.
+This is a model of continuous trait evolution via a random walk wherein phenotypic change accumulates at random (with no bias in direction) and independently for all branches descending from the same common ancenstor. Future versions of *MRFtools* will support alternative models for phenotypic change.
 
-Since our penalty matrix includes levels for both the observed species (tips) and their common ancestors (nodes), we need to add those extra node names into the data. We will create a second factor variable (`species_plus`) to denote the augmented vector of species names. 
+Since our penalty matrix includes levels for both the observed species (tips) and their common ancestors (nodes), we need to add those extra node names into the data. We will create a second factor variable (`species_phylo`) to denote the augmented vector of species names. 
 
 ```{r}
 #|label: relabel-phylo
@@ -469,21 +489,21 @@ Since our penalty matrix includes levels for both the observed species (tips) an
 phylo_df <- phylo_df |>
   mutate(
     species  = factor(species), 
-    species_plus = factor(species, levels = get_labels(S_phylo)))
+    species_phylo = factor(species, levels = get_labels(S_phylo)))
 
 ```
 
 
 We will fit one model to each of the two traits.
 
-As with the previous examples, we pass the `species_plus` factor to `s()`, set the basis to `"mrf"`, and provide the penalty matrix via the `xt` argument. We have also included a standard random effect smoother, to help assess the degree of phylogenetic information in the variable; if there is little phylogenetic information, the phylogenetic smoother will be shrunk toward zero, whereas if there is strong phylogenetic signal, the random effect smoother will be shrunk toward zero (as the model is able to capture the amount of interspecific variation in trait means using fewer degrees of freedom from the phylogenetic smoother).
+As with the previous examples, we pass the `species_phylo` factor to `s()`, set the basis to `"mrf"`, and provide the penalty matrix via the `xt` argument. We have also included a standard random effect smoother, to help assess the degree of phylogenetic information in the variable; if there is little phylogenetic information, the phylogenetic smoother will be shrunk toward zero, whereas if there is strong phylogenetic signal, the random effect smoother will be shrunk toward zero (as the model is able to capture the amount of interspecific variation in trait means using fewer degrees of freedom from the phylogenetic smoother).
 
 We also have to specify `drop.unused.levels = FALSE` within the gam, as otherwise `mgcv` will treat the unobserved nodes as missing and drop them from the model.
 
 ```{r}
 #| label: fit-phylo-model
 m_phylo1 <- gam(
-  y1 ~ s(species_plus, bs = "mrf", xt = list(penalty = S_phylo)) +
+  y1 ~ s(species_phylo, bs = "mrf", xt = list(penalty = S_phylo)) +
        s(species, bs = "re"),
   data = phylo_df,
   method = "REML", 
@@ -491,7 +511,7 @@ m_phylo1 <- gam(
 )
 
 m_phylo2 <- gam(
-  y2 ~ s(species_plus, bs = "mrf", xt = list(penalty = S_phylo)) +
+  y2 ~ s(species_phylo, bs = "mrf", xt = list(penalty = S_phylo)) +
        s(species, bs = "re"),
   data = phylo_df,
   method = "REML", 
@@ -517,7 +537,90 @@ overview(m_phylo2)
 
 We can see that there is almost no variation assigned to the MRF, while the random effect term has an EDF almost equal to the number of species.
 
+### The role of internal nodes for phylogenetic smoothers
 
-[^internal-nodes]: If you want instead to calculate a penalty for just the observed species (excluding internal nodes), you can set the option `internal_nodes = FALSE` inside the `mrf_penalty` call.  
+
+As noted above, by default the penalty matrix constructed by `mrf_penalty.phlyo` includes the internal nodes of the tree. This is because, under Brownian motion, the distribution of traits for two species is independent of one another after conditioning on the trait values of their common ancestor, leading to a sparse precision matrix when the internal nodes of three are included. This approach will allow for future development of more complex evolutionary models that maintain this Markovian property. It also means that the GAM model automatically estimates  values for the internal nodes (I.e. the common ancestors). 
+
+To see how this can be used, we can visualize these estimates for the internal nodes by creating new prediction data and plotting the predictions on a tree:
+
+```{r}
+#| label: phylo-interpolate
+
+#use gratia's data_slice function to create prediction levels for all the values of species
+phylo_pred_data <- gratia::data_slice(
+  object = m_phylo1, 
+  species_phylo = evenly(species_phylo),
+  species = ref_level(species)
+  ) |>
+  mutate(label = species_phylo)
+
+  #add the predicted values for the two models, excluding the species-level random effect from the predictions
+phylo_pred1 <- phylo_pred_data |>
+  add_fitted(model = m_phylo1, value = "estimate", exclude = "s(species)") 
+phylo_pred2 <- phylo_pred_data |>
+  add_fitted(model = m_phylo2, value = "estimate", exclude = "s(species)")
+  
+```
+
+
+
+```{r}
+#| label: plot-predict-trees
+pred1_tree <- phylo_pred1 |>
+  full_join(tree,y = _, by = "label")
+
+pred2_tree <- phylo_pred2 |>
+  full_join(tree,y = _, by = "label")
+
+
+trs_pred <- list(`Trait 1` = pred1_tree, `Trait 2` = pred2_tree)
+class(trs_pred) <- 'treedataList'
+
+trait_pred_plot <- ggtree(trs_pred) + 
+  facet_wrap(~.id) +
+  geom_nodepoint(aes(fill = estimate), shape = 21, size = 2)+ 
+  geom_tippoint(aes(fill = estimate), shape = 21, size = 2) + 
+  scale_fill_continuous_divergingx(
+    name = "Estimated trait value", 
+    palette = 'RdBu', 
+    mid = 0,
+    rev = TRUE
+    ) +
+  theme(legend.position = "bottom")
+
+trait_pred_plot
+```
+
+
+Note that the root node is estimated to have a non-zero value for both models; this is not an error; in this case, the regression model includes an unpenalized intercept term, so the estimated value of the root here corresponds to the estimated value of the intercept; the estimated phylogenetic smooth value for this node should be zero. 
+
+If you instead want to fit a model for only the tips of a tree, you can do so by specifying `internal_nodes = FALSE`.
+
+```{r}
+#| label: phylo-no-nodes
+S_phylo_tips <- mrf_penalty(tree, internal_nodes = FALSE)
+
+#this should be a 20 x 20 matrix:
+dim(S_phylo_tips)
+```
+
+We can see that this gives an almost identical model fit for the trait with phylogenetic signal. We can do this by using the new penalty, and just setting `drop.unused.levels = FALSE` (although in general you should not rely on this functionality, and instead specify factor levels explicitly in the data):
+
+```{r}
+#| label: phylo-mod-tips
+m_tips_phylo1 <- gam(
+  y1 ~ s(species_phylo, bs = "mrf", xt = list(penalty = S_phylo_tips)) +
+       s(species, bs = "re"),
+  data = phylo_df,
+  method = "REML", 
+  drop.unused.levels = TRUE
+)
+
+overview(m_tips_phylo1)
+```
+
+
+However, this model is now unable to make predictions for internal nodes. 
 
 ## References

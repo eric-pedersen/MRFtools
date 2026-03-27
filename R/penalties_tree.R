@@ -201,7 +201,12 @@
   edge_lengths <- object$edge.length
 
   if (model %in% c("rw1", "brownian")) {
-    pen <- prec_rw1(start = i, end = j, n = n_nodes, dists = edge_lengths)
+    pen <- prec_rw1(
+      start = i,
+      end = j,
+      n = n_nodes,
+      dists = edge_lengths
+    )
   } else if (model == "ou") {
     pen <- prec_ou(
       start = i,
@@ -213,7 +218,7 @@
   }
 
   if (delta) {
-    #add delta onto the diagonal if requested
+    # add delta onto the diagonal if requested
     diag(pen) <- diag(pen) + delta
   }
 
@@ -253,6 +258,7 @@
 #' @inheritParams mrf_penalty.phylo4
 #'
 #' @importFrom ape as.phylo.hclust
+#' @importFrom stats as.hclust
 #' @export
 `mrf_penalty.dendrogram` <- function(
   object,

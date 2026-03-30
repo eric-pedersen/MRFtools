@@ -177,147 +177,6 @@
   plt
 }
 
-#' @importFrom tidyr pivot_longer
-#' @importFrom dplyr as_tibble mutate row_number
-#' @importFrom ggplot2 ggplot aes geom_raster labs
-#' @importFrom colorspace scale_fill_continuous_divergingx
-`plot_penalty_matrix` <- function(
-  x,
-  xlab = NULL,
-  ylab = NULL,
-  title = NULL,
-  subtitle = NULL,
-  caption = NULL,
-  fill_scale = NULL
-) {
-  # convert penalty matrix to long form for plotting
-  r_levs <- rownames(x)
-  c_levs <- colnames(x)
-  mtrx <- x |>
-    as.data.frame() |>
-    dplyr::as_tibble(rownames = ".row") |>
-    pivot_longer(
-      cols = -.row,
-      names_to = ".col", # pivoting produces a column id
-      values_to = ".penalty"
-    ) |>
-    mutate(
-      # set levels to data order from penalty matrix
-      .row = factor(.row, labels = r_levs, levels = r_levs),
-      .col = factor(.col, labels = r_levs, levels = c_levs)
-    )
-
-  # set up default labels if none supplied
-  if (is.null(xlab)) {
-    xlab <- "col"
-  }
-  if (is.null(ylab)) {
-    ylab <- "row"
-  }
-
-  # set up the default fill scale if user didn't supply anything
-  if (is.null(fill_scale)) {
-    fill_scale <- colorspace::scale_fill_continuous_divergingx(
-      palette = 'RdBu',
-      mid = 0,
-      rev = TRUE
-    )
-  }
-
-  # plot
-  mtrx |>
-    ggplot(
-      aes(x = .data$.col, y = .data$.row, fill = .data$.penalty)
-    ) +
-    geom_raster() +
-    fill_scale +
-    labs(
-      x = xlab,
-      y = ylab,
-      fill = "penalty",
-      title = title,
-      subtitle = subtitle,
-      caption = caption
-    )
-}
-
-#' @importFrom tidygraph as_tbl_graph
-#' @importFrom ggraph ggraph create_layout geom_edge_link geom_node_label
-#' @importFrom ggplot2 .data aes
-#' @importFrom rlang abort caller_env
-#'
-`plot_penalty_graph` <- function(
-  x,
-  layout,
-  circular = FALSE,
-  edge = "link",
-  label_nodes = TRUE,
-  ...
-) {
-  edge_fun <- get_edge_fun(edge, call = rlang::caller_env())
-
-  # convert to adjacency matrix and thence to a tbl_graph
-  grph <- x |>
-    abs() |>
-    tidygraph::as_tbl_graph(directed = FALSE) |>
-    tidygraph::activate("nodes") |>
-    dplyr::mutate(node_index = 1:dplyr::n())
-
-  # start from a layout base don the graph
-  lyt <- grph |>
-    ggraph::create_layout(layout = layout, circular = circular, ...)
-
-  # start the plot
-  plt <- lyt |>
-    ggraph::ggraph() +
-    edge_fun()
-
-  # should we label the nodes
-  if (label_nodes) {
-    plt <- plt +
-      ggraph::geom_node_label(
-        ggplot2::aes(label = .data$name)
-      )
-  }
-
-  # return
-  plt
-}
-
-stop_edge_fun_not_found <- function(
-  msg,
-  fun,
-  call = rlang::caller_env()
-) {
-  rlang::abort(
-    msg,
-    class = "edge_not_found",
-    fun = fun,
-    call = call
-  )
-}
-
-get_edge_fun <- function(x, call = rlang::caller_env()) {
-  x <- paste0("geom_edge_", x)
-  fun <- try(match.fun(x), silent = TRUE)
-  if (inherits(fun, "try-error")) {
-    msg <- c(
-      "Problem with 'edge'",
-      "x" = paste0("Function '", x, "()' was not found."),
-      "i" = "Did you forget to load 'tidygraph'?",
-      "i" = "Run 'library(\"tidygraphy\")' and try again."
-    )
-    stop_edge_fun_not_found(
-      msg,
-      fun = x,
-      call = call
-    )
-  } else {
-    fun
-  }
-}
-
-
 #' @title Visualizing penalty matrix or graph object for a cyclic 1D MRF
 #'
 #' @param x an object of class `"cyclic_mrf_penalty"`
@@ -379,4 +238,147 @@ get_edge_fun <- function(x, call = rlang::caller_env()) {
   }
 
   v
+}
+
+
+#internal functions for plotting specific components
+
+#' @importFrom tidyr pivot_longer
+#' @importFrom dplyr as_tibble mutate row_number
+#' @importFrom ggplot2 ggplot aes geom_raster labs
+#' @importFrom colorspace scale_fill_continuous_divergingx
+`plot_penalty_matrix` <- function(
+    x,
+    xlab = NULL,
+    ylab = NULL,
+    title = NULL,
+    subtitle = NULL,
+    caption = NULL,
+    fill_scale = NULL
+) {
+  # convert penalty matrix to long form for plotting
+  r_levs <- rownames(x)
+  c_levs <- colnames(x)
+  mtrx <- x |>
+    as.data.frame() |>
+    dplyr::as_tibble(rownames = ".row") |>
+    pivot_longer(
+      cols = -.row,
+      names_to = ".col", # pivoting produces a column id
+      values_to = ".penalty"
+    ) |>
+    mutate(
+      # set levels to data order from penalty matrix
+      .row = factor(.row, labels = r_levs, levels = r_levs),
+      .col = factor(.col, labels = r_levs, levels = c_levs)
+    )
+  
+  # set up default labels if none supplied
+  if (is.null(xlab)) {
+    xlab <- "col"
+  }
+  if (is.null(ylab)) {
+    ylab <- "row"
+  }
+  
+  # set up the default fill scale if user didn't supply anything
+  if (is.null(fill_scale)) {
+    fill_scale <- colorspace::scale_fill_continuous_divergingx(
+      palette = 'RdBu',
+      mid = 0,
+      rev = TRUE
+    )
+  }
+  
+  # plot
+  mtrx |>
+    ggplot(
+      aes(x = .data$.col, y = .data$.row, fill = .data$.penalty)
+    ) +
+    geom_raster() +
+    fill_scale +
+    labs(
+      x = xlab,
+      y = ylab,
+      fill = "penalty",
+      title = title,
+      subtitle = subtitle,
+      caption = caption
+    )
+}
+
+#' @importFrom tidygraph as_tbl_graph
+#' @importFrom ggraph ggraph create_layout geom_edge_link geom_node_label
+#' @importFrom ggplot2 .data aes
+#' @importFrom rlang abort caller_env
+#'
+`plot_penalty_graph` <- function(
+    x,
+    layout,
+    circular = FALSE,
+    edge = "link",
+    label_nodes = TRUE,
+    ...
+) {
+  edge_fun <- get_edge_fun(edge, call = rlang::caller_env())
+  
+  # convert to adjacency matrix and thence to a tbl_graph
+  grph <- x |>
+    abs() |>
+    tidygraph::as_tbl_graph(directed = FALSE) |>
+    tidygraph::activate("nodes") |>
+    dplyr::mutate(node_index = 1:dplyr::n())
+  
+  # start from a layout base don the graph
+  lyt <- grph |>
+    ggraph::create_layout(layout = layout, circular = circular, ...)
+  
+  # start the plot
+  plt <- lyt |>
+    ggraph::ggraph() +
+    edge_fun()
+  
+  # should we label the nodes
+  if (label_nodes) {
+    plt <- plt +
+      ggraph::geom_node_label(
+        ggplot2::aes(label = .data$name)
+      )
+  }
+  
+  # return
+  plt
+}
+
+stop_edge_fun_not_found <- function(
+    msg,
+    fun,
+    call = rlang::caller_env()
+) {
+  rlang::abort(
+    msg,
+    class = "edge_not_found",
+    fun = fun,
+    call = call
+  )
+}
+
+get_edge_fun <- function(x, call = rlang::caller_env()) {
+  x <- paste0("geom_edge_", x)
+  fun <- try(match.fun(x), silent = TRUE)
+  if (inherits(fun, "try-error")) {
+    msg <- c(
+      "Problem with 'edge'",
+      "x" = paste0("Function '", x, "()' was not found."),
+      "i" = "Did you forget to load 'tidygraph'?",
+      "i" = "Run 'library(\"tidygraphy\")' and try again."
+    )
+    stop_edge_fun_not_found(
+      msg,
+      fun = x,
+      call = call
+    )
+  } else {
+    fun
+  }
 }

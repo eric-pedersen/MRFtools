@@ -6,11 +6,11 @@
 #'   for details on the models
 #' @param cyclic logical; If TRUE, the end points are treated as neighbouring
 #'   each other. See Description for details
+#' @param rho numeric; autoregression parameter for a discrete-time random walk ("ar1"). abs(rho) must be < 1 if specified.
+#' @param alpha numeric; autoregression parameter for a continuous-time random walk ("ou"). rho must be >0. 
+#' @param at_nodes numeric; what nodes (I.e. object values) that you want to evaluate the penalty at. Must include all values levels specified in `object`, but can also include additional levels that you want to evaluate the penalty at (see details).
 #' @param end_points numeric; an optional vector of length 2 providing the end
 #'   points of the period of cycle.
-#' @param rho numeric;
-#' @param at_nodes numeric;
-#' @param add_missing logical;
 #' @param end_dist numeric;
 #'
 #' @inheritParams mrf_penalty.factor
@@ -21,25 +21,37 @@
 #' Models one-dimensional numeric vectors as random-walk models.
 #'
 #' @examples
+#' # create some test data
+#' x_cont <- seq(0,5, length = 10)
+#' x_disc <- 1:10 
+#' 
 #' # linear rw1: 1st order continuous-time random walk
-#' p <- mrf_penalty(1:10)
-#' as.matrix(p)
+#' p1 <- mrf_penalty(x_cont)
+#' p1
 #'
 #' # cyclic rw1:
-#' p <- mrf_penalty(1:10, model = "rw1", cyclic = TRUE)
-#' as.matrix(p)
+#' p2 <- mrf_penalty(x_cont, model = "rw1", cyclic = TRUE)
+#' p2
 #'
 #' # cyclic with user-specified end points
-#' p <- mrf_penalty(1:10, model = "rw1", cyclic = TRUE, end_points = c(0,11))
-#' as.matrix(p)
+#' p3 <- mrf_penalty(x_cont, model = "rw1", cyclic = TRUE, end_points = c(0,6))
+#' p3
+#' 
+#' # Continuous-time auto-regressive (I.e. "ou") model:
+#' p4 <- mrf_penalty(x_cont, model = "ou",alpha = 2)
+#' p4
+#' 
+#' # Discrete-time autoregressive model with negative 1st order autocorrelation
+#' p5 <- mrf_penalty(x_disc, model = "ar1", rho = -0.5)
+#' 
 `mrf_penalty.numeric` <- function(
     object,
     model = c("rw1", "rw2", "ar1", "ou"),
     cyclic = FALSE,
+    alpha = NULL,
     rho = NULL,
     at_nodes = NULL,
     node_labels = NULL,
-    add_missing = NULL,
     end_points = NULL,
     end_dist = NULL,
     delta = FALSE,
@@ -48,8 +60,30 @@
 ) {
   delta <- check_delta(delta)
   model <- match.arg(model)
+  
+  if (model == "ou") {
+    #ou model needs to have 'alpha' specified
+    assertthat::assert_that(
+      is.numeric(alpha),
+      length(alpha) == 1,
+      alpha > 1e-5
+    )
+  }
+  
+  if (model == "ar1") {
+    #ou model needs to have 'rho' specified
+    assertthat::assert_that(
+      is.numeric(rho),
+      length(rho) == 1,
+      abs(rho) < (1-1e-6),
+      #data and end distances should be (to numerical precision) integers for OU models
+      rlang::is_integerish(object),
+      is_null(end_dist) || rlang::is_integerish(end_dist)
+    )
+  }
+  
   #Not all model options are implemented as of yet
-  if (model %in% c("ou", "ar1", "rw2")) {
+  if (model %in% c( "rw2")) {
     stop(
       paste0('model class "', model, '" is not yet implemented'),
       class(object)[[1L]],
@@ -127,57 +161,49 @@
     }
   }
   
-  #create an empty penalty matrix
-  pen <- matrix(0, nrow = n, ncol = n)
+  #indices to identify pairwise differences
+  i <- 1:(n - 1)
+  j <- 2:n
   
-  if (model %in% c("rw1", "ou")) {
-    #calculate distances between values
-    loc_diff <- diff(object)
-    
-    #indices to identify pairwise differences
-    i = 1:(n - 1)
-    j = 2:n
-    
-    if (cyclic) {
-      if (is.null(end_dist)) {
-        end_dist <- min(loc_diff)
-      }
-      # set the distance between the first and last observed value to the
-      # distance between them, accounting for potentially excluded end points
-      # in the observed data
-      obs_end_diff <- end_dist + sum(abs(range(object) - end_points))
-      i <- c(i, 1)
-      j <- c(j, n)
-      loc_diff <- c(loc_diff, obs_end_diff)
-    }
-    
-    if (model == "rw1") {
-      for (k in 1:length(i)) {
-        pen[i[k], j[k]] <- -1 / loc_diff[k]
-      }
-      pen <- pen + t(pen)
-      diag(pen) <- -colSums(pen) + delta
-    } else {
-      #ou process still to be implemented
-    }
-  }
+  #calculate distances between values
+  diffs <- diff(object)
   
   if (cyclic) {
-    type = c("cyclic", "sequential")
-  } else {
-    type = "sequential"
+    if (is.null(end_dist)) {
+      #find the smallest observed distance in the data set. 
+      end_diff <- min(diffs)
+    }
+    # set the distance between the first and last observed value to the
+    # distance between them, accounting for potentially excluded end points
+    # in the observed data
+    obs_end_diff <- end_diff + sum(abs(range(object) - end_points))
+    i <- c(i, 1)
+    j <- c(j, n)
+    diffs <- c(diffs, obs_end_diff)
   }
   
+  if (model == "rw1"){
+    pen <- prec_rw1(start = i, end = j, n = n, dists = diffs)
+  } else if(model == "ou"){
+    pen <- prec_ou(start = i, end = j, n = n_nodes, dists = diffs, alpha = alpha)
+  } else if(model == "ar1"){
+    pen <- prec_ar1(start = i, end = j, n = n_nodes, dists = diffs, rho = rho)
+  } else{
+   message(paste0("Model type '", model, "' is not yet implemented.")) 
+  }
+    
   if (cyclic) {
+    type <- c("cyclic", "sequential")
     params <- list(
       rho = rho,
+      alpha  = alpha,
       cyclic = cyclic,
       end_points = end_points,
       end_dist = end_dist
     )
   } else {
-    #no need to return end points or distances if not cyclic
-    params <- list(rho = rho, cyclic = cyclic)
+    type = "sequential"
+    params <- list(rho = rho, alpha = alpha)
   }
   
   pen_config <- mrf_config(
@@ -189,7 +215,7 @@
     obj = NULL
   )
   
-  pen <- as_mrf_penalty(pen, config = pen_config)
+  pen <- as_mrf_penalty(as.matrix(pen), config = pen_config)
   
   pen
 }

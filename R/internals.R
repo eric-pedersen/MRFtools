@@ -86,7 +86,7 @@
 
 `prec_ar1` <- function(start, end, n, dists, rho){ 
   assertthat::assert_that(
-    is.integer(dists), 
+    rlang::is_integerish(dists), 
     all(dists>0),
     length(start) == length(end),
     length(start) == length(dists),
@@ -120,7 +120,7 @@
 
 # internal function to get the shortest phylogenetic distance between two nodes
 # in a given tree
-get_treedist <- function(tree, tip1, tip2){
+`get_treedist` <- function(tree, tip1, tip2){
   path <- names(phylobase::shortestPath(tree, tip1, tip2))
   #drop the most recent common ancestor of the two nodes
   path <- path[-1]
@@ -128,3 +128,4 @@ get_treedist <- function(tree, tip1, tip2){
   path <- c(path, tip1, tip2)
   sum(phylobase::edgeLength(tree, path))
 }
+

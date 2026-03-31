@@ -2,7 +2,7 @@
 
 #' @title Continuous-time random walk MRF penalty from a numeric vector
 #'
-#' @param model character; one of "rw1", "rw2", "ar1", or "ou". See Description
+#' @param model character; one of "rw1","ou", "ar1",  "rw2", or "rw2_d". "rw1" is a first-order continuous-time random walk model (I.e. Brownian motion). "ou" is the Ornstein-Uhlenbeck (I.e. continuous-time first-order autoregressive model); model = "ou" also requires specifying a value of alpha. "ar1" is a first-order discrete-time autoregressive model, and requires specifying the `rho` parameter.  "rw2" is a second-order random-walk model (the "CRW2" model from Rue and Held 2005); it returns a dense precision matrix for the values of the function evaluated at the chosen points. "rw2_d" is a sparse version of "rw2", that includes both the function itself and the derivatives of the function in its precision matrix. See Description
 #'   for details on the models
 #' @param cyclic logical; If TRUE, the end points are treated as neighbouring
 #'   each other. See Description for details
@@ -46,7 +46,7 @@
 #' 
 `mrf_penalty.numeric` <- function(
     object,
-    model = c("rw1", "rw2", "ar1", "ou"),
+    model = c("rw1", "rw2", "rw2_d", "ar1", "ou"),
     cyclic = FALSE,
     alpha = NULL,
     rho = NULL,
@@ -81,16 +81,7 @@
       is_null(end_dist) || rlang::is_integerish(end_dist)
     )
   }
-  
-  #Not all model options are implemented as of yet
-  if (model %in% c( "rw2")) {
-    stop(
-      paste0('model class "', model, '" is not yet implemented'),
-      class(object)[[1L]],
-      ">",
-      call. = FALSE
-    )
-  }
+
   #remove duplicated object values
   object <- object[!duplicated(object)]
   
@@ -171,16 +162,20 @@
   if (cyclic) {
     if (is.null(end_dist)) {
       #find the smallest observed distance in the data set. 
-      end_diff <- min(diffs)
+      end_dist <- min(diffs)
     }
     # set the distance between the first and last observed value to the
     # distance between them, accounting for potentially excluded end points
     # in the observed data
-    obs_end_diff <- end_diff + sum(abs(range(object) - end_points))
+    obs_end_diff <- end_dist + sum(abs(range(object) - end_points))
     i <- c(i, 1)
     j <- c(j, n)
     diffs <- c(diffs, obs_end_diff)
   }
+  
+  #rescaling differences to avoid issues with very large or very small values
+  #leading to numerical issues
+  diffs <- diffs/median(diffs)
   
   if (model == "rw1"){
     pen <- prec_rw1(start = i, end = j, n = n, dists = diffs)
@@ -188,10 +183,20 @@
     pen <- prec_ou(start = i, end = j, n = n_nodes, dists = diffs, alpha = alpha)
   } else if(model == "ar1"){
     pen <- prec_ar1(start = i, end = j, n = n_nodes, dists = diffs, rho = rho)
-  } else{
-   message(paste0("Model type '", model, "' is not yet implemented.")) 
-  }
-    
+  } else if (model %in% c("rw2_d", "rw2")){
+    deriv <- model == "rw2_d"
+    if(cyclic){
+      end_dist <- diffs[n]
+    } else{
+      end_dist <- Inf
+    }
+      #rw2 penalties handle differences differently from the other models
+      pen <- prec_rw2(diffs[1:(n-1)],n = n, end_dist = end_dist, deriv)
+      if(deriv){
+        node_labels <- c(node_labels, paste0("d_", node_labels))
+      }
+    } else message(stop("Model type '", model, "' is not yet implemented.")) 
+  
   if (cyclic) {
     type <- c("cyclic", "sequential")
     params <- list(

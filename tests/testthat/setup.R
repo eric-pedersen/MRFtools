@@ -1,10 +1,14 @@
 # create variables used elsewhere in tests
 
+n <- 10
 # factor variable
-fv <- factor(letters[1:10])
+fv <- factor(letters[1:n])
 
 # numeric variable
-nv <- 1:10
+nv <- 1:n
+
+# tolerance level for negative eigenvalues
+eigtol <- 1e-14
 
 # hclust object for hclust and dendrogram methods
 hc <- hclust(dist(UScitiesD), "ave")

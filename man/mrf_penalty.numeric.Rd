@@ -6,7 +6,7 @@
 \usage{
 \method{mrf_penalty}{numeric}(
   object,
-  model = c("rw1", "rw2", "ar1", "ou"),
+  model = c("rw1", "rw2", "rw2_d", "ar1", "ou"),
   cyclic = FALSE,
   alpha = NULL,
   rho = NULL,
@@ -22,7 +22,7 @@
 \arguments{
 \item{object}{an R object to create the MRF penalty from.}
 
-\item{model}{character; one of "rw1", "rw2", "ar1", or "ou". See Description
+\item{model}{character; one of "rw1","ou", "ar1",  "rw2", or "rw2_d". "rw1" is a first-order continuous-time random walk model (I.e. Brownian motion). "ou" is the Ornstein-Uhlenbeck (I.e. continuous-time first-order autoregressive model); model = "ou" also requires specifying a value of alpha. "ar1" is a first-order discrete-time autoregressive model, and requires specifying the \code{rho} parameter.  "rw2" is a second-order random-walk model (the "CRW2" model from Rue and Held 2005); it returns a dense precision matrix for the values of the function evaluated at the chosen points. "rw2_d" is a sparse version of "rw2", that includes both the function itself and the derivatives of the function in its precision matrix. See Description
 for details on the models}
 
 \item{cyclic}{logical; If TRUE, the end points are treated as neighbouring
@@ -56,7 +56,7 @@ Models one-dimensional numeric vectors as random-walk models.
 }
 \examples{
 # create some test data
-x_cont <- seq(1.5,10.5, length = 10)
+x_cont <- seq(0,5, length = 10)
 x_disc <- 1:10 
 
 # linear rw1: 1st order continuous-time random walk

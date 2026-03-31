@@ -78,7 +78,7 @@
       abs(rho) < (1-1e-6),
       #data and end distances should be (to numerical precision) integers for OU models
       rlang::is_integerish(object),
-      is_null(end_dist) || rlang::is_integerish(end_dist)
+      rlang::is_null(end_dist) || rlang::is_integerish(end_dist)
     )
   }
 
@@ -175,14 +175,14 @@
   
   #rescaling differences to avoid issues with very large or very small values
   #leading to numerical issues
-  diffs <- diffs/median(diffs)
+  diffs <- diffs/stats::median(diffs)
   
   if (model == "rw1"){
     pen <- prec_rw1(start = i, end = j, n = n, dists = diffs)
   } else if(model == "ou"){
-    pen <- prec_ou(start = i, end = j, n = n_nodes, dists = diffs, alpha = alpha)
+    pen <- prec_ou(start = i, end = j, n = n, dists = diffs, alpha = alpha)
   } else if(model == "ar1"){
-    pen <- prec_ar1(start = i, end = j, n = n_nodes, dists = diffs, rho = rho)
+    pen <- prec_ar1(start = i, end = j, n = n, dists = diffs, rho = rho)
   } else if (model %in% c("rw2_d", "rw2")){
     deriv <- model == "rw2_d"
     if(cyclic){

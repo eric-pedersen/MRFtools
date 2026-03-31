@@ -239,7 +239,7 @@
 `zero_pad` = function(x){
   stopifnot(is.numeric(x))
   x = format(x)
-  x = stringr::str_replace_all(x, pattern = " ", replacement = "0")
+  x = gsub(pattern = " ", replacement = "0",x = x)
   x
 }
 

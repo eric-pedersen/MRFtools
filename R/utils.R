@@ -236,4 +236,177 @@
   penalty
 }
 
+#' @rdname sim_func1d
+#' 
+#' @title Simulate 1D nonlinear functions
+#' 
+#' @description
+#' Simulates nonlinear functions across a range of values. 
+#' 
+#' 
+`sim_func1D` <- function(
+    n_obs = 100, n_funcs = 1,
+    trend_type = c("linear","none", "exponential", "saturating", "sigmoid"),
+    discrete = FALSE, irregular = FALSE,
+    n_sines = 5, spec_power = 1, 
+    cycle_strength = 1, trend_strength = 1,
+    intercept_sd = 1, 
+    trend_scale = 1, 
+    derivs = FALSE
+    ){
+  assertthat::assert_that(is.numeric(n_obs),
+                          n_obs > 2,
+                          n_funcs > 0)
+  trend_type <- match.arg(trend_type)
+  
+  
+  if(discrete){
+    x_min <- 1
+    if(irregular){
+      x_max <- 2*n_obs
+      x <- matrix(0,nrow = n_obs, ncol = n_funcs)
+      for(i in 1:n_funcs){
+        samp <- sample((x_min+1):(x_max-1), size = n_obs - 2, replace = FALSE)
+        x[,i] <- c(x_min,sort(samp), x_max)
+      }
+    }else{
+      x_max <- n_obs
+      x <- matrix(1:n_obs,nrow = n_obs, ncol = n_funcs)
+      
+    }
+
+  } else{
+    x_min <- 0
+    x_max <- 1
+    if(irregular){
+      x <- matrix(0,nrow = n_obs, ncol = n_funcs)
+      for(i in 1:n_funcs){
+        samp <- runif(n_obs-2,x_min, x_max)
+        x[,i] <- c(x_min,sort(samp), x_max)
+      }
+    } else{
+      x <- matrix(seq(x_min, x_max,length = n_obs), nrow = n_obs, ncol = n_funcs) 
+    }
+  }
+  
+  intercepts <- rnorm(n_funcs,0,sd = intercept_sd)
+  f <- matrix(intercepts, nrow = n_obs, ncol = n_funcs,byrow = TRUE)
+  if(derivs){
+    dfdx <- matrix(0, nrow = n_obs, ncol = n_funcs)
+  }
+  if(n_sines>0){
+    freqs <- 1:n_sines
+    
+    amp_sigma <- freqs^(-spec_power)
+    
+    amplitudes <- matrix(0, nrow = n_sines, ncol = n_funcs)
+    phase_coefs <- matrix(0, nrow = n_sines, ncol = n_funcs)
+    
+    for(j in 1:n_funcs){
+      amplitudes[,j] <- rnorm(n_sines, 0, amp_sigma)
+      phase_coefs[,j] <-  runif(n_sines, 0,2*pi)
+    }
+    
+    cyclic <- matrix(0, nrow = n_obs, ncol = n_funcs) 
+    if(derivs){
+      dcyclic <- matrix(0, nrow = n_obs, ncol = n_funcs) 
+    }
+    
+    for(j in 1:n_funcs){
+      for(i in 1:n_sines){
+        cyclic[,j] <-cyclic[,j] + amplitudes[i,j]*sin(freqs[i]*(2*pi/x_max*x[,j] + phase_coefs[i,j]))
+        if(derivs){
+          dcyclic[,j] <- dcyclic[,j] + freqs[i]*(2*pi/x_max)*amplitudes[i,j]*cos(freqs[i]*(2*pi/x_max*x[,j] + phase_coefs[i,j]))
+        }
+      }
+      range_size <- max(cyclic[,j]) - min(cyclic[,j])
+      cyclic[,j] <- cycle_strength*cyclic[,j]/range_size
+      if(derivs){
+        dcyclic[,j] <- cycle_strength*dcyclic[,j]/range_size
+      }
+    }
+    f <- f + cyclic
+    if(derivs){
+      dfdx <- dfdx + dcyclic
+    }
+  }
+  
+  trend_func_list <- list(
+    linear = function(x) x/x_max,
+    exponential = function(x) (trend_scale+1)^(x/x_max),
+    saturating = function(x) trend_scale*x/(trend_scale*x+x_max),
+    sigmoid = function(x) stats::plogis(trend_scale*(x/x_max-0.5))
+    )
+  
+  trend_deriv_list <- list(
+    linear = function(x) 1/x_max,
+    exponential = function(x)((trend_scale+1)^(x/x_max)*ln(trend_scale+1))/x_max,
+    saturating = function(x) trend_scale*x_max/(trend_scale*x+x_max)^2,
+    sigmoid = function(x) trend_scale/x_max*stats::dlogis(trend_scale*(x/x_max-0.5))
+  )
+  if(trend_type != "none"){
+    trend_func <- trend_func_list[[trend_type]]
+    trend_mult <- trend_strength/(trend_func(x_max) - trend_func(x_min))
+    trends <- apply(
+      x,
+      MARGIN = 2, 
+      FUN = function(x){
+        f <- trend_func(x)
+        f <- trend_mult*(f-trend_func(0))
+        f
+      }
+    )
+    
+    f <- f + trends
+    if(derivs){
+      
+      dtrend_func <- trend_deriv_list[[trend_type]]
+      dtrends <- apply(
+        x,
+        MARGIN = 2, 
+        FUN = function(x){
+          d <- dtrend_func(x)
+          d <- trend_mult*d
+          d
+        }
+      )
+      dfdx <- dfdx + dtrends
+    }
+  }
+  
+  dat <-  dplyr::tibble(
+    x = as.vector(x),
+    func = rep(1:n_funcs, each = n_obs),
+    intercept = rep(intercepts, each = n_obs),
+    trend = as.vector(trends),
+    f = as.vector(f)) 
+  
+  if(derivs){
+    dat <- dat |>
+      dplyr::mutate(dfdx = as.vector(dfdx))
+  }
+  
+  return(dat)
+}
+
+## TODO: Add documentation
+#' @rdname rmrf
+#' 
+#' @description
+#' Simulates random draws from a (possibly low-rank) MRF smoother
+#' 
+#' 
+#' @export
+`rmrf` = function(
+    n, Q, mu, 
+    at_nodes = NULL,
+    null_rank = NULL, 
+    null_vecs = NULL, 
+    null_vars = NULL){s
+  assertthat::assert_that(rlang::is_integerish(n),
+                          length(n) ==1,
+                          methods::is(Q, "mrf_penalty"))
+  dim <- nrow(Q)
+  
+}
 ## TODO: implement helper functions to construct penalties for tensor-product MRFs

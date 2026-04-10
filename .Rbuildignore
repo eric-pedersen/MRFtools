@@ -25,3 +25,4 @@
 ^Meta$
 ^local_experiments$
 ^vignettes/\.quarto$
+^vignettes/articles$

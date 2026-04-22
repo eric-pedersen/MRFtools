@@ -1,0 +1,42 @@
+---
+title: "Markov Random Field models for continuous sequential data"
+format: 
+  html:
+    toc: true
+    html-math-method: mathjax
+bibliography: references.bib
+vignette: >
+  %\VignetteIndexEntry{Vignette's Title}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{quarto::html}
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+## Setup
+
+To follow this vignette, you'll need the following packages
+
+```{r}
+#| label: pkg-list
+pkgs <- c( "mgcv", "MRFtools", "Matrix", "dplyr", "ggplot2", "gratia")
+```
+
+Running this will load all these packages into your workspace.
+
+```{r}
+#| label: setup
+#| cache: false
+#| message: false
+vapply(
+  pkgs,
+  library,
+  logical(1),
+  character.only = TRUE,
+  logical.return = TRUE
+)
+```
+
+Here we will 

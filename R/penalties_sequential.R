@@ -10,8 +10,8 @@
 #' @param alpha numeric; autoregression parameter for a continuous-time random walk ("ou"). rho must be >0. 
 #' @param at_nodes numeric; what nodes (I.e. object values) that you want to evaluate the penalty at. Must include all values levels specified in `object`, but can also include additional levels that you want to evaluate the penalty at (see details).
 #' @param end_points numeric; an optional vector of length 2 providing the end
-#'   points of the period of cycle.
-#' @param end_dist numeric;
+#'   points of the period of cycle. If not provided and cyclic = TRUE, the smallest and largest values will be assumed to be the endpoints. 
+#' @param end_dist numeric; an optional number giving the distance between the two end points for cyclic smoothers.
 #'
 #' @inheritParams mrf_penalty.factor
 #'

@@ -209,7 +209,7 @@
     Matrix::isSymmetric(mat),
     is.integer(indices),
     all(indices > 0),
-    all(indices < nrow(mat)),
+    all(indices <= nrow(mat)),
     !anyDuplicated(indices),
     length(indices)< nrow(mat)
   )

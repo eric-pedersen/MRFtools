@@ -38,9 +38,9 @@ each other. See Description for details}
 of the factor.}
 
 \item{end_points}{numeric; an optional vector of length 2 providing the end
-points of the period of cycle.}
+points of the period of cycle. If not provided and cyclic = TRUE, the smallest and largest values will be assumed to be the endpoints.}
 
-\item{end_dist}{numeric;}
+\item{end_dist}{numeric; an optional number giving the distance between the two end points for cyclic smoothers.}
 
 \item{delta}{numeric or logical; either the numeric value to add to the
 diagonal of the MRF penalty matrix, or a logical value indicating if such

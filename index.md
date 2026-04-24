@@ -10,5 +10,5 @@ You can install the development version from
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("eric-pedersen/MRFtools")
+remotes::install_github("gam-mafia/MRFtools")
 ```

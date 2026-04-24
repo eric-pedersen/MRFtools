@@ -14,16 +14,16 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/eric-pedersen/MRFtools/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/gam-mafia/MRFtools/blob/main/DESCRIPTION)
 
 Pedersen E, Simpson G (2026). *MRFtools: Tools for Constructing and
 Plotting Markov Random Fields in R for Graphical Data*. R package
-version 0.0-5, <https://github.com/eric-pedersen/MRFtools>.
+version 0.0-5, <https://github.com/gam-mafia/MRFtools>.
 
     @Manual{,
       title = {MRFtools: Tools for Constructing and Plotting Markov Random Fields in R for Graphical Data},
       author = {Eric J. Pedersen and Gavin L. Simpson},
       year = {2026},
       note = {R package version 0.0-5},
-      url = {https://github.com/eric-pedersen/MRFtools},
+      url = {https://github.com/gam-mafia/MRFtools},
     }

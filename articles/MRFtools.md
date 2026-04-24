@@ -50,7 +50,7 @@ If you have the tools to build source packages, you can use the
 if (isFALSE(require("remotes"))) {
   install.packages("remotes")
 }
-remotes::install_github("eric-pedersen/MRFtools")
+remotes::install_github("gam-mafia/MRFtools")
 ```
 
 Soon, we’ll have *MRFtools* available for installation via ROpenSci’s R

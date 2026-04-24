@@ -5,7 +5,7 @@ Authors@R: c(
     person(
         given = "Eric J.",
         family = "Pedersen",
-        email = "eric.j.pedersen@gmail.com",
+        email = "eric.pedersen@concordia.ca",
         role = c("aut", "cre"),
         comment = c(ORCID = "0000-0003-1016-540X")
     ),
@@ -23,7 +23,7 @@ Authors@R: c(
         role = c("ctb"),
         comment = c(ORCID = "0000-0003-0268-818X")
     ))
-Maintainer: Eric J. Pedersen <eric.j.pedersen@gmail.com>
+Maintainer: Eric J. Pedersen <eric.pedersen@concordia.ca>
 Depends:
     R (>= 4.1.0)
 Imports:
@@ -55,8 +55,8 @@ Suggests:
 Description: Utility functions for using Markov Random Field smooths in Generalized Additive Models fitted with the 'mgcv' package.
 License: GPL-3
 LazyData: true
-URL: https://github.com/eric-pedersen/MRFtools
-BugReports: https://github.com/eric-pedersen/MRFtools/issues
+URL: https://github.com/gam-mafia/MRFtools
+BugReports: https://github.com/gam-mafia/MRFtools/issues
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Encoding: UTF-8

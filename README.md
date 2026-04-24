@@ -13,7 +13,7 @@ coverage](https://codecov.io/gh/gam-mafia/MRFtools/branch/main/graph/badge.svg)]
 [![GitHub
 Version](https://img.shields.io/github/r-package/v/gam-mafia/MRFtools?label=GitHub%20Version)](https://github.com/gam-mafia/MRFtools/blob/main/DESCRIPTION)
 <!-- [![Downloads](https://cranlogs.r-pkg.org/badges/sspm?color=brightgreen)](https://CRAN.R-project.org/package=sspm/) -->
-<!-- [![Latest Release](https://img.shields.io/github/v/release/eric-pedersen/MRFtools?label=Latest%20Release)](https://github.com/eric-pedersen/MRFtools/releases/latest) -->
+<!-- [![Latest Release](https://img.shields.io/github/v/release/gam-mafia/MRFtools?label=Latest%20Release)](https://github.com/gam-mafia/MRFtools/releases/latest) -->
 <!-- [![CRAN Version](https://img.shields.io/cran/v/sspm?label=CRAN%20Version)](https://CRAN.R-project.org/package=sspm) -->
 <!-- badges: end -->
 
@@ -27,5 +27,5 @@ You can install the development version from
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("eric-pedersen/MRFtools")
+remotes::install_github("gam-mafia/MRFtools")
 ```

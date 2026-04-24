@@ -1,13 +1,23 @@
-# linear mrf_penalty with a numeric
+# linear sequential mrf_penalties
 
     Code
-      print(pen)
+      print(seq_pen1)
     Output
       Markov Random Field penalty
       Type: sequential
       N   : 10
 
-# cyclic mrf_penalty with a numeric
+# cyclic sequential mrf_penalty
+
+    Code
+      print(pen_cyclic)
+    Output
+      Markov Random Field penalty
+      Type: cyclic
+      Type: sequential
+      N   : 10
+
+# cyclic sequential mrf_penalty with user-specified end points
 
     Code
       print(pen)
@@ -17,15 +27,23 @@
       Type: sequential
       N   : 10
 
-# cyclic mrf_penalty with a numeric and user end points
+# linear sequential rw2 mrf_penalty
 
     Code
-      print(pen)
+      print(pen_cw2)
     Output
       Markov Random Field penalty
-      Type: cyclic
       Type: sequential
       N   : 10
+
+---
+
+    Code
+      print(pen_cw2_d)
+    Output
+      Markov Random Field penalty
+      Type: sequential
+      N   : 20
 
 # fully connected mrf_penalty with a factor
 

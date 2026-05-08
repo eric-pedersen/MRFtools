@@ -58,8 +58,8 @@ LazyData: true
 URL: https://github.com/eric-pedersen/MRFtools
 BugReports: https://github.com/eric-pedersen/MRFtools/issues
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Encoding: UTF-8
 Config/testthat/edition: 3
 VignetteBuilder: 
     quarto
+Config/roxygen2/version: 8.0.0

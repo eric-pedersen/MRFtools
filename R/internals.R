@@ -24,7 +24,17 @@
 }
 
 
-
+#' @noRd
+#' @title Function for generating precision matrices for 1st order RWs for 1D data
+#' 
+#' @param start Indices for the starting value of an arrow connecting two obs
+#' 
+#' @param end Indices for the starting value of an arrow connecting two obs. Must be the same length as `start`.
+#' 
+#' @param n Total number of values for the smoother
+#' 
+#' @param dists Distances between pairs of observations. Must be a vector of positive values of the same length as `start`
+#' 
 `prec_rw1` <- function(start, end, n, dists){
   assertthat::assert_that(
     is.numeric(dists), 
@@ -32,7 +42,11 @@
     length(start) == length(end),
     length(start) == length(dists),
     all(start < end),
-    anyDuplicated(cbind(start,end))==0)
+    anyDuplicated(cbind(start,end))==0,
+    all(dplyr::between(start, 1, n)),
+    all(dplyr::between(end, 1, n))
+  )
+  
   
   values <- -1/dists
   
@@ -40,15 +54,28 @@
   prec <- Matrix::sparseMatrix(
     i = start, j = end, x = values,
     dims = c(n, n),
-    symmetric = TRUE)
+    symmetric = TRUE
+    )
   
   diag(prec) <- -colSums(prec)
   
-  return(prec)
-  
+  prec
 }
 
-
+#' @description Calculates the precision matrix for a 1d 1st order continuous-time autoregressive
+#'   random walk (I.e. an Ornstein-Uhlenbeck, or OU process). Takes two vectors of indices (start
+#'   and end) saying which nodes out of the n total nodes are connected to each other. The `alpha`
+#'   parameter controls the strength of the autoregressive component relative to the ends of
+#'   function.
+#'
+#' @param start vector of starting indices. All values must be between 1 and n
+#' @param end vector of ending indices (nodes that follow the start node in the list)
+#' @param n Total number of nodes in the system
+#' @param dists The distances between the pairs of nodes. Must be positive numbers.
+#' @param alpha The autocorrelation strength of the random walk. Must range between 1e-5 and
+#'   infinity, with the lower limit set to avoid numerical issues with dividing by very small
+#'   numbers
+#' 
 `prec_ou` <- function(start, end, n, dists, alpha){ 
   assertthat::assert_that(
     is.numeric(dists), 
@@ -64,7 +91,7 @@
   rho <- exp(-alpha)
   dist_exp <- rho^dists
   
-  #scales covariances so that, in the limit of rho -> 1, results in a rw matrixs
+  #scales covariances so that, in the limit of rho -> 1, results in a rw matrix
   rho_scale <- 2*(1-rho)
   
   values <- - dist_exp/(1-dist_exp^2) * rho_scale
@@ -77,15 +104,34 @@
   for(m in 1:length(start)){
     i <- start[m]
     j <- end[m]
+    #need to add the (negatives) of the values to both the start and end point in the diagonals
+    #Since the matrix is symmetric, the same edge will not appear twice to allow for that addition
+    #by just selecting an index for i
     diag(prec)[c(i,j)] <- diag(prec)[c(i,j)] - dist_exp[m]*values[m]
   }
   
-  return(prec)
+  prec
 }
 
-
+#' @description
+#' Calculates the precision matrix for a 1d 1st order discrete-time autoregressive 
+#' random walk. Takes two vectors of indices (start and end) saying which nodes
+#' out of the n total nodes are connected to each other. The `rho` parameter
+#' controls the strength of the autoregressive component relative to the ends of
+#' function. 
+#' 
+#' @param start vector of starting indices. All values must be between 1 and n
+#' @param end vector of ending indices (nodes that follow the start node in the list)
+#' @param n Total number of nodes in the system
+#' @param dists The distances between the pairs of nodes. Must be positive integers.
+#' @param rho The autocorrelation strength of the random walk. Must range between -1 and 1.
+#' 
 `prec_ar1` <- function(start, end, n, dists, rho){ 
   assertthat::assert_that(
+    #is_integerish checks if the distances are "integer-like" to numerical
+    #precision without requiring the user to specify distances as integers.
+    #Since this is for a discrete-time random walk, all distances must be
+    #integer-like
     rlang::is_integerish(dists), 
     all(dists>0),
     length(start) == length(end),
@@ -96,27 +142,62 @@
     abs(rho) <  1-1e-6
   )
   
+  #The correlation between two observations distance 1 away is rho, and 
+  #increasing this distance leads to scaling rho by the power of the distance
   dist_exp <- rho^dists
   
-  #scales covariances so that, in the limit of rho -> 1, results in a rw matrixs
+  #scales covariances so that, in the limit of rho -> 1, results in a rw matrix
   rho_scale <- 2*(1-abs(rho))
   
+  #negative of partial autocovariance betwee pairs.
   values <- - dist_exp/(1-dist_exp^2) * rho_scale
+  
+  #create a sparse precision matrix. 
   prec <- Matrix::sparseMatrix(
     i = start, j = end, x = values,
     dims = c(n, n),
     symmetric = TRUE)
   
   diag(prec) <- rho_scale
-  for(m in 1:length(start)){
+  
+  for(m in seq_along(start)){
     i <- start[m]
     j <- end[m]
+    #need to add the (negatives) of the values to both the start and end point in the diagonals
+    #Since the matrix is symmetric, the same edge will not appear twice to allow for that addition
+    #by just selecting an index for i
     diag(prec)[c(i,j)] <- diag(prec)[c(i,j)] - dist_exp[m]*values[m]
   }
   
-  return(prec)
+  prec
 }
 
+#' @description Calculates the precision matrix for a 1-dimensional 2nd order
+#'   continuous time random walk. The underlying model is an integrated Wiener
+#'   process (RW2 in Rue and Held, 2005) across possibly irregularly spaced
+#'   points. Values are assumed to be in order, with distances indexing how far
+#'   apart observations are. Can be made into a cyclic RW2 model by specifying a
+#'   finite end distance (`end_dist`).
+#'
+#'   The sparse version of this process gives a 2n x 2n block matrix; the upper
+#'   n x n block is the precision matrix for the values of the function at the
+#'   specified points, the lower right n x n block is the precision matrix for
+#'   the derivatives of the function at those points. It has rank 2n-2 (both the
+#'   flat line and the linear function fall in the null space).
+#'
+#'   The dense version of this precision matrix is an n x n matrix for only the
+#'   values of the function. It has rank n-1 (the flat line is in the null
+#'   space)
+#'
+#' @param dists The distances between the pairs of nodes. Must be positive
+#'   numbers
+#' @param n The number of nodes in the series. Must be equal to 1 + the number
+#'   of distances
+#' @param end_dist The distance between the end points. If infinite, the random
+#'   walk is non-cyclic.
+#' @param derivs Whether to return the sparse matrix (with both derivatives and
+#'   values of the function) or the dense matrix for the function values only.
+#' 
 `prec_rw2` <- function(dists, n, end_dist = Inf, derivs = FALSE){
   assertthat::assert_that(
     is.numeric(dists), 
@@ -183,10 +264,10 @@
   pen <- methods::as(pen, "symmetricMatrix")
   
   if(!derivs){
-    pen <- calc_subprec(pen, indices = 1:n)
+    pen <- calc_subprec(pen, indices = seq_len(n))
   }
   
-  return(pen)
+  pen
 }
 
 
@@ -231,7 +312,7 @@
   
   xx_sub <- xx - xy %*% yy_inv %*% Matrix::t(xy)
   
-  return(xx_sub)
+  xx_sub
 }
 
 

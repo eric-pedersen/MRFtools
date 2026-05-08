@@ -16,7 +16,7 @@
 \item{circular}{logical;}
 
 \item{...}{arguments passed to other methods and ultimately on to
-\code{\link[ggraph:ggraph]{ggraph::create_layout()}} if \code{graph = TRUE}.}
+\code{\link[ggraph:create_layout]{ggraph::create_layout()}} if \code{graph = TRUE}.}
 }
 \description{
 Visualizing penalty matrix or graph object for a cyclic 1D MRF

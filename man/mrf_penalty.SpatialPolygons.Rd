@@ -24,7 +24,7 @@ fully connected graph (\code{"full"}) or a random effect (random intercepts;
 of the factor.}
 
 \item{buffer}{numeric; buffer distance for all or for individual elements
-of the geometry. See argument \code{dist} in \link[sf:st_buffer]{sf::st_buffer} for details.}
+of the geometry. See argument \code{dist} in \link[sf:geos_unary]{sf::st_buffer} for details.}
 
 \item{delta}{numeric or logical; either the numeric value to add to the
 diagonal of the MRF penalty matrix, or a logical value indicating if such

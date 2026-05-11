@@ -2,10 +2,10 @@
 
 n <- 10
 # factor variable
-fv <- factor(letters[1:n])
+fv <- factor(letters[seq_len(n)])
 
 # numeric variable
-nv <- 1:n
+nv <- seq_len(n)
 
 # tolerance level for negative eigenvalues
 eigtol <- 1e-14

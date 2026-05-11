@@ -2,14 +2,12 @@
 # functions from other scripts AT YOUR OWN RISK, as the interface for these 
 # functions may change without notice.
 
-## TODO: extend this function: 
-##   Should validate that the penalty has the right  dimensions and is positive
-##   semidefinite
-`check_penalty` <- function(...) {
-  list()
-}
 
-
+#' @keywords internal
+#' @title Check delta parameter
+#' @description Internal function to check whether the delta parameter is valid
+#' when added to the diagonal of a precision matrix
+#' 
 `check_delta` <- function(delta) {
   if (length(delta) > 1) {
     stop("'delta' has to be a single value, either logical or numeric")
@@ -24,16 +22,21 @@
 }
 
 
-#' @noRd
-#' @title Function for generating precision matrices for 1st order RWs for 1D data
-#' 
+#' @keywords internal
+#' @title Generator for 1st order randm walk
+#' @title Internal function for generating precision matrices for 1st order RWs
+#'   for 1D data. This is the same as a Brownian motion stochastic process
+#'   sampled at a finite number of points
+#'
 #' @param start Indices for the starting value of an arrow connecting two obs
-#' 
-#' @param end Indices for the starting value of an arrow connecting two obs. Must be the same length as `start`.
-#' 
+#'
+#' @param end Indices for the starting value of an arrow connecting two obs.
+#'   Must be the same length as `start`.
+#'
 #' @param n Total number of values for the smoother
-#' 
-#' @param dists Distances between pairs of observations. Must be a vector of positive values of the same length as `start`
+#'
+#' @param dists Distances between pairs of observations. Must be a vector of
+#'   positive values of the same length as `start`
 #' 
 `prec_rw1` <- function(start, end, n, dists){
   assertthat::assert_that(
@@ -46,7 +49,6 @@
     all(dplyr::between(start, 1, n)),
     all(dplyr::between(end, 1, n))
   )
-  
   
   values <- -1/dists
   
@@ -62,19 +64,24 @@
   prec
 }
 
-#' @description Calculates the precision matrix for a 1d 1st order continuous-time autoregressive
-#'   random walk (I.e. an Ornstein-Uhlenbeck, or OU process). Takes two vectors of indices (start
-#'   and end) saying which nodes out of the n total nodes are connected to each other. The `alpha`
-#'   parameter controls the strength of the autoregressive component relative to the ends of
-#'   function.
+#' @keywords internal
+#' @title Generator function for an Ornstein-Uhlenbeck process
+#' @description Internal function that calculates the precision matrix for a 1d
+#'   1st order continuous-time autoregressive random walk (I.e. an
+#'   Ornstein-Uhlenbeck, or OU process). Takes two vectors of indices (start and
+#'   end) saying which nodes out of the n total nodes are connected to each
+#'   other. The `alpha` parameter controls the strength of the autoregressive
+#'   component relative to the ends of function.
 #'
 #' @param start vector of starting indices. All values must be between 1 and n
-#' @param end vector of ending indices (nodes that follow the start node in the list)
+#' @param end vector of ending indices (nodes that follow the start node in the
+#'   list)
 #' @param n Total number of nodes in the system
-#' @param dists The distances between the pairs of nodes. Must be positive numbers.
-#' @param alpha The autocorrelation strength of the random walk. Must range between 1e-5 and
-#'   infinity, with the lower limit set to avoid numerical issues with dividing by very small
-#'   numbers
+#' @param dists The distances between the pairs of nodes. Must be positive
+#'   numbers.
+#' @param alpha The autocorrelation strength of the random walk. Must range
+#'   between 1e-5 and infinity, with the lower limit set to avoid numerical
+#'   issues with dividing by very small numbers
 #' 
 `prec_ou` <- function(start, end, n, dists, alpha){ 
   assertthat::assert_that(
@@ -113,18 +120,24 @@
   prec
 }
 
-#' @description
-#' Calculates the precision matrix for a 1d 1st order discrete-time autoregressive 
-#' random walk. Takes two vectors of indices (start and end) saying which nodes
-#' out of the n total nodes are connected to each other. The `rho` parameter
-#' controls the strength of the autoregressive component relative to the ends of
-#' function. 
-#' 
+#' @keywords internal
+#' @title Generator function for a 1st order discrete-time autoregessive
+#'   process.
+#'
+#' @description Internal function that calculates the precision matrix for a 1d
+#'   1st order discrete-time autoregressive random walk. Takes two vectors of
+#'   indices (start and end) saying which nodes out of the n total nodes are
+#'   connected to each other. The `rho` parameter controls the strength of the
+#'   autoregressive component relative to the ends of function.
+#'
 #' @param start vector of starting indices. All values must be between 1 and n
-#' @param end vector of ending indices (nodes that follow the start node in the list)
+#' @param end vector of ending indices (nodes that follow the start node in the
+#'   list)
 #' @param n Total number of nodes in the system
-#' @param dists The distances between the pairs of nodes. Must be positive integers.
-#' @param rho The autocorrelation strength of the random walk. Must range between -1 and 1.
+#' @param dists The distances between the pairs of nodes. Must be positive
+#'   integers.
+#' @param rho The autocorrelation strength of the random walk. Must range
+#'   between -1 and 1.
 #' 
 `prec_ar1` <- function(start, end, n, dists, rho){ 
   assertthat::assert_that(
@@ -172,12 +185,16 @@
   prec
 }
 
-#' @description Calculates the precision matrix for a 1-dimensional 2nd order
-#'   continuous time random walk. The underlying model is an integrated Wiener
-#'   process (RW2 in Rue and Held, 2005) across possibly irregularly spaced
-#'   points. Values are assumed to be in order, with distances indexing how far
-#'   apart observations are. Can be made into a cyclic RW2 model by specifying a
-#'   finite end distance (`end_dist`).
+#' @keywords internal
+#' @title Generator function for a 2nd order continuous-time random walk for
+#'   irregularly sampled points
+#'
+#' @description Internal function that calculates the precision matrix for a
+#'   1-dimensional 2nd order continuous time random walk. The underlying model
+#'   is an integrated Wiener process (RW2 in Rue and Held, 2005) across possibly
+#'   irregularly spaced points. Values are assumed to be in order, with
+#'   distances indexing how far apart observations are. Can be made into a
+#'   cyclic RW2 model by specifying a finite end distance (`end_dist`).
 #'
 #'   The sparse version of this process gives a 2n x 2n block matrix; the upper
 #'   n x n block is the precision matrix for the values of the function at the
@@ -271,8 +288,13 @@
 }
 
 
-# internal function to get the shortest phylogenetic distance between two nodes
-# in a given tree
+#' @keywords internal
+#' @title Path length distance between two nodes of a phylogenetic tree
+#' @description Internal function to get the shortest phylogenetic distance
+#'   between two nodes in a given tree
+#' @param tree a phylo4 tree object
+#' @param tip1 The starting tip (either named or as an index)
+#' @param tip2 the ending tip for the path
 `get_treedist` <- function(tree, tip1, tip2){
   path <- names(phylobase::shortestPath(tree, tip1, tip2))
   #drop the most recent common ancestor of the two nodes
@@ -282,9 +304,18 @@
   sum(phylobase::edgeLength(tree, path))
 }
 
-# function to find the precision matrix of a subset of values (specified via
-# indices) using block-inversion block-inversion of sparse matrices to find the
-# inverse of the submatrix specified by mat[indices, indices]
+#' @keywords internal
+#' @title Calculate precision matrix for a subset of nodes
+#' @description Internal function to find the precision matrix of a subset of
+#'   values (specified via indices) using block-inversion block-inversion of
+#'   sparse matrices to find the inverse of the submatrix for the selected
+#'   indices. Note that, even when given a sparse matrix, the precision matrix
+#'   for a subset of nodes will be in general dense.
+#'
+#' @param mat n x n positive semidefinite precision matrix, generated by the
+#'   Matrix package
+#' @param indices numeric indices for the rows/columns of the submatrix to be
+#'   generated. All indices must be between 1 and n with no  repeated indices
 `calc_subprec` <- function(mat, indices){
   assertthat::assert_that(
     Matrix::isSymmetric(mat),
@@ -315,8 +346,10 @@
   xx_sub
 }
 
-
-#add leading zeros to a vector of numbers to improve sorting
+#' @title Add zeros onto numeric factor level names
+#' @description add leading zeros to a vector of numbers to improve sorting. Not
+#'   currently used in code; here if needed.
+#' @keywords internal
 `zero_pad` = function(x){
   stopifnot(is.numeric(x))
   x = format(x)
@@ -325,3 +358,10 @@
 }
 
 
+#' @noRd
+#' @description To-be implemented internal function to check validate that the
+#' penalty has the right dimensions and is positive semidefinite
+`check_penalty` <- function(...) {
+  ## TODO: extend this function
+  list()
+}

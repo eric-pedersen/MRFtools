@@ -14,24 +14,25 @@ in one of three ways
     defining one or more polygons, one per level of the factor provided
     to the smooth, where the spatial arrangement of polygons is used to
     build a neighbourhood structure and from that a penalty matrix
-    $\mathbf{S}$,
+    $`\mathbf{S}`$,
 
 2.  `nb` — providing the neighbourhood structure itself, as a list, with
     one element per level of the factor supplied to the smooth. Each
     element of this list provides the indices of the levels for the
     neighbours of that element. From this list, the corresponding
-    penalty matrix $\mathbf{S}$ is created, and
+    penalty matrix $`\mathbf{S}`$ is created, and
 
-3.  `penalty` — providing the penalty matrix $\mathbf{S}$ directly.
+3.  `penalty` — providing the penalty matrix $`\mathbf{S}`$ directly.
 
 The flexibility of the MRF basis arises from the last of these — the
 ability to provide a penalty matrix directly. However, many users of
 *mgcv* are unlikely to be able to specify `penalty` themselves,
 especially because there are some strict rules that must be followed in
-order for the correct $\mathbf{S}$ to be specified without producing an
-error from *mgcv*. *MRFtools* aims to take some of the pain out of using
-the MRF basis by providing functions that create the `penalty` matrix
-for you for a range of commonly encountered R objects and structures.
+order for the correct $`\mathbf{S}`$ to be specified without producing
+an error from *mgcv*. *MRFtools* aims to take some of the pain out of
+using the MRF basis by providing functions that create the `penalty`
+matrix for you for a range of commonly encountered R objects and
+structures.
 
 This vignette will briefly describe how to use *MRFtools* to specify a
 penalty matrix, and how to use that penalty matrix with *mgcv*. The aim
@@ -46,6 +47,7 @@ If you have the tools to build source packages, you can use the
 *remotes* package to install *MRFtools*.
 
 ``` r
+
 # do we need to install remotes?
 if (isFALSE(require("remotes"))) {
   install.packages("remotes")
@@ -61,6 +63,7 @@ Universe system.
 To follow this vignette, you’ll need the following packages
 
 ``` r
+
 pkgs <- c("ape", "mgcv", "MRFtools", "dplyr", "ggplot2", "gratia", "ggtree", "colorspace")
 ```
 
@@ -69,6 +72,7 @@ installed, you’ll need to install the *BiocManager* package first to
 perform the installation:
 
 ``` r
+
 if (!require("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 
@@ -76,6 +80,7 @@ BiocManager::install("ggtree")
 ```
 
 ``` r
+
 vapply(
   pkgs,
   library,
@@ -94,16 +99,23 @@ vapply(
 
 One of the ways in which regular temporal data can be modelled in
 general is through a discrete random walk (RW). In this section I’ll
-illustrate how to create the corresponding penalty matrix $\mathbf{S}$
+illustrate how to create the corresponding penalty matrix $`\mathbf{S}`$
 for a first order discrete random walk and include this in a GAM.
 
 A discrete first order random walk (RW1) is defined by
 
-$$x_{1} \sim \mathcal{N}(0,\sigma^{2}),\qquad x_{t} = x_{t - 1} + \varepsilon_{t},\qquad\varepsilon_{t} \sim \mathcal{N}(0,\tau^{-1}).$$
+``` math
+x_1 \sim \mathcal{N}(0, \sigma^2),
+\qquad
+x_t = x_{t-1} + \varepsilon_t,
+\qquad
+\varepsilon_t \sim \mathcal{N}(0, \tau^{-1}).
+```
 
 We can simulate a RW1 using the following function
 
 ``` r
+
 rw1_sim <- function(n, sigma = 1, tau = 1) {
   # n    = length of the random walk
   # sigma = sd of initial state x1
@@ -130,6 +142,7 @@ Let’s simulate a 100 time step series from a RW1 and store the data in a
 data frame
 
 ``` r
+
 df <- tibble(
   y = withr::with_seed(2026 - 3 - 24, rw1_sim(n = 100)),
   x = seq_len(100)
@@ -139,6 +152,7 @@ df <- tibble(
 and visualise it
 
 ``` r
+
 df |>
   ggplot(
     aes(x = x, y = y)
@@ -151,7 +165,7 @@ df |>
 To model this time series using a Gaussian MRF and the MRF basis, we
 need to do a couple of things to prepare the data for *mgcv*
 
-1.  Create the penalty matrix $\mathbf{S}$, and
+1.  Create the penalty matrix $`\mathbf{S}`$, and
 
 2.  Coerce the time covariate, here `x`, into a factor.
 
@@ -159,14 +173,15 @@ This latter step seems an odd thing to do for a time series, but it is a
 requirement of *mgcv* and reflects the original intention of modelling
 discrete areal data.
 
-### Creating $\mathbf{S}$
+### Creating $`\mathbf{S}`$
 
-The penalty matrix $S$ is created using
+The penalty matrix $`\mathrm{S}`$ is created using
 [`mrf_penalty()`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.md),
 which for the RW1 talks a vector of regularly spaced discrete time
-points. To create $S$ for our series, we use
+points. To create $`\mathrm{S}`$ for our series, we use
 
 ``` r
+
 S <- with(df, mrf_penalty(x))
 ```
 
@@ -174,6 +189,7 @@ This creates an `"mrf_penalty"` object, a matrix with some extra
 attributes:
 
 ``` r
+
 S
 ```
 
@@ -185,6 +201,7 @@ As it is a little cumbersome to visualize a 100 by 100 matrix, we’ll
 repeat the above using on the first 10 time points
 
 ``` r
+
 with(df, mrf_penalty(x[1:10])) |>
   as.matrix()
 ```
@@ -206,20 +223,21 @@ are (temporal) neighbours. The diagonal of the matrix counts the number
 of neighbours for each observation. At the start and end time points of
 the series, the observations have a single neighbour, while the
 intermediate time points have two neighbours: the observation prior
-($x_{t - 1}$ and the one after ($x_{t + 1}$) $x_{t}$.
+($`x_{t-1}`$ and the one after ($`x_{t+1}`$) $`x_t`$.
 
 ### Creating the data
 
 The second step, creating a factor with the correct levels, is required
 for *mgcv* to align observations for each *unit* with a particular row
-and column of $S$. This is done by using a factor for the time variable,
-where the levels of the factor identify the time points. This
-construction allows for multiple observations for each row/column in
-$S$. We’ll look at examples like that in other vignettes. For now, we
-just need to create a new factor, `fx`, from `x` with the correct
-levels.
+and column of $`\mathrm{S}`$. This is done by using a factor for the
+time variable, where the levels of the factor identify the time points.
+This construction allows for multiple observations for each row/column
+in $`\mathrm{S}`$. We’ll look at examples like that in other vignettes.
+For now, we just need to create a new factor, `fx`, from `x` with the
+correct levels.
 
 ``` r
+
 df <- df |>
   mutate(
     fx = factor(x, levels = x)
@@ -231,6 +249,7 @@ df <- df |>
 Now we are ready to fit the GAM using *mgcv*
 
 ``` r
+
 m_rw1 <- gam(
   y ~ s(fx, bs = "mrf", xt = list(penalty = S)),
   data = df,
@@ -238,7 +257,7 @@ m_rw1 <- gam(
 )
 ```
 
-Instead of using a smooth of $x$, as we would in a typical GAM, we
+Instead of using a smooth of $`x`$, as we would in a typical GAM, we
 request a smooth of the factor `fx`. The `bs` argument allows us to
 specify the type of basis to use for the smooth function. Here, we
 specify `"mrf"` to use the Gaussian MRF basis. The final step is to pass
@@ -255,6 +274,7 @@ implemented. Instead, we can evaluate the fitted model at the observed
 time points and plot the predicted values.
 
 ``` r
+
 m_rw1 |>
   fitted_values() |>
   mutate(x = as.character(fx) |> as.numeric()) |>
@@ -280,12 +300,14 @@ models involving smooths, not very, well, smooth. This isn’t surprising
 in this case, however, as the underlying data generation process is a
 RW1. Importantly, the fitted trend hasn’t interpolated the data; there
 has been some shrinkage of the coefficients. This is a full-rank MRF,
-with $n - 1$ (99) basis functions. If we consult the model summary, we
+with $`n-1`$ (99) basis functions. If we consult the model summary, we
 that the effective degrees of freedom for the fitted trend is 79.05
 
 ``` r
+
 overview(m_rw1)
 ```
+
 
     Generalized Additive Model with 2 terms
 
@@ -301,11 +323,14 @@ How does the discrete RW1 work with a different underlying model? In the
 next example we simulate autocorrelated observations from the smooth
 function
 
-$$(1280*x_{t}^{4})*(1 - x_{t})^{4}.$$
+``` math
+(1280 * x_t^4) * (1- x_t)^4 .
+```
 
 To simulate from this function plus AR(1) noise we can use
 
 ``` r
+
 sim_fun <- function(n = 100, rho) {
   time <- 1:n
   xt <- time / n
@@ -316,9 +341,10 @@ sim_fun <- function(n = 100, rho) {
 ```
 
 which we use to generate 100 observations, with moderate autocorrelation
-($\rho$ = 0.1713)
+($`\rho`$ = 0.1713)
 
 ``` r
+
 df2 <- withr::with_seed(
   321,
   sim_fun(rho = 0.1713)
@@ -328,6 +354,7 @@ df2 <- withr::with_seed(
 Next, we generate the penalty matrix for these observations
 
 ``` r
+
 S2 <- with(df2, mrf_penalty(time))
 ```
 
@@ -341,6 +368,7 @@ helper function. This will ensure that the factor of time points we
 create has the correct levels
 
 ``` r
+
 df2 <- df2 |>
   mutate(
     f_time = factor(time, levels = get_labels(S2))
@@ -359,6 +387,7 @@ Now we can fit the GAM to the simulated data, again passing along the
 penalty matrix to the `xt` argument of *mgcv*’s `s()` function
 
 ``` r
+
 m2_rw1 <- gam(
   y ~ s(f_time, bs = "mrf", xt = list(penalty = S2)),
   data = df2,
@@ -369,8 +398,10 @@ m2_rw1 <- gam(
 Looking at the model summary we see strong penalization.
 
 ``` r
+
 overview(m2_rw1)
 ```
+
 
     Generalized Additive Model with 2 terms
 
@@ -389,6 +420,7 @@ Plotting the fitted smooth is again illustrative of the behaviour of the
 discrete RW1:
 
 ``` r
+
 m2_rw1 |>
   fitted_values() |>
   mutate(time = as.character(f_time) |> as.numeric()) |>
@@ -422,7 +454,7 @@ noise is part of the signal we tasked the model with finding when we
 fitted the RW1 process.
 
 If we believe the true relationship between, in this case, time and the
-response, $Y$, is smooth (in the usual sense), then we should instead
+response, $`Y`$, is smooth (in the usual sense), then we should instead
 fit a model using one of the standard spline bases provided by *mgcv*.
 The RW1, and most models that
 [`mrf_penalty()`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.md)
@@ -434,6 +466,7 @@ need to reduce the dimensionality of the penalty we use. Instead of
 creating the rull penalty matrix, here
 
 ``` r
+
 dim(S)
 ```
 
@@ -448,6 +481,7 @@ Note that this is done when specifying the smooth in the model formula;
 we still need to pass the full RW1 penalty matrix to `gam()`:
 
 ``` r
+
 m3_rw1 <- gam(
   y ~ s(fx, bs = "mrf", xt = list(penalty = S), k = 20),
   data = df,
@@ -459,6 +493,7 @@ When we visualise the model predictions, we note that the fitted smooth
 is now, well, smooth:
 
 ``` r
+
 m3_rw1 |>
   fitted_values() |>
   mutate(x = as.character(fx) |> as.numeric()) |>
@@ -484,7 +519,7 @@ smooths work, for practical purposes it is of limited interest in this
 case. The choice of `k = 20` is not the *optimal* complexity for these
 data — we already saw that optimal function used ~20 EDF — and as a user
 you are free to set `k` to whatever value you want (as long as it is
-less $n_{t}$ and greater than 2.) If you want to obtained a smooth
+less $`n_t`$ and greater than 2.) If you want to obtained a smooth
 trend, you would be better served with one of *mgcv*’s standard
 smoothers, and perhaps fit the model using NCV or include an
 autocorrelation process (via `bam()` or `gamm()` say).
@@ -512,6 +547,7 @@ We being by simulating a simple phylogenetic tree using the *ape*
 package
 
 ``` r
+
 n_species <- 20
 tree <- withr::with_seed(
   2026-3-25,
@@ -529,18 +565,19 @@ plot(tree)
 
 Next, we simulate some response data for each species to demonstrate the
 utility of the MRF smoothers. Here, we assume that we have observed some
-outcomes $y_{1}$ and $y_{2}$ for multiple individuals from each species
+outcomes $`y_1`$ and $`y_2`$ for multiple individuals from each species
 in our dataset.
 
-The species-level mean value ($\mu_{1}$) for trait $y_{1}$ follows a
+The species-level mean value ($`\mu_1`$) for trait $`y_1`$ follows a
 phylogenetic random walk (specifically an OU model). The species-level
-mean value for trait $y_{2}$ ($\mu_{2}$) is not conserved; it is
+mean value for trait $`y_2`$ ($`\mu_2`$) is not conserved; it is
 normally distributed at the species level.
 
 We will also generate some observation-level error for each trait in
 each observed individual.
 
 ``` r
+
 n_obs <- 5
 withr::with_seed(
   seed = 20260326,
@@ -587,6 +624,7 @@ We can visualize the distribution of true means of the two traits across
 the tree using the `ggtree` package:
 
 ``` r
+
 library(ggtree)
 mu1_tree <- data.frame(label=tree$tip.label, variable = mu1) |>
   full_join(tree,y = _, by = "label")
@@ -624,6 +662,7 @@ pass `tree` to
 [`mrf_penalty()`](https://gam-mafia.github.io/MRFtools/reference/mrf_penalty.md).
 
 ``` r
+
 S_phylo <- mrf_penalty(tree)
 ```
 
@@ -631,13 +670,18 @@ The default penalty for phylogenies is “rw1”, which is a first-order
 random walk model of trait evolution (synonymous with the standard
 “Brownian motion” model of trait evolution). Also by default, the
 penalty matrix generated is for the entire tree (including internal
-nodes). The precision matrix ($S$) for “rw1” for a whole tree is:
+nodes). The precision matrix ($`S`$) for “rw1” for a whole tree is:
 
-$$S_{i,j} = \begin{cases}
-{-1/l_{ij}} & {{\text{if}\mspace{6mu}}i \neq j{\mspace{6mu}\text{and node i is a direct ancestor/descendant of j}}} \\
-{\sum\limits_{k \neq i} - S_{ik}} & {{\text{if}\mspace{6mu}}i = j} \\
-0 & {\mspace{6mu}\text{otherwise}}
-\end{cases}$$
+``` math
+\begin{equation}
+S_{i,j}=
+    \begin{cases}
+        -1/l_{ij} & \text{if } i\ne j \text{ and node i is a direct ancestor/descendant of j} \\
+        \sum_{k\ne i} -S_{ik} & \text{if } i =j \\
+        0 & \text{ otherwise}
+    \end{cases}
+\end{equation}
+```
 
 This is a model of continuous trait evolution via a random walk wherein
 phenotypic change accumulates at random (with no bias in direction) and
@@ -651,6 +695,7 @@ node names into the data. We will create a second factor variable
 (`species_phylo`) to denote the augmented vector of species names.
 
 ``` r
+
 #|label: relabel-phylo
 
 phylo_df <- phylo_df |>
@@ -676,6 +721,7 @@ otherwise `mgcv` will treat the unobserved nodes as missing and drop
 them from the model.
 
 ``` r
+
 m_phylo1 <- gam(
   y1 ~ s(species_phylo, bs = "mrf", xt = list(penalty = S_phylo)) +
        s(species, bs = "re"),
@@ -694,8 +740,10 @@ m_phylo2 <- gam(
 ```
 
 ``` r
+
 overview(m_phylo1)
 ```
+
 
     Generalized Additive Model with 3 terms
 
@@ -712,8 +760,10 @@ effect term, indicating a strong phylogenetic signal in the trait value.
 Now let’s look at the overview for the second model:
 
 ``` r
+
 overview(m_phylo2)
 ```
+
 
     Generalized Additive Model with 3 terms
 
@@ -743,6 +793,7 @@ internal nodes by creating new prediction data and plotting the
 predictions on a tree:
 
 ``` r
+
 #use gratia's data_slice function to create prediction levels for all the values of species
 phylo_pred_data <- gratia::data_slice(
   object = m_phylo1, 
@@ -759,6 +810,7 @@ phylo_pred2 <- phylo_pred_data |>
 ```
 
 ``` r
+
 pred1_tree <- phylo_pred1 |>
   full_join(tree,y = _, by = "label")
 
@@ -796,6 +848,7 @@ If you instead want to fit a model for only the tips of a tree, you can
 do so by specifying `internal_nodes = FALSE`.
 
 ``` r
+
 S_phylo_tips <- mrf_penalty(tree, internal_nodes = FALSE)
 
 #this should be a 20 x 20 matrix:
@@ -811,6 +864,7 @@ should not rely on this functionality, and instead specify factor levels
 explicitly in the data):
 
 ``` r
+
 m_tips_phylo1 <- gam(
   y1 ~ s(species_phylo, bs = "mrf", xt = list(penalty = S_phylo_tips)) +
        s(species, bs = "re"),
@@ -821,6 +875,7 @@ m_tips_phylo1 <- gam(
 
 overview(m_tips_phylo1)
 ```
+
 
     Generalized Additive Model with 3 terms
 

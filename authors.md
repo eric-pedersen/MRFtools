@@ -18,12 +18,12 @@ Source:
 
 Pedersen E, Simpson G (2026). *MRFtools: Tools for Constructing and
 Plotting Markov Random Fields in R for Graphical Data*. R package
-version 0.0-5, <https://github.com/gam-mafia/MRFtools>.
+version 0.0-6, <https://github.com/gam-mafia/MRFtools>.
 
     @Manual{,
       title = {MRFtools: Tools for Constructing and Plotting Markov Random Fields in R for Graphical Data},
       author = {Eric J. Pedersen and Gavin L. Simpson},
       year = {2026},
-      note = {R package version 0.0-5},
+      note = {R package version 0.0-6},
       url = {https://github.com/gam-mafia/MRFtools},
     }

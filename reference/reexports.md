@@ -5,4 +5,4 @@ to see their documentation.
 
 - generics:
 
-  [`visualize`](https://generics.r-lib.org/reference/visualize.html)
+  [`visualize()`](https://generics.r-lib.org/reference/visualize.html)

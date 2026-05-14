@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">MRFtools</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0-5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0-6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,12 +42,12 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for class 'numeric'</span></span>
 <span><span class="fu"><a href="mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span></span>
 <span>  <span class="va">object</span>,</span>
-<span>  model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rw1"</span>, <span class="st">"rw2"</span>, <span class="st">"ar1"</span>, <span class="st">"ou"</span><span class="op">)</span>,</span>
+<span>  model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rw1"</span>, <span class="st">"rw2"</span>, <span class="st">"rw2_d"</span>, <span class="st">"ar1"</span>, <span class="st">"ou"</span><span class="op">)</span>,</span>
 <span>  cyclic <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  rho <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  at_nodes <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  node_labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  add_missing <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  end_points <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  end_dist <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  delta <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -65,7 +65,7 @@
 
 
 <dt id="arg-model">model<a class="anchor" aria-label="anchor" href="#arg-model"></a></dt>
-<dd><p>character; one of "rw1", "rw2", "ar1", or "ou". See Description
+<dd><p>character; one of "rw1","ou", "ar1",  "rw2", or "rw2_d". "rw1" is a first-order continuous-time random walk model (I.e. Brownian motion). "ou" is the Ornstein-Uhlenbeck (I.e. continuous-time first-order autoregressive model); model = "ou" also requires specifying a value of alpha. "ar1" is a first-order discrete-time autoregressive model, and requires specifying the <code>rho</code> parameter.  "rw2" is a second-order random-walk model (the "CRW2" model from Rue and Held 2005); it returns a dense precision matrix for the values of the function evaluated at the chosen points. "rw2_d" is a sparse version of "rw2", that includes both the function itself and the derivatives of the function in its precision matrix. See Description
 for details on the models</p></dd>
 
 
@@ -74,21 +74,21 @@ for details on the models</p></dd>
 each other. See Description for details</p></dd>
 
 
+<dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
+<dd><p>numeric; autoregression parameter for a continuous-time random walk ("ou"). rho must be &gt;0.</p></dd>
+
+
 <dt id="arg-rho">rho<a class="anchor" aria-label="anchor" href="#arg-rho"></a></dt>
-<dd><p>numeric;</p></dd>
+<dd><p>numeric; autoregression parameter for a discrete-time random walk ("ar1"). abs(rho) must be &lt; 1 if specified.</p></dd>
 
 
 <dt id="arg-at-nodes">at_nodes<a class="anchor" aria-label="anchor" href="#arg-at-nodes"></a></dt>
-<dd><p>numeric;</p></dd>
+<dd><p>numeric; what nodes (I.e. object values) that you want to evaluate the penalty at. Must include all values levels specified in <code>object</code>, but can also include additional levels that you want to evaluate the penalty at (see details).</p></dd>
 
 
 <dt id="arg-node-labels">node_labels<a class="anchor" aria-label="anchor" href="#arg-node-labels"></a></dt>
 <dd><p>character; a vector of alternative labels for the levels
 of the factor.</p></dd>
-
-
-<dt id="arg-add-missing">add_missing<a class="anchor" aria-label="anchor" href="#arg-add-missing"></a></dt>
-<dd><p>logical;</p></dd>
 
 
 <dt id="arg-end-points">end_points<a class="anchor" aria-label="anchor" href="#arg-end-points"></a></dt>
@@ -118,50 +118,43 @@ the penalty matrix.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># linear rw1: 1st order continuous-time random walk</span></span></span>
-<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     1  2  3  4  5  6  7  8  9 10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   1 -1  0  0  0  0  0  0  0  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  -1  2 -1  0  0  0  0  0  0  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   0 -1  2 -1  0  0  0  0  0  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   0  0 -1  2 -1  0  0  0  0  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   0  0  0 -1  2 -1  0  0  0  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6   0  0  0  0 -1  2 -1  0  0  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7   0  0  0  0  0 -1  2 -1  0  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8   0  0  0  0  0  0 -1  2 -1  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9   0  0  0  0  0  0  0 -1  2 -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10  0  0  0  0  0  0  0  0 -1  1</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># create some test data</span></span></span>
+<span class="r-in"><span><span class="va">x_cont</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span>, length <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">x_disc</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span> </span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># linear rw1: 1st order continuous-time random walk</span></span></span>
+<span class="r-in"><span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span><span class="va">x_cont</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p1</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Markov Random Field penalty</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Type: sequential</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> N   : 10</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># cyclic rw1:</span></span></span>
-<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, model <span class="op">=</span> <span class="st">"rw1"</span>, cyclic <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     1  2  3  4  5  6  7  8  9 10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   2 -1  0  0  0  0  0  0  0 -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  -1  2 -1  0  0  0  0  0  0  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   0 -1  2 -1  0  0  0  0  0  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   0  0 -1  2 -1  0  0  0  0  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   0  0  0 -1  2 -1  0  0  0  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6   0  0  0  0 -1  2 -1  0  0  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7   0  0  0  0  0 -1  2 -1  0  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8   0  0  0  0  0  0 -1  2 -1  0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9   0  0  0  0  0  0  0 -1  2 -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 -1  0  0  0  0  0  0  0 -1  2</span>
+<span class="r-in"><span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span><span class="va">x_cont</span>, model <span class="op">=</span> <span class="st">"rw1"</span>, cyclic <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p2</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Markov Random Field penalty</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Type: cyclic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Type: sequential</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> N   : 10</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># cyclic with user-specified end points</span></span></span>
-<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, model <span class="op">=</span> <span class="st">"rw1"</span>, cyclic <span class="op">=</span> <span class="cn">TRUE</span>, end_points <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">11</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             1  2  3  4  5  6  7  8  9         10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   1.3333333 -1  0  0  0  0  0  0  0 -0.3333333</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  -1.0000000  2 -1  0  0  0  0  0  0  0.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   0.0000000 -1  2 -1  0  0  0  0  0  0.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   0.0000000  0 -1  2 -1  0  0  0  0  0.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   0.0000000  0  0 -1  2 -1  0  0  0  0.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6   0.0000000  0  0  0 -1  2 -1  0  0  0.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7   0.0000000  0  0  0  0 -1  2 -1  0  0.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8   0.0000000  0  0  0  0  0 -1  2 -1  0.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9   0.0000000  0  0  0  0  0  0 -1  2 -1.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 -0.3333333  0  0  0  0  0  0  0 -1  1.3333333</span>
+<span class="r-in"><span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu"><a href="mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span><span class="va">x_cont</span>, model <span class="op">=</span> <span class="st">"rw1"</span>, cyclic <span class="op">=</span> <span class="cn">TRUE</span>, end_points <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p3</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Markov Random Field penalty</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Type: cyclic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Type: sequential</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> N   : 10</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Continuous-time auto-regressive (I.e. "ou") model:</span></span></span>
+<span class="r-in"><span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="fu"><a href="mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span><span class="va">x_cont</span>, model <span class="op">=</span> <span class="st">"ou"</span>,alpha <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p4</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Markov Random Field penalty</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Type: sequential</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> N   : 10</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Discrete-time autoregressive model with negative 1st order autocorrelation</span></span></span>
+<span class="r-in"><span><span class="va">p5</span> <span class="op">&lt;-</span> <span class="fu"><a href="mrf_penalty.html">mrf_penalty</a></span><span class="op">(</span><span class="va">x_disc</span>, model <span class="op">=</span> <span class="st">"ar1"</span>, rho <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

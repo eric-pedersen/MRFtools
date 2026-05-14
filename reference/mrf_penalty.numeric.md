@@ -8,12 +8,12 @@ Models one-dimensional numeric vectors as random-walk models.
 # S3 method for class 'numeric'
 mrf_penalty(
   object,
-  model = c("rw1", "rw2", "ar1", "ou"),
+  model = c("rw1", "rw2", "rw2_d", "ar1", "ou"),
   cyclic = FALSE,
+  alpha = NULL,
   rho = NULL,
   at_nodes = NULL,
   node_labels = NULL,
-  add_missing = NULL,
   end_points = NULL,
   end_dist = NULL,
   delta = FALSE,
@@ -30,30 +30,45 @@ mrf_penalty(
 
 - model:
 
-  character; one of "rw1", "rw2", "ar1", or "ou". See Description for
-  details on the models
+  character; one of "rw1","ou", "ar1", "rw2", or "rw2_d". "rw1" is a
+  first-order continuous-time random walk model (I.e. Brownian motion).
+  "ou" is the Ornstein-Uhlenbeck (I.e. continuous-time first-order
+  autoregressive model); model = "ou" also requires specifying a value
+  of alpha. "ar1" is a first-order discrete-time autoregressive model,
+  and requires specifying the `rho` parameter. "rw2" is a second-order
+  random-walk model (the "CRW2" model from Rue and Held 2005); it
+  returns a dense precision matrix for the values of the function
+  evaluated at the chosen points. "rw2_d" is a sparse version of "rw2",
+  that includes both the function itself and the derivatives of the
+  function in its precision matrix. See Description for details on the
+  models
 
 - cyclic:
 
   logical; If TRUE, the end points are treated as neighbouring each
   other. See Description for details
 
+- alpha:
+
+  numeric; autoregression parameter for a continuous-time random walk
+  ("ou"). rho must be \>0.
+
 - rho:
 
-  numeric;
+  numeric; autoregression parameter for a discrete-time random walk
+  ("ar1"). abs(rho) must be \< 1 if specified.
 
 - at_nodes:
 
-  numeric;
+  numeric; what nodes (I.e. object values) that you want to evaluate the
+  penalty at. Must include all values levels specified in `object`, but
+  can also include additional levels that you want to evaluate the
+  penalty at (see details).
 
 - node_labels:
 
   character; a vector of alternative labels for the levels of the
   factor.
-
-- add_missing:
-
-  logical;
 
 - end_points:
 
@@ -82,48 +97,40 @@ mrf_penalty(
 ## Examples
 
 ``` r
+# create some test data
+x_cont <- seq(0,5, length = 10)
+x_disc <- 1:10 
+
 # linear rw1: 1st order continuous-time random walk
-p <- mrf_penalty(1:10)
-as.matrix(p)
-#>     1  2  3  4  5  6  7  8  9 10
-#> 1   1 -1  0  0  0  0  0  0  0  0
-#> 2  -1  2 -1  0  0  0  0  0  0  0
-#> 3   0 -1  2 -1  0  0  0  0  0  0
-#> 4   0  0 -1  2 -1  0  0  0  0  0
-#> 5   0  0  0 -1  2 -1  0  0  0  0
-#> 6   0  0  0  0 -1  2 -1  0  0  0
-#> 7   0  0  0  0  0 -1  2 -1  0  0
-#> 8   0  0  0  0  0  0 -1  2 -1  0
-#> 9   0  0  0  0  0  0  0 -1  2 -1
-#> 10  0  0  0  0  0  0  0  0 -1  1
+p1 <- mrf_penalty(x_cont)
+p1
+#> Markov Random Field penalty
+#> Type: sequential
+#> N   : 10
 
 # cyclic rw1:
-p <- mrf_penalty(1:10, model = "rw1", cyclic = TRUE)
-as.matrix(p)
-#>     1  2  3  4  5  6  7  8  9 10
-#> 1   2 -1  0  0  0  0  0  0  0 -1
-#> 2  -1  2 -1  0  0  0  0  0  0  0
-#> 3   0 -1  2 -1  0  0  0  0  0  0
-#> 4   0  0 -1  2 -1  0  0  0  0  0
-#> 5   0  0  0 -1  2 -1  0  0  0  0
-#> 6   0  0  0  0 -1  2 -1  0  0  0
-#> 7   0  0  0  0  0 -1  2 -1  0  0
-#> 8   0  0  0  0  0  0 -1  2 -1  0
-#> 9   0  0  0  0  0  0  0 -1  2 -1
-#> 10 -1  0  0  0  0  0  0  0 -1  2
+p2 <- mrf_penalty(x_cont, model = "rw1", cyclic = TRUE)
+p2
+#> Markov Random Field penalty
+#> Type: cyclic
+#> Type: sequential
+#> N   : 10
 
 # cyclic with user-specified end points
-p <- mrf_penalty(1:10, model = "rw1", cyclic = TRUE, end_points = c(0,11))
-as.matrix(p)
-#>             1  2  3  4  5  6  7  8  9         10
-#> 1   1.3333333 -1  0  0  0  0  0  0  0 -0.3333333
-#> 2  -1.0000000  2 -1  0  0  0  0  0  0  0.0000000
-#> 3   0.0000000 -1  2 -1  0  0  0  0  0  0.0000000
-#> 4   0.0000000  0 -1  2 -1  0  0  0  0  0.0000000
-#> 5   0.0000000  0  0 -1  2 -1  0  0  0  0.0000000
-#> 6   0.0000000  0  0  0 -1  2 -1  0  0  0.0000000
-#> 7   0.0000000  0  0  0  0 -1  2 -1  0  0.0000000
-#> 8   0.0000000  0  0  0  0  0 -1  2 -1  0.0000000
-#> 9   0.0000000  0  0  0  0  0  0 -1  2 -1.0000000
-#> 10 -0.3333333  0  0  0  0  0  0  0 -1  1.3333333
+p3 <- mrf_penalty(x_cont, model = "rw1", cyclic = TRUE, end_points = c(0,6))
+p3
+#> Markov Random Field penalty
+#> Type: cyclic
+#> Type: sequential
+#> N   : 10
+
+# Continuous-time auto-regressive (I.e. "ou") model:
+p4 <- mrf_penalty(x_cont, model = "ou",alpha = 2)
+p4
+#> Markov Random Field penalty
+#> Type: sequential
+#> N   : 10
+
+# Discrete-time autoregressive model with negative 1st order autocorrelation
+p5 <- mrf_penalty(x_disc, model = "ar1", rho = -0.5)
 ```

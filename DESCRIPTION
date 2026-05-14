@@ -1,5 +1,5 @@
 Package: MRFtools
-Version: 0.0-5
+Version: 0.0-6
 Title: Tools for Constructing and Plotting Markov Random Fields in R for Graphical Data
 Authors@R: c(
     person(
@@ -58,8 +58,9 @@ LazyData: true
 URL: https://github.com/gam-mafia/MRFtools
 BugReports: https://github.com/gam-mafia/MRFtools/issues
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Encoding: UTF-8
 Config/testthat/edition: 3
 VignetteBuilder: 
     quarto
+Config/roxygen2/version: 8.0.0
+RoxygenNote: 7.3.3

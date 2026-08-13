@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Getting started with the MRFtools package • MRFtools</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="MRFtools_files/libs/quarto-html/popper.min.js"></script><script src="MRFtools_files/libs/quarto-html/tippy.umd.min.js"></script><link href="MRFtools_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="MRFtools_files/libs/quarto-html/light-border.css" rel="stylesheet">
@@ -65,11 +65,11 @@
     <p>The Gaussian Markov random field basis (<code>bs = "mrf"</code>) in <em>mgcv</em> is an extremely powerful and flexible “spline”, which can be used to include a range of effects into a GAM that one would not typically think of as smooth effects. As with many powerful tools in R, that power and flexibility can often bring with it additional complexity when you try to actually use the thing.</p>
 <p>The MRF basis (<code>bs = "mrf"</code>) allows for the definition of a Gaussian MRF in one of three ways</p>
 <ol type="1">
-<li><p><code>polys</code> — providing a list containing numeric vectors of points defining one or more polygons, one per level of the factor provided to the smooth, where the spatial arrangement of polygons is used to build a neighbourhood structure and from that a penalty matrix <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐒</mi><annotation encoding="application/x-tex">\mathbf{S}</annotation></semantics></math>,</p></li>
-<li><p><code>nb</code> — providing the neighbourhood structure itself, as a list, with one element per level of the factor supplied to the smooth. Each element of this list provides the indices of the levels for the neighbours of that element. From this list, the corresponding penalty matrix <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐒</mi><annotation encoding="application/x-tex">\mathbf{S}</annotation></semantics></math> is created, and</p></li>
-<li><p><code>penalty</code> — providing the penalty matrix <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐒</mi><annotation encoding="application/x-tex">\mathbf{S}</annotation></semantics></math> directly.</p></li>
+<li><p><code>polys</code> — providing a list containing numeric vectors of points defining one or more polygons, one per level of the factor provided to the smooth, where the spatial arrangement of polygons is used to build a neighbourhood structure and from that a penalty matrix <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="bold-italic">𝑺</mi><annotation encoding="application/x-tex">\mathbf{S}</annotation></semantics></math>,</p></li>
+<li><p><code>nb</code> — providing the neighbourhood structure itself, as a list, with one element per level of the factor supplied to the smooth. Each element of this list provides the indices of the levels for the neighbours of that element. From this list, the corresponding penalty matrix <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="bold-italic">𝑺</mi><annotation encoding="application/x-tex">\mathbf{S}</annotation></semantics></math> is created, and</p></li>
+<li><p><code>penalty</code> — providing the penalty matrix <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="bold-italic">𝑺</mi><annotation encoding="application/x-tex">\mathbf{S}</annotation></semantics></math> directly.</p></li>
 </ol>
-<p>The flexibility of the MRF basis arises from the last of these — the ability to provide a penalty matrix directly. However, many users of <em>mgcv</em> are unlikely to be able to specify <code>penalty</code> themselves, especially because there are some strict rules that must be followed in order for the correct <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐒</mi><annotation encoding="application/x-tex">\mathbf{S}</annotation></semantics></math> to be specified without producing an error from <em>mgcv</em>. <em>MRFtools</em> aims to take some of the pain out of using the MRF basis by providing functions that create the <code>penalty</code> matrix for you for a range of commonly encountered R objects and structures.</p>
+<p>The flexibility of the MRF basis arises from the last of these — the ability to provide a penalty matrix directly. However, many users of <em>mgcv</em> are unlikely to be able to specify <code>penalty</code> themselves, especially because there are some strict rules that must be followed in order for the correct <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="bold-italic">𝑺</mi><annotation encoding="application/x-tex">\mathbf{S}</annotation></semantics></math> to be specified without producing an error from <em>mgcv</em>. <em>MRFtools</em> aims to take some of the pain out of using the MRF basis by providing functions that create the <code>penalty</code> matrix for you for a range of commonly encountered R objects and structures.</p>
 <p>This vignette will briefly describe how to use <em>MRFtools</em> to specify a penalty matrix, and how to use that penalty matrix with <em>mgcv</em>. The aim is to demonstrate the basic workflow, not to provide an exhaustive overview of <em>MRFtools</em> capabilities. Also, the specific details of workflow are in a bit of flux as Eric and I work towards an initial CRAN release of <em>MRFtools</em>.</p>
 <section class="level2"><h2 id="installing-mrftools">Installing <em>MRFtools</em>
 <a class="anchor" aria-label="anchor" href="#installing-mrftools"></a>
@@ -113,9 +113,9 @@ colorspace
 </div>
 </section><section class="level2"><h2 id="discrete-random-walks">Discrete random walks<a class="anchor" aria-label="anchor" href="#discrete-random-walks"></a>
 </h2>
-<p>One of the ways in which regular temporal data can be modelled in general is through a discrete random walk (RW). In this section I’ll illustrate how to create the corresponding penalty matrix <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐒</mi><annotation encoding="application/x-tex">\mathbf{S}</annotation></semantics></math> for a first order discrete random walk and include this in a GAM.</p>
+<p>One of the ways in which regular temporal data can be modelled in general is through a discrete random walk (RW). In this section I’ll illustrate how to create the corresponding penalty matrix <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="bold-italic">𝑺</mi><annotation encoding="application/x-tex">\mathbf{S}</annotation></semantics></math> for a first order discrete random walk and include this in a GAM.</p>
 <p>A discrete first order random walk (RW1) is defined by</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>∼</mo><mi>𝒩</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><msup><mi>σ</mi><mn>2</mn></msup><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>x</mi><mi>t</mi></msub><mo>=</mo><msub><mi>x</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><msub><mi>ε</mi><mi>t</mi></msub><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>ε</mi><mi>t</mi></msub><mo>∼</mo><mi>𝒩</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><msup><mi>τ</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>∼</mo><mi mathvariant="script">𝒩</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><msup><mi>σ</mi><mn>2</mn></msup><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>x</mi><mi>t</mi></msub><mo>=</mo><msub><mi>x</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><msub><mi>ε</mi><mi>t</mi></msub><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>ε</mi><mi>t</mi></msub><mo>∼</mo><mi mathvariant="script">𝒩</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><msup><mi>τ</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
 x_1 \sim \mathcal{N}(0, \sigma^2),
 \qquad
 x_t = x_{t-1} + \varepsilon_t,
@@ -171,11 +171,11 @@ x_t = x_{t-1} + \varepsilon_t,
 </div>
 <p>To model this time series using a Gaussian MRF and the MRF basis, we need to do a couple of things to prepare the data for <em>mgcv</em></p>
 <ol type="1">
-<li><p>Create the penalty matrix <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐒</mi><annotation encoding="application/x-tex">\mathbf{S}</annotation></semantics></math>, and</p></li>
+<li><p>Create the penalty matrix <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="bold-italic">𝑺</mi><annotation encoding="application/x-tex">\mathbf{S}</annotation></semantics></math>, and</p></li>
 <li><p>Coerce the time covariate, here <code>x</code>, into a factor.</p></li>
 </ol>
 <p>This latter step seems an odd thing to do for a time series, but it is a requirement of <em>mgcv</em> and reflects the original intention of modelling discrete areal data.</p>
-<section class="level3"><h3 id="creating-mathbfs">Creating <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐒</mi><annotation encoding="application/x-tex">\mathbf{S}</annotation></semantics></math><a class="anchor" aria-label="anchor" href="#creating-mathbfs"></a>
+<section class="level3"><h3 id="creating-mathbfs">Creating <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="bold-italic">𝑺</mi><annotation encoding="application/x-tex">\mathbf{S}</annotation></semantics></math><a class="anchor" aria-label="anchor" href="#creating-mathbfs"></a>
 </h3>
 <p>The penalty matrix <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">S</mi><annotation encoding="application/x-tex">\mathrm{S}</annotation></semantics></math> is created using <code><a href="../reference/mrf_penalty.html">mrf_penalty()</a></code>, which for the RW1 talks a vector of regularly spaced discrete time points. To create <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">S</mi><annotation encoding="application/x-tex">\mathrm{S}</annotation></semantics></math> for our series, we use</p>
 <div class="cell">
@@ -791,7 +791,7 @@ Pedersen, Eric J, David L Miller, Gavin L Simpson, and Noam Ross. 2019. <span>�
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

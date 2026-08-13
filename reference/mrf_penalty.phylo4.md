@@ -25,9 +25,8 @@ mrf_penalty(
 
 - model:
 
-  character; one of `"full"` or `"individual"` indicating if a fully
-  connected graph (`"full"`) or a random effect (random intercepts;
-  `"individual"`) penalty is created.
+  character; one of `"rw1"`, `"ou"`, or `"brownian"`. The type of trait
+  evolution model to use.
 
 - alpha:
 

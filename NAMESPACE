@@ -42,41 +42,57 @@ export(mrf_penalty)
 export(vis)
 export(visualise)
 export(visualize)
-importFrom(Matrix,Diagonal)
-importFrom(Matrix,Matrix)
-importFrom(Matrix,diag)
-importFrom(Matrix,sparseMatrix)
-importFrom(ape,as.phylo.hclust)
-importFrom(ape,drop.tip)
-importFrom(ape,vcv)
+importFrom(Matrix,
+  Diagonal,
+  Matrix,
+  diag,
+  sparseMatrix
+)
+importFrom(ape,
+  as.phylo.hclust,
+  drop.tip,
+  vcv
+)
 importFrom(colorspace,scale_fill_continuous_divergingx)
-importFrom(dplyr,as_tibble)
-importFrom(dplyr,mutate)
-importFrom(dplyr,row_number)
+importFrom(dplyr,
+  as_tibble,
+  mutate,
+  row_number
+)
 importFrom(generics,visualize)
-importFrom(ggplot2,.data)
-importFrom(ggplot2,aes)
-importFrom(ggplot2,geom_raster)
-importFrom(ggplot2,ggplot)
-importFrom(ggplot2,labs)
-importFrom(ggplot2,scale_color_manual)
-importFrom(ggraph,create_layout)
-importFrom(ggraph,geom_edge_link)
-importFrom(ggraph,geom_node_label)
-importFrom(ggraph,ggraph)
-importFrom(gratia,get_smooths_by_id)
-importFrom(gratia,is_mrf_smooth)
-importFrom(gratia,which_smooths)
+importFrom(ggplot2,
+  .data,
+  aes,
+  geom_raster,
+  ggplot,
+  labs,
+  scale_color_manual
+)
+importFrom(ggraph,
+  create_layout,
+  geom_edge_link,
+  geom_node_label,
+  ggraph
+)
+importFrom(gratia,
+  get_smooths_by_id,
+  is_mrf_smooth,
+  which_smooths
+)
 importFrom(methods,as)
 importFrom(phylobase,subset)
-importFrom(rlang,abort)
-importFrom(rlang,caller_env)
-importFrom(sf,st_as_sf)
-importFrom(sf,st_buffer)
-importFrom(sf,st_geometry)
-importFrom(sf,st_geometry_type)
-importFrom(sf,st_intersects)
-importFrom(sf,st_sf)
+importFrom(rlang,
+  abort,
+  caller_env
+)
+importFrom(sf,
+  st_as_sf,
+  st_buffer,
+  st_geometry,
+  st_geometry_type,
+  st_intersects,
+  st_sf
+)
 importFrom(stats,as.hclust)
 importFrom(tidygraph,as_tbl_graph)
 importFrom(tidyr,pivot_longer)
